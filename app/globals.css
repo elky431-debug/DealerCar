@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Surfaces — warm, slightly off-white for a refined feel */
+    --background: 240 20% 98.5%;
+    --foreground: 224 47% 9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 47% 9%;
+
+    --muted: 220 16% 95.5%;
+    --muted-foreground: 220 9% 42%;
+
+    --border: 220 14% 91%;
+    --input: 220 14% 91%;
+    --ring: 221 83% 53%;
+
+    /* Accent — refined indigo/blue */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 47% 9%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 47% 9%;
+
+    --success: 158 64% 38%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 32 95% 44%;
+    --warning-foreground: 0 0% 100%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    color-scheme: dark;
+    /* Surfaces — deep, slightly cool charcoal */
+    --background: 224 25% 7%;
+    --foreground: 220 16% 96%;
+
+    --card: 224 22% 10%;
+    --card-foreground: 220 16% 96%;
+
+    --muted: 224 18% 14%;
+    --muted-foreground: 220 9% 65%;
+
+    --border: 224 16% 18%;
+    --input: 224 16% 18%;
+    --ring: 217 91% 60%;
+
+    /* Accent — slightly brighter blue for dark bg */
+    --primary: 217 91% 60%;
+    --primary-foreground: 224 47% 9%;
+
+    --secondary: 224 18% 14%;
+    --secondary-foreground: 220 16% 96%;
+
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --accent: 224 18% 14%;
+    --accent-foreground: 220 16% 96%;
+
+    --success: 158 70% 48%;
+    --success-foreground: 224 47% 9%;
+
+    --warning: 32 95% 55%;
+    --warning-foreground: 224 47% 9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  html,
+  body {
+    @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background-color: hsl(var(--primary) / 0.2);
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  /* Refined scrollbars */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.4);
+    background-clip: padding-box;
+  }
+
+  /* Refined focus rings */
+  *:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--ring) / 0.45);
+  }
+}
+
+@layer components {
+  .field-label {
+    @apply text-sm font-medium text-foreground;
+  }
+  .field-error {
+    @apply text-xs text-destructive mt-1;
+  }
+  .field-hint {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+
+  /* Glass surface */
+  .glass {
+    @apply border border-border/70 bg-background/70 backdrop-blur-md;
+  }
+
+  /* Premium card surface */
+  .surface {
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.98) 100%);
+    box-shadow:
+      0 1px 0 hsl(var(--foreground) / 0.04),
+      0 1px 2px hsl(var(--foreground) / 0.04);
+  }
+
+  /* Subtle elevation on hover */
+  .elevate-hover {
+    @apply transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/[0.06];
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .display-font {
+    letter-spacing: -0.025em;
+  }
+
+  /* Tabular numbers for prices */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "ss01" 1;
+  }
+
+  /* Premium gradient on title (subtle) */
+  .text-gradient {
+    background: linear-gradient(180deg, hsl(var(--foreground)) 0%, hsl(var(--foreground) / 0.78) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Soft glow used on focused/active surfaces */
+  .glow-primary {
+    box-shadow:
+      0 0 0 4px hsl(var(--primary) / 0.08),
+      0 8px 24px -8px hsl(var(--primary) / 0.4);
+  }
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted) / 0.6) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Dashboard activity chart (SVG stroke animation — global pour éviter les soucis d’inline style) */
+@keyframes chart-line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes chart-dot-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "dealerlink",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/dev-guard.mjs",
+    "dev": "next dev",
+    "dev:fresh": "node scripts/dev-guard.mjs --clean && next dev",
+    "dev:stop": "node scripts/dev-guard.mjs --silent",
+    "prebuild": "node scripts/build-guard.mjs",
+    "build": "next build",
+    "start": "next start",
+    "clean": "rm -rf .next",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:setup": "node scripts/db-setup.mjs",
+    "import:ademe": "node scripts/import-ademe.mjs"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.46.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.460.0",
+    "next": "^14.2.35",
+    "openai": "^6.35.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.2",
+    "tailwind-merge": "^2.5.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^17.4.2",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
+    "pg": "^8.20.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3"
+  }
+}
