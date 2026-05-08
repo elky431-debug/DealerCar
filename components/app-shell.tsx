@@ -28,6 +28,20 @@ export function AppShell({
     setMobileOpen(false);
   }, [pathname]);
 
+  // Prefetch major app routes to reduce click-to-navigation latency.
+  useEffect(() => {
+    const routes = [
+      "/dashboard",
+      "/garage/vehicules",
+      "/garage/vehicules/nouveau",
+      "/garage/clients",
+      "/recherche/reseau",
+    ];
+    for (const route of routes) {
+      router.prefetch(route);
+    }
+  }, [router]);
+
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
