@@ -231,7 +231,7 @@ export default async function DashboardPage() {
       <PageBody className="space-y-6 pb-14">
         {/* Top row : chart + stack of mini-stats */}
         <div className="grid min-w-0 gap-5 lg:grid-cols-[1fr_320px]">
-          <section className="min-w-0 overflow-hidden rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_40px_-24px_hsl(var(--foreground)/0.28)] ring-1 ring-white/30 backdrop-blur-sm dark:ring-white/5 sm:p-6">
+          <section className="min-w-0 overflow-hidden rounded-3xl border border-border/60 bg-card p-5 shadow-[0_8px_24px_-18px_hsl(var(--foreground)/0.22)] sm:p-6">
             <ActivityChart days={daily} monthLabel={monthLabel} todayIndex={todayIndex} />
           </section>
 
@@ -314,7 +314,7 @@ export default async function DashboardPage() {
         {/* Bottom row : Recent activity + Recent vehicles */}
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           {/* Activity feed */}
-          <section className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_36px_-22px_hsl(var(--foreground)/0.26)] ring-1 ring-white/25 backdrop-blur-sm dark:ring-white/5 sm:p-6">
+          <section className="rounded-3xl border border-border/60 bg-card p-5 shadow-[0_8px_24px_-18px_hsl(var(--foreground)/0.22)] sm:p-6">
             <div className="flex items-baseline justify-between">
               <h3 className="text-[15px] font-semibold tracking-tight">Activité récente</h3>
               <Link
@@ -340,7 +340,7 @@ export default async function DashboardPage() {
           </section>
 
           {/* Recent vehicles */}
-          <section className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_36px_-22px_hsl(var(--foreground)/0.26)] ring-1 ring-white/25 backdrop-blur-sm dark:ring-white/5 sm:p-6">
+          <section className="rounded-3xl border border-border/60 bg-card p-5 shadow-[0_8px_24px_-18px_hsl(var(--foreground)/0.22)] sm:p-6">
             <div className="flex items-baseline justify-between">
               <h3 className="text-[15px] font-semibold tracking-tight">Derniers véhicules</h3>
               <Link
@@ -462,7 +462,7 @@ function MiniStat({
         : "from-primary/12 to-primary/0";
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-4 shadow-[0_10px_28px_-20px_hsl(var(--foreground)/0.32)] ring-1 ring-white/20 backdrop-blur-sm dark:ring-white/5">
+    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-4 shadow-[0_8px_20px_-16px_hsl(var(--foreground)/0.22)]">
       <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", tone)} />
       <div className="flex items-baseline justify-between">
         <p className="relative text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -505,7 +505,7 @@ function InventoryCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-4 shadow-[0_10px_30px_-22px_hsl(var(--foreground)/0.28)] ring-1 ring-white/20 transition-all hover:-translate-y-1 hover:border-foreground/15 hover:shadow-[0_18px_34px_-20px_hsl(var(--foreground)/0.34)] dark:ring-white/5"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card p-4 shadow-[0_8px_20px_-16px_hsl(var(--foreground)/0.22)] transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_12px_24px_-16px_hsl(var(--foreground)/0.25)]"
     >
       <span className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-primary/[0.06] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       <div className="flex items-center justify-between">

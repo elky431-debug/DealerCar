@@ -52,14 +52,12 @@ export function AppShell({
         className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_80%_at_70%_0%,hsl(var(--primary)/0.06),transparent_60%)]"
       />
 
-      {/* ───────── Desktop sidebar (rail 68px → 256px on hover) ───────── */}
+      {/* ───────── Desktop sidebar (fixed width for smoother perf) ───────── */}
       <aside
         className={cn(
-          "group/sb fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden",
-          "border-r border-border/60 bg-card/95 backdrop-blur-xl",
-          "w-[68px] transition-[width,box-shadow] duration-300 ease-out",
-          "hover:w-64 focus-within:w-64",
-          "hover:shadow-[0_0_48px_-14px_rgba(15,23,42,0.22)] focus-within:shadow-[0_0_48px_-14px_rgba(15,23,42,0.22)]",
+          "fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden",
+          "border-r border-border/60 bg-card",
+          "w-64 shadow-[0_0_24px_-16px_rgba(15,23,42,0.15)]",
           "md:flex",
         )}
       >
@@ -67,12 +65,13 @@ export function AppShell({
 
         <QuickAddCTA />
 
-        <SidebarNav variant="rail" />
+        <SidebarNav variant="drawer" />
 
         <SidebarFooter
           profile={profile}
           initials={initials}
           onLogout={handleLogout}
+          variant="drawer"
         />
       </aside>
 
@@ -80,10 +79,10 @@ export function AppShell({
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-foreground/40"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative z-10 flex h-full w-72 flex-col border-r border-border/70 bg-card/95 backdrop-blur-xl shadow-2xl">
+          <aside className="relative z-10 flex h-full w-72 flex-col border-r border-border/70 bg-card shadow-2xl">
             <div className="flex h-16 items-center gap-3 border-b border-border px-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
                 <Car className="h-[18px] w-[18px]" />
@@ -127,7 +126,7 @@ export function AppShell({
       )}
 
       {/* ───────── Main ───────── */}
-      <div className="flex min-h-screen flex-col md:pl-16">
+      <div className="flex min-h-screen flex-col md:pl-64">
         {/* Mobile topbar */}
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur md:hidden">
           <Button
@@ -169,7 +168,7 @@ function BrandHeader() {
         <Car className="h-[18px] w-[18px]" />
         <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
       </span>
-      <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100">
+      <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight">
         DealerLink
       </span>
     </div>
@@ -196,7 +195,7 @@ function QuickAddCTA() {
         )}
       >
         <Plus className="h-[18px] w-[18px] shrink-0" />
-        <span className="whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100">
+        <span className="whitespace-nowrap">
           Nouveau véhicule
         </span>
       </Link>
