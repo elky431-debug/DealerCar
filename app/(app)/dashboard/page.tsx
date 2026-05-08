@@ -228,10 +228,10 @@ export default async function DashboardPage() {
           </>
         }
       />
-      <PageBody className="space-y-6">
+      <PageBody className="space-y-6 pb-14">
         {/* Top row : chart + stack of mini-stats */}
         <div className="grid min-w-0 gap-5 lg:grid-cols-[1fr_320px]">
-          <section className="min-w-0 rounded-2xl border border-border/60 bg-card p-5 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)] sm:p-6">
+          <section className="min-w-0 overflow-hidden rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_40px_-24px_hsl(var(--foreground)/0.28)] ring-1 ring-white/30 backdrop-blur-sm dark:ring-white/5 sm:p-6">
             <ActivityChart days={daily} monthLabel={monthLabel} todayIndex={todayIndex} />
           </section>
 
@@ -314,7 +314,7 @@ export default async function DashboardPage() {
         {/* Bottom row : Recent activity + Recent vehicles */}
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           {/* Activity feed */}
-          <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)] sm:p-6">
+          <section className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_36px_-22px_hsl(var(--foreground)/0.26)] ring-1 ring-white/25 backdrop-blur-sm dark:ring-white/5 sm:p-6">
             <div className="flex items-baseline justify-between">
               <h3 className="text-[15px] font-semibold tracking-tight">Activité récente</h3>
               <Link
@@ -331,7 +331,7 @@ export default async function DashboardPage() {
                 Pas encore d'activité. Ajoutez un véhicule pour commencer.
               </div>
             ) : (
-              <ol className="mt-5 space-y-1">
+              <ol className="mt-5 space-y-1.5">
                 {feed.map((e, i) => (
                   <FeedItem key={i} event={e} />
                 ))}
@@ -340,7 +340,7 @@ export default async function DashboardPage() {
           </section>
 
           {/* Recent vehicles */}
-          <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)] sm:p-6">
+          <section className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-[0_14px_36px_-22px_hsl(var(--foreground)/0.26)] ring-1 ring-white/25 backdrop-blur-sm dark:ring-white/5 sm:p-6">
             <div className="flex items-baseline justify-between">
               <h3 className="text-[15px] font-semibold tracking-tight">Derniers véhicules</h3>
               <Link
@@ -365,7 +365,7 @@ export default async function DashboardPage() {
                     <li key={v.id}>
                       <Link
                         href={`/garage/vehicules/${v.id}`}
-                        className="flex items-center gap-3 rounded-xl border border-transparent p-2 transition-colors hover:border-border/60 hover:bg-muted/40"
+                        className="flex items-center gap-3 rounded-xl border border-transparent p-2.5 transition-all hover:-translate-y-0.5 hover:border-border/60 hover:bg-muted/45"
                       >
                         <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
                           {cover ? (
@@ -408,7 +408,7 @@ export default async function DashboardPage() {
             )}
 
             {total > 0 && (
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-muted/40 p-3 text-[12.5px]">
+              <div className="mt-4 flex items-center justify-between rounded-xl border border-border/60 bg-gradient-to-r from-muted/50 to-muted/20 p-3 text-[12.5px]">
                 <span className="text-muted-foreground">Prix moyen au stock</span>
                 <span className="tabular font-semibold">{formatPrice(avgStockPrice)}</span>
               </div>
@@ -454,18 +454,26 @@ function MiniStat({
   spark: number[];
   variant: "primary" | "emerald" | "muted";
 }) {
+  const tone =
+    variant === "emerald"
+      ? "from-emerald-500/10 to-emerald-500/0"
+      : variant === "muted"
+        ? "from-foreground/8 to-foreground/0"
+        : "from-primary/12 to-primary/0";
+
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)]">
+    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-4 shadow-[0_10px_28px_-20px_hsl(var(--foreground)/0.32)] ring-1 ring-white/20 backdrop-blur-sm dark:ring-white/5">
+      <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", tone)} />
       <div className="flex items-baseline justify-between">
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        <p className="relative text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
           {label}
         </p>
       </div>
-      <p className="mt-1 text-[22px] font-semibold tabular leading-none tracking-[-0.02em]">
+      <p className="relative mt-1 text-[23px] font-semibold tabular leading-none tracking-[-0.02em]">
         {value}
       </p>
-      <p className="mt-1 text-[12px] text-muted-foreground">{hint}</p>
-      <Sparkline values={spark} variant={variant} className="mt-3 h-8" />
+      <p className="relative mt-1 text-[12px] text-muted-foreground">{hint}</p>
+      <Sparkline values={spark} variant={variant} className="relative mt-3 h-8" />
     </div>
   );
 }
@@ -497,21 +505,22 @@ function InventoryCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col rounded-2xl border border-border/60 bg-card p-4 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)] transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.18)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-4 shadow-[0_10px_30px_-22px_hsl(var(--foreground)/0.28)] ring-1 ring-white/20 transition-all hover:-translate-y-1 hover:border-foreground/15 hover:shadow-[0_18px_34px_-20px_hsl(var(--foreground)/0.34)] dark:ring-white/5"
     >
+      <span className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-primary/[0.06] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       <div className="flex items-center justify-between">
         <span className={cn("flex h-7 w-7 items-center justify-center rounded-md", accent)}>
           <Icon className="h-3.5 w-3.5" />
         </span>
         <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/0 transition-colors group-hover:text-muted-foreground" />
       </div>
-      <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="relative mt-3 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-0.5 text-[26px] font-semibold tabular leading-none tracking-[-0.02em]">
+      <p className="relative mt-0.5 text-[26px] font-semibold tabular leading-none tracking-[-0.02em]">
         {value}
       </p>
-      <p className="mt-1 text-[12px] text-muted-foreground">{sub}</p>
+      <p className="relative mt-1 text-[12px] text-muted-foreground">{sub}</p>
     </Link>
   );
 }
@@ -540,7 +549,7 @@ function FeedItem({ event }: { event: { type: "added" | "sold" | "lead"; when: s
     <li>
       <Link
         href={event.href}
-        className="group flex items-start gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-muted/40"
+        className="group flex items-start gap-3 rounded-xl border border-transparent px-2.5 py-2.5 transition-all hover:border-border/60 hover:bg-muted/40"
       >
         <span
           className={cn(

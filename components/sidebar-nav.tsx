@@ -37,7 +37,7 @@ export function SidebarNav({
   return (
     <nav
       className={cn(
-        "flex-1 space-y-1 overflow-y-auto",
+        "flex-1 space-y-1 overflow-y-auto [scrollbar-width:thin]",
         variant === "rail" ? "p-2.5" : "p-3",
         className,
       )}
@@ -84,7 +84,7 @@ function Group({
               variant === "rail" &&
                 "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
               groupActive
-                ? "text-foreground/80"
+                ? "text-foreground"
                 : "text-muted-foreground/70",
             )}
           >
@@ -177,12 +177,12 @@ function Item({
   );
 
   const baseClasses = cn(
-    "relative flex items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200",
+    "relative flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200",
     isDisabled && "cursor-not-allowed opacity-50",
     !isDisabled && active
-      ? "bg-foreground text-background shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.25)]"
+      ? "bg-gradient-to-r from-foreground to-foreground/90 text-background shadow-[0_10px_24px_-12px_hsl(var(--foreground)/0.65)]"
       : !isDisabled
-        ? "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
+        ? "text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground"
         : "text-muted-foreground",
   );
 

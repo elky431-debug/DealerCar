@@ -56,10 +56,10 @@ export function AppShell({
       <aside
         className={cn(
           "group/sb fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden",
-          "border-r border-border/60 bg-card",
+          "border-r border-border/60 bg-card/95 backdrop-blur-xl",
           "w-[68px] transition-[width,box-shadow] duration-300 ease-out",
           "hover:w-64 focus-within:w-64",
-          "hover:shadow-[0_0_40px_-12px_rgba(15,23,42,0.15)] focus-within:shadow-[0_0_40px_-12px_rgba(15,23,42,0.15)]",
+          "hover:shadow-[0_0_48px_-14px_rgba(15,23,42,0.22)] focus-within:shadow-[0_0_48px_-14px_rgba(15,23,42,0.22)]",
           "md:flex",
         )}
       >
@@ -83,9 +83,9 @@ export function AppShell({
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative z-10 flex h-full w-72 flex-col border-r border-border bg-card shadow-2xl">
+          <aside className="relative z-10 flex h-full w-72 flex-col border-r border-border/70 bg-card/95 backdrop-blur-xl shadow-2xl">
             <div className="flex h-16 items-center gap-3 border-b border-border px-5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
                 <Car className="h-[18px] w-[18px]" />
               </span>
               <span className="text-[15px] font-semibold tracking-tight">
@@ -139,7 +139,7 @@ export function AppShell({
             <Menu className="h-5 w-5" />
           </Button>
           <span className="flex items-center gap-2 font-semibold">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
               <Car className="h-3.5 w-3.5" />
             </span>
             DealerLink
@@ -165,9 +165,9 @@ export function AppShell({
 function BrandHeader() {
   return (
     <div className="flex h-16 items-center gap-3 border-b border-border/60 px-4 font-semibold">
-      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground shadow-[0_4px_12px_-2px_hsl(var(--primary)/0.45)]">
+      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-background text-black shadow-[0_4px_12px_-2px_hsl(var(--foreground)/0.22)] dark:text-foreground">
         <Car className="h-[18px] w-[18px]" />
-        <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
+        <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
       </span>
       <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100">
         DealerLink
@@ -191,8 +191,8 @@ function QuickAddCTA() {
         href="/garage/vehicules/nouveau"
         title="Nouveau véhicule"
         className={cn(
-          "flex h-11 items-center justify-center gap-2 rounded-lg bg-foreground px-3 text-[13.5px] font-medium text-background shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)] transition-all duration-200",
-          "hover:bg-foreground/90 active:scale-[0.98]",
+          "flex h-11 items-center justify-center gap-2 rounded-xl border border-black/5 bg-black px-3 text-[13.5px] font-medium text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.45)] transition-all duration-200 dark:border-white/10 dark:bg-foreground dark:text-background",
+          "hover:-translate-y-0.5 hover:bg-black/90 active:scale-[0.98] dark:hover:bg-foreground/90",
         )}
       >
         <Plus className="h-[18px] w-[18px] shrink-0" />
