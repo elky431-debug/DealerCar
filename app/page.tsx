@@ -2,16 +2,19 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, Car, Network, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (isSupabaseConfigured()) {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect("/dashboard");
+    if (user) {
+      redirect("/dashboard");
+    }
   }
 
   return (
