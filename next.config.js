@@ -10,6 +10,11 @@ const supabaseHost = (() => {
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: [
+      supabaseHost,
+      "vxkzrktpqvuctvnggxdp.supabase.co",
+      "vxkzrktpqvuctvnggdp.supabase.co",
+    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -20,13 +25,13 @@ const nextConfig = {
       // when env changes and dev server cache gets stale.
       {
         protocol: "https",
-        hostname: "**.supabase.co",
+        hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
       // Signed URLs can also be used in some views.
       {
         protocol: "https",
-        hostname: "**.supabase.co",
+        hostname: "*.supabase.co",
         pathname: "/storage/v1/object/sign/**",
       },
     ],
