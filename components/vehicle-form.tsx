@@ -136,8 +136,25 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
       ? "border-blue-300 bg-blue-50/40 focus-visible:border-blue-500 focus-visible:ring-blue-200/50"
       : "";
 
+  async function geocodeLocation(location: string): Promise<{ latitude: number | null; longitude: number | null }> {
+    try {
+      const url = new URL("/api/geocode", window.location.origin);
+      url.searchParams.set("location", location);
+      const response = await fetch(url.toString());
+      if (!response.ok) return { latitude: null, longitude: null };
+      const data = (await response.json()) as { latitude: number | null; longitude: number | null };
+      return {
+        latitude: data.latitude ?? null,
+        longitude: data.longitude ?? null,
+      };
+    } catch {
+      return { latitude: null, longitude: null };
+    }
+  }
+
   async function onSubmit(values: VehicleInput) {
     const supabase = createClient();
+    const coords = await geocodeLocation(values.location);
 
     const payload = {
       dealer_id: userId,
@@ -147,6 +164,8 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
       mileage: values.mileage,
       price: values.price,
       location: values.location,
+      latitude: coords.latitude,
+      longitude: coords.longitude,
       description: values.description || null,
       type: values.type,
       visibility: values.visibility,

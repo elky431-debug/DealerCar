@@ -53,6 +53,8 @@ create table if not exists public.vehicles (
   mileage           int  not null check (mileage >= 0),
   price             numeric(12,2) not null check (price >= 0),
   location          text not null,
+  latitude          double precision,
+  longitude         double precision,
   description       text,
 
   -- Logique métier (cf. cahier des charges §5)
@@ -73,6 +75,7 @@ create index if not exists idx_vehicles_dealer on public.vehicles(dealer_id);
 create index if not exists idx_vehicles_visible on public.vehicles(visibility, status);
 create index if not exists idx_vehicles_search on public.vehicles(brand, model, price, location);
 create index if not exists idx_vehicles_created on public.vehicles(created_at desc);
+create index if not exists idx_vehicles_map on public.vehicles(latitude, longitude);
 
 -- updated_at trigger
 create or replace function public.touch_updated_at()

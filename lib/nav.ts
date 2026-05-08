@@ -7,6 +7,7 @@ import {
   Globe,
   Heart,
   LayoutDashboard,
+  MapPinned,
   Megaphone,
   Network,
   TrendingUp,
@@ -104,6 +105,12 @@ export const NAV: NavGroup[] = [
         label: "Réseau",
         icon: Network,
         description: "Véhicules partagés par les autres marchands",
+      },
+      {
+        href: "/map",
+        label: "Carte",
+        icon: MapPinned,
+        description: "Vue carte des véhicules réseau",
       },
       {
         href: "/recherche/favoris",

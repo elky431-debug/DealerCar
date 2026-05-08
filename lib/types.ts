@@ -24,6 +24,8 @@ export interface Vehicle {
   mileage: number;
   price: number;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
   description: string | null;
   type: VehicleType;
   visibility: VehicleVisibility;

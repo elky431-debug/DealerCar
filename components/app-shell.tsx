@@ -36,6 +36,7 @@ export function AppShell({
       "/garage/vehicules/nouveau",
       "/garage/clients",
       "/recherche/reseau",
+      "/map",
     ];
     for (const route of routes) {
       router.prefetch(route);
