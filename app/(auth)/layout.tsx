@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Car } from "lucide-react";
+import { SupabaseSetupNotice } from "@/components/supabase-setup-notice";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +20,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Link>
       </header>
       <main className="container flex items-start justify-center py-8 sm:py-16">
-        <div className="w-full max-w-md">{children}</div>
+        <div className="w-full max-w-md">
+          {isSupabaseConfigured() ? children : <SupabaseSetupNotice />}
+        </div>
       </main>
     </div>
   );
