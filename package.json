@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "predev": "node scripts/dev-guard.mjs",
-    "dev": "next dev",
-    "dev:fresh": "node scripts/dev-guard.mjs --clean && next dev",
+    "dev": "next dev -p 3001",
+    "dev:fresh": "node scripts/dev-guard.mjs --clean && next dev -p 3001",
     "dev:stop": "node scripts/dev-guard.mjs --silent",
     "prebuild": "node scripts/build-guard.mjs",
     "build": "next build",
