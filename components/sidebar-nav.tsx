@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { cn } from "@/lib/utils";
 import {
   NAV,
@@ -124,6 +125,7 @@ function Item({
   active: boolean;
   onClick?: () => void;
 }) {
+  const [navPending, startNavTransition] = useTransition();
   const Icon = item.icon;
   const isDisabled = item.disabled || item.comingSoon;
 
@@ -208,8 +210,13 @@ function Item({
     <Link
       href={item.href}
       title={item.description ?? item.label}
-      onClick={onClick}
-      className={baseClasses}
+      prefetch
+      onClick={() => {
+        startNavTransition(() => {
+          onClick?.();
+        });
+      }}
+      className={cn(baseClasses, navPending && !active && "opacity-80")}
     >
       {drawerActiveBar}
       {content}

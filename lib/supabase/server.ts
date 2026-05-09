@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -39,13 +40,13 @@ export function createClient() {
  * À utiliser dans les Server Components / route handlers pour navigation fluide.
  * Pour une action très sensible, préférer `supabase.auth.getUser()` ponctuellement.
  */
-export async function getServerAuth(): Promise<{
+export const getServerAuth = cache(async (): Promise<{
   supabase: ReturnType<typeof createClient>;
   user: User | null;
-}> {
+}> => {
   const supabase = createClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
   return { supabase, user: session?.user ?? null };
-}
+});

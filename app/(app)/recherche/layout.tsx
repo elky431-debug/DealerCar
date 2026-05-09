@@ -1,18 +1,15 @@
 import { TabsNav } from "@/components/ui/tabs";
+import { getCachedFavCount } from "@/lib/data/layout-cache";
 import { getServerAuth } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function RechercheLayout({ children }: { children: React.ReactNode }) {
-  const { supabase, user } = await getServerAuth();
+  const { user } = await getServerAuth();
 
   let favCount = 0;
   if (user) {
-    const { count } = await supabase
-      .from("favorites")
-      .select("vehicle_id", { count: "exact", head: true })
-      .eq("dealer_id", user.id);
-    favCount = count ?? 0;
+    favCount = await getCachedFavCount(user.id);
   }
 
   return (
