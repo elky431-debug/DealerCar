@@ -17,6 +17,19 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+/** Message lisible quand la base n’a pas été migrée pour la carte. */
+function mapApiUserMessage(technical: string): string {
+  const t = technical.toLowerCase();
+  const missingCol = t.includes("does not exist") || t.includes("schema cache");
+  if (missingCol && t.includes("vehicles") && (t.includes("latitude") || t.includes("longitude"))) {
+    return "La base Supabase n’a pas encore les colonnes GPS sur les véhicules. Dans Supabase → SQL Editor, exécutez le fichier supabase/migration-map.sql (ou migration-v7.sql), puis ré-enregistrez vos véhicules ou « Mon garage » pour remplir les coordonnées.";
+  }
+  if (missingCol && t.includes("profiles") && (t.includes("latitude") || t.includes("longitude"))) {
+    return "La base n’a pas les colonnes GPS sur les profils marchands. Exécutez supabase/migration-map.sql (partie profiles) ou migration-v8.sql.";
+  }
+  return technical;
+}
+
 type ProfileRow = {
   id: string;
   company_name: string;
@@ -76,7 +89,9 @@ export async function GET(request: Request) {
   }
 
   const { data, error, count } = await req;
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) {
+    return NextResponse.json({ error: mapApiUserMessage(error.message) }, { status: 400 });
+  }
 
   type VRow = {
     id: string;
