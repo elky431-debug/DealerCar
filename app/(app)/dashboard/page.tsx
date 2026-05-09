@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageBody, PageHeader } from "@/components/page-header";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import { formatPrice, formatRelative, publicImageUrl, cn } from "@/lib/utils";
 import type { Profile, Vehicle, VehicleImage } from "@/lib/types";
 import { ActivityChart } from "./activity-chart";
@@ -42,10 +42,7 @@ const MONTH_LABELS_FR = [
 ];
 
 export default async function DashboardPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const dayKey = (d: Date | string): string => {

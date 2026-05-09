@@ -4,7 +4,7 @@ import { PageBody, PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import { formatDate, formatPrice, publicImageUrl, cn } from "@/lib/utils";
 import {
   COST_CATEGORY_LABELS,
@@ -22,10 +22,7 @@ interface CostWithVehicle extends VehicleCost {
 }
 
 export default async function FraisPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const [{ data: costsData }, { data: vehiclesData }] = await Promise.all([

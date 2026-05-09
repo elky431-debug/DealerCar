@@ -24,8 +24,10 @@ export function FavoriteButton({ vehicleId, initial, className, size = "md" }: P
     e.preventDefault();
     e.stopPropagation();
     const supabase = createClient();
-    const { data: userRes } = await supabase.auth.getUser();
-    const userId = userRes.user?.id;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const userId = session?.user?.id;
     if (!userId) return;
 
     setIsFav((v) => !v);

@@ -3,7 +3,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleCard } from "@/components/vehicle-card";
 import { SearchFilters } from "./search-filters";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -19,10 +19,7 @@ interface Props {
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   let query = supabase

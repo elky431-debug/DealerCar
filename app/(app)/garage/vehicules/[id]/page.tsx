@@ -26,7 +26,7 @@ import { DocumentSection } from "@/components/document-section";
 import { LeadsSection } from "./leads-section";
 import { CostsSection } from "./costs-section";
 import { EcoSpecsCard } from "@/components/eco-specs-card";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import { findVehicleSpecsForVehicle } from "@/lib/vehicle-specs";
 import { formatMileage, formatPrice, formatTitle } from "@/lib/utils";
 import {
@@ -49,10 +49,7 @@ interface Props {
 }
 
 export default async function VehicleDetailPage({ params, searchParams }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: vehicle } = await supabase

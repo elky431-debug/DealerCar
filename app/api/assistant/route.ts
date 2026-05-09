@@ -1,5 +1,5 @@
 import { OPENAI_MODEL, getOpenAIClient } from "@/lib/openai";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { CostCategory } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -76,10 +76,7 @@ const LEAD_STATUS_FR: Record<string, string> = {
 };
 
 async function buildSystemPrompt(): Promise<string> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) {
     return `Tu es l'assistant DealerLink.\n\n${RESPONSE_RULES}`;
   }

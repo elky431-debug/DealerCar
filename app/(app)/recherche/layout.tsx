@@ -1,13 +1,10 @@
 import { TabsNav } from "@/components/ui/tabs";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function RechercheLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
 
   let favCount = 0;
   if (user) {

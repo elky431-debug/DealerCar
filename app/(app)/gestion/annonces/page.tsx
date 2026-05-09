@@ -2,17 +2,14 @@ import { redirect } from "next/navigation";
 import { Megaphone } from "lucide-react";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleWithRelations } from "@/lib/types";
 import { ListingsManager } from "./listings-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AnnoncesPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const { data } = await supabase

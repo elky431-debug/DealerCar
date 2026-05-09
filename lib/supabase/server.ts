@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import type { User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export function createClient() {
@@ -30,4 +31,21 @@ export function createClient() {
       },
     },
   );
+}
+
+/**
+ * Auth rapide côté serveur : lit la session depuis les cookies sans appel réseau
+ * vers l’API Auth Supabase (contrairement à `getUser()`).
+ * À utiliser dans les Server Components / route handlers pour navigation fluide.
+ * Pour une action très sensible, préférer `supabase.auth.getUser()` ponctuellement.
+ */
+export async function getServerAuth(): Promise<{
+  supabase: ReturnType<typeof createClient>;
+  user: User | null;
+}> {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return { supabase, user: session?.user ?? null };
 }

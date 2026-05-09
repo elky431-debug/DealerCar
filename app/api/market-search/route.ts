@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import {
   searchMarket,
   CarapisError,
@@ -14,10 +14,7 @@ const SOURCES: MarketSource[] = ["autoscout24", "mobile.de"];
 
 export async function POST(req: Request) {
   // Auth check — uniquement les marchands connectés
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getServerAuth();
   if (!user) {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   }

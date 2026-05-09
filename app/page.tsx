@@ -1,14 +1,11 @@
 import { redirect } from "next/navigation";
 import { MarketingLanding } from "@/components/landing/marketing-page";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 
 export default async function HomePage() {
   if (isSupabaseConfigured()) {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user } = await getServerAuth();
 
     if (user) {
       redirect("/dashboard");

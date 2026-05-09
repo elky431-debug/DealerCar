@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import { formatRelative, formatTitle } from "@/lib/utils";
 import {
   INSPECTION_DECISION_LABELS,
@@ -19,10 +19,7 @@ import { NewInspectionButton } from "./new-inspection-button";
 export const dynamic = "force-dynamic";
 
 export default async function InspectionsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data } = await supabase

@@ -243,7 +243,6 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
 
     toast.success(isEdit ? "Véhicule modifié" : "Véhicule ajouté");
     router.push(`/garage/vehicules/${vehicleId}`);
-    router.refresh();
   }
 
   return (

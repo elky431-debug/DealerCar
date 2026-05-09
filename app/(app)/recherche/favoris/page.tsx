@@ -2,16 +2,13 @@ import { Heart } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleCard } from "@/components/vehicle-card";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function FavorisPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: favs } = await supabase

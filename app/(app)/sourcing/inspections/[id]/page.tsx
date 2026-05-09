@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleInspection } from "@/lib/types";
 import { InspectionWizard } from "./inspection-wizard";
 
@@ -17,10 +17,7 @@ interface Props {
  * expérience immersive : une étape à la fois, illustration en hero.
  */
 export default async function InspectionDetailPage({ params }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: inspection } = await supabase

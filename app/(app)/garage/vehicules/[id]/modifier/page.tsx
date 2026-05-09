@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleForm } from "@/components/vehicle-form";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +14,7 @@ interface Props {
 }
 
 export default async function EditVehiclePage({ params }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const { data: vehicle } = await supabase

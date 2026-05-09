@@ -2,16 +2,13 @@ import { Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { ClientsList } from "./clients-list";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { LeadWithVehicle, Vehicle } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const [{ data: leads }, { data: vehicles }] = await Promise.all([

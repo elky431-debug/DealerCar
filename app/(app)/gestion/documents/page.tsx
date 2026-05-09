@@ -2,17 +2,14 @@ import { redirect } from "next/navigation";
 import { FolderOpen } from "lucide-react";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { VehicleDocument, Vehicle } from "@/lib/types";
 import { DocumentsManager } from "./documents-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function DocumentsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const [docsRes, vehiclesRes] = await Promise.all([
