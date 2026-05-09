@@ -25,6 +25,17 @@ type ClusterProps = { cluster: true; point_count: number; point_count_abbreviate
 type MapPoint = PointFeature<ClusterProps | { cluster: false; vehicle: MapVehicleItem }>;
 type BBox = [number, number, number, number];
 
+/** Écarte le pin concession du nuage de marqueurs-prix (même marchand). */
+function offsetConcessionPosition(lat: number, lng: number, dealerId: string): [number, number] {
+  let h = 0;
+  for (let i = 0; i < dealerId.length; i++) h = (h + dealerId.charCodeAt(i) * (i + 1)) % 997;
+  const angle = (h / 997) * 2 * Math.PI;
+  const d = 0.00065;
+  const dLat = d * Math.cos(angle);
+  const dLng = (d * Math.sin(angle)) / Math.cos((lat * Math.PI) / 180);
+  return [lat + dLat, lng + dLng];
+}
+
 interface Filters {
   q: string;
   priceMin: string;
@@ -156,11 +167,12 @@ export function MapView() {
         lng = Number(lng);
       }
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+      const [dispLat, dispLng] = offsetConcessionPosition(lat, lng, dealerId);
       pins.push({
         dealerId,
         dealer,
-        latitude: lat,
-        longitude: lng,
+        latitude: dispLat,
+        longitude: dispLng,
         vehicleCount: vehs.length,
       });
     }
@@ -268,7 +280,7 @@ export function MapView() {
               ? "Chargement..."
               : dealerFilterId
                 ? `${filteredItems.length} véhicule(s) — cette concession`
-                : `${items.length} véhicule(s) dans la zone`}
+                : `${items.length} véhicule(s) dans la zone${dealerPins.length ? ` · ${dealerPins.length} concession(s) sur la carte` : ""}`}
           </p>
           <ul className="space-y-2">
             {filteredItems.map((v) => (

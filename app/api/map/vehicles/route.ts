@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   let req = supabase
     .from("vehicles")
     .select(
-      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position),profiles(company_name,phone,location,latitude,longitude)",
+      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position),profiles(company_name,phone,location)",
       { count: "exact" },
     )
     .eq("visibility", "network")
@@ -89,15 +89,11 @@ export async function GET(request: Request) {
           company_name: string;
           phone: string;
           location: string;
-          latitude: number | string | null;
-          longitude: number | string | null;
         }
       | {
           company_name: string;
           phone: string;
           location: string;
-          latitude: number | string | null;
-          longitude: number | string | null;
         }[]
       | null;
   };
@@ -124,19 +120,44 @@ export async function GET(request: Request) {
         company_name: prof?.company_name ?? "—",
         phone: prof?.phone ?? "",
         location: prof?.location ?? "",
-        latitude: prof?.latitude != null ? Number(prof.latitude) : null,
-        longitude: prof?.longitude != null ? Number(prof.longitude) : null,
+        latitude: null as number | null,
+        longitude: null as number | null,
       },
       image: cover?.storage_path ?? null,
     };
   });
 
+  const dealerIds = [...new Set(rows.map((r) => r.dealer_id))];
+  let items = rows;
+  if (dealerIds.length > 0) {
+    const profRes = await supabase.from("profiles").select("id, latitude, longitude").in("id", dealerIds);
+    if (!profRes.error && profRes.data?.length) {
+      const byId = new Map(
+        profRes.data.map((p) => [p.id, p] as [string, { id: string; latitude: number | null; longitude: number | null }]),
+      );
+      items = rows.map((r) => {
+        const p = byId.get(r.dealer_id);
+        if (p?.latitude != null && p?.longitude != null) {
+          return {
+            ...r,
+            dealer: {
+              ...r.dealer,
+              latitude: Number(p.latitude),
+              longitude: Number(p.longitude),
+            },
+          };
+        }
+        return r;
+      });
+    }
+  }
+
   const filtered =
     radiusKm > 0
-      ? rows.filter((v) =>
+      ? items.filter((v) =>
           haversineKm(centerLat, centerLng, Number(v.latitude), Number(v.longitude)) <= radiusKm,
         )
-      : rows;
+      : items;
 
   return NextResponse.json({
     items: filtered,
