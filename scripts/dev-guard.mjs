@@ -7,7 +7,7 @@
  *
  * Actions :
  *   1. Tue TOUS les `next dev` / `next-server` / `next build` en cours.
- *   2. Libère les ports 3000-3005 si encore occupés.
+ *   2. Libère le port dev (3456) + 3000-3005 si encore occupés.
  *   3. Détecte les caches .next incohérents (pas de manifests, mtime ancien…)
  *      et propose / force un reset.
  *
@@ -20,6 +20,7 @@ import { execSync } from "node:child_process";
 import { existsSync, rmSync, statSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { DEV_PORT } from "./dev-port.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -66,7 +67,7 @@ function killNextProcesses() {
   if (killed > 0) log(`✓ ${killed} process Next.js tué(s)`);
 }
 
-/* ────────── 2. Free ports 3000-3005 ────────── */
+/* ────────── 2. Free dev port + 3000-3005 ────────── */
 
 function pidsListeningOnPortWindows(port) {
   const pids = new Set();
@@ -90,7 +91,7 @@ function pidsListeningOnPortWindows(port) {
 
 function freePorts() {
   let freed = 0;
-  const ports = [3000, 3001, 3002, 3003, 3004, 3005];
+  const ports = [DEV_PORT, 3000, 3001, 3002, 3003, 3004, 3005];
 
   if (isWin) {
     for (const port of ports) {
@@ -106,7 +107,7 @@ function freePorts() {
         }
       }
     }
-    if (freed > 0) log(`✓ ${freed} processus Windows libérant le(s) port(s) 3000-3005`);
+    if (freed > 0) log(`✓ ${freed} processus Windows libérant le(s) port(s) dev + 3000-3005`);
     return;
   }
 
