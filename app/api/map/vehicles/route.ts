@@ -17,6 +17,15 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+type ProfileRow = {
+  id: string;
+  company_name: string;
+  phone: string;
+  location: string;
+  latitude?: number | null;
+  longitude?: number | null;
+};
+
 export async function GET(request: Request) {
   const supabase = createClient();
   const { searchParams } = new URL(request.url);
@@ -41,7 +50,7 @@ export async function GET(request: Request) {
   let req = supabase
     .from("vehicles")
     .select(
-      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position),profiles(company_name,phone,location)",
+      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
       { count: "exact" },
     )
     .eq("visibility", "network")
@@ -69,7 +78,7 @@ export async function GET(request: Request) {
   const { data, error, count } = await req;
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  type Row = {
+  type VRow = {
     id: string;
     dealer_id: string;
     brand: string;
@@ -84,24 +93,11 @@ export async function GET(request: Request) {
     latitude: number | string | null;
     longitude: number | string | null;
     vehicle_images: Pick<VehicleImage, "storage_path" | "position">[] | null;
-    profiles:
-      | {
-          company_name: string;
-          phone: string;
-          location: string;
-        }
-      | {
-          company_name: string;
-          phone: string;
-          location: string;
-        }[]
-      | null;
   };
 
-  const rows = (data ?? []).map((raw) => {
-    const v = raw as unknown as Row;
+  const vehicleRows = (data ?? []).map((raw) => {
+    const v = raw as unknown as VRow;
     const cover = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position)[0];
-    const prof = Array.isArray(v.profiles) ? v.profiles[0] ?? null : v.profiles;
     return {
       id: v.id,
       dealer_id: v.dealer_id,
@@ -116,41 +112,42 @@ export async function GET(request: Request) {
       visibility: v.visibility,
       latitude: Number(v.latitude),
       longitude: Number(v.longitude),
-      dealer: {
-        company_name: prof?.company_name ?? "—",
-        phone: prof?.phone ?? "",
-        location: prof?.location ?? "",
-        latitude: null as number | null,
-        longitude: null as number | null,
-      },
       image: cover?.storage_path ?? null,
     };
   });
 
-  const dealerIds = [...new Set(rows.map((r) => r.dealer_id))];
-  let items = rows;
+  const dealerIds = [...new Set(vehicleRows.map((r) => r.dealer_id))];
+  const profileById = new Map<string, ProfileRow>();
+
   if (dealerIds.length > 0) {
-    const profRes = await supabase.from("profiles").select("id, latitude, longitude").in("id", dealerIds);
-    if (!profRes.error && profRes.data?.length) {
-      const byId = new Map(
-        profRes.data.map((p) => [p.id, p] as [string, { id: string; latitude: number | null; longitude: number | null }]),
-      );
-      items = rows.map((r) => {
-        const p = byId.get(r.dealer_id);
-        if (p?.latitude != null && p?.longitude != null) {
-          return {
-            ...r,
-            dealer: {
-              ...r.dealer,
-              latitude: Number(p.latitude),
-              longitude: Number(p.longitude),
-            },
-          };
-        }
-        return r;
-      });
+    const profFull = await supabase
+      .from("profiles")
+      .select("id, company_name, phone, location, latitude, longitude")
+      .in("id", dealerIds);
+    const profRows =
+      profFull.error || !profFull.data
+        ? (await supabase.from("profiles").select("id, company_name, phone, location").in("id", dealerIds)).data
+        : profFull.data;
+    if (profRows) {
+      for (const p of profRows as ProfileRow[]) {
+        profileById.set(p.id, p);
+      }
     }
   }
+
+  const items = vehicleRows.map((r) => {
+    const p = profileById.get(r.dealer_id);
+    return {
+      ...r,
+      dealer: {
+        company_name: p?.company_name ?? "—",
+        phone: p?.phone ?? "",
+        location: p?.location ?? "",
+        latitude: p?.latitude != null ? Number(p.latitude) : null,
+        longitude: p?.longitude != null ? Number(p.longitude) : null,
+      },
+    };
+  });
 
   const filtered =
     radiusKm > 0

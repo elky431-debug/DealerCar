@@ -2,7 +2,7 @@
 
 import "leaflet/dist/leaflet.css";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PointFeature } from "supercluster";
 import Supercluster from "supercluster";
 import { DivIcon } from "leaflet";
@@ -63,7 +63,9 @@ function BoundsListener({
   useEffect(() => {
     const b = map.getBounds();
     onBoundsChange([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], map.getZoom());
-  }, [map, onBoundsChange]);
+    // Intentionnel : on ne dépend pas de onBoundsChange (voir MapView : handler stable via useCallback).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
 
   return null;
 }
@@ -108,6 +110,12 @@ export function MapView() {
   const [loading, setLoading] = useState(false);
   const [locCenter, setLocCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [dealerFilterId, setDealerFilterId] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const handleBoundsChange = useCallback((bbox: BBox, z: number) => {
+    setBounds((prev) => (prev.every((v, i) => Math.abs(v - bbox[i]) < 1e-9) ? prev : bbox));
+    setZoom((prev) => (prev === z ? prev : z));
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -132,7 +140,13 @@ export function MapView() {
         }
 
         const res = await fetch(url.toString(), { signal: controller.signal });
-        if (!res.ok) return;
+        if (!res.ok) {
+          const body = (await res.json().catch(() => ({}))) as { error?: string };
+          setFetchError(body.error ?? `Erreur ${res.status}`);
+          setItems([]);
+          return;
+        }
+        setFetchError(null);
         const payload = (await res.json()) as { items: MapVehicleItem[] };
         const next = payload.items ?? [];
         setItems(next);
@@ -275,13 +289,27 @@ export function MapView() {
               </button>
             </div>
           ) : null}
+          {fetchError ? (
+            <p className="mb-2 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-2 text-xs text-destructive">
+              {fetchError}
+            </p>
+          ) : null}
           <p className="mb-2 text-xs text-muted-foreground">
             {loading
               ? "Chargement..."
               : dealerFilterId
                 ? `${filteredItems.length} véhicule(s) — cette concession`
-                : `${items.length} véhicule(s) dans la zone${dealerPins.length ? ` · ${dealerPins.length} concession(s) sur la carte` : ""}`}
+                : fetchError
+                  ? "—"
+                  : `${items.length} véhicule(s) dans la zone${dealerPins.length ? ` · ${dealerPins.length} concession(s) sur la carte` : ""}`}
           </p>
+          {!loading && !fetchError && items.length === 0 ? (
+            <p className="mb-2 text-xs text-muted-foreground">
+              Aucun véhicule réseau géolocalisé dans cette zone. Vérifiez qu’au moins un véhicule est en
+              visibilité « Réseau », disponible, avec coordonnées GPS (éditer la fiche ou enregistrer le
+              profil garage).
+            </p>
+          ) : null}
           <ul className="space-y-2">
             {filteredItems.map((v) => (
               <li key={v.id} className="rounded-xl border border-border/60 bg-background p-2.5">
@@ -311,12 +339,7 @@ export function MapView() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <BoundsListener
-            onBoundsChange={(bbox, z) => {
-              setBounds(bbox);
-              setZoom(z);
-            }}
-          />
+          <BoundsListener onBoundsChange={handleBoundsChange} />
           <div className="leaflet-top leaflet-right">
             <div className="leaflet-control">
               <LocateButton onLocate={(lat, lng) => setLocCenter({ lat, lng })} />
