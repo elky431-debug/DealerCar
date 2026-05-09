@@ -18,6 +18,39 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+/**
+ * Quand l’utilisateur saisit une ville, la carte peut encore être centrée ailleurs :
+ * on fusionne la vue courante avec une fenêtre ~55 km autour du point géocodé,
+ * sinon les annonces « Lyon » avec GPS à Lyon sont exclues si le bbox client est ailleurs.
+ */
+async function boundsUnionWithGeocodedCity(
+  minLat: number,
+  maxLat: number,
+  minLng: number,
+  maxLng: number,
+  city: string | null | undefined,
+): Promise<{ minLat: number; maxLat: number; minLng: number; maxLng: number }> {
+  const c = city?.trim();
+  if (!c) return { minLat, maxLat, minLng, maxLng };
+
+  const g = await geocodeLocationNominatim(c, { throttleMs: 0 });
+  if (!g) return { minLat, maxLat, minLng, maxLng };
+
+  const padLat = 0.5;
+  const padLng = 0.55 / Math.cos((g.latitude * Math.PI) / 180);
+  const cl = g.latitude - padLat;
+  const ch = g.latitude + padLat;
+  const cwl = g.longitude - padLng;
+  const cwh = g.longitude + padLng;
+
+  return {
+    minLat: Math.min(minLat, cl),
+    maxLat: Math.max(maxLat, ch),
+    minLng: Math.min(minLng, cwl),
+    maxLng: Math.max(maxLng, cwh),
+  };
+}
+
 /** Message lisible quand la base n’a pas été migrée pour la carte. */
 function mapApiUserMessage(technical: string): string {
   const t = technical.toLowerCase();
@@ -104,6 +137,8 @@ export async function GET(request: Request) {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
+  const bbox = await boundsUnionWithGeocodedCity(minLat, maxLat, minLng, maxLng, city);
+
   let req = supabase
     .from("vehicles")
     .select(
@@ -114,10 +149,10 @@ export async function GET(request: Request) {
     .eq("status", "available")
     .not("latitude", "is", null)
     .not("longitude", "is", null)
-    .gte("latitude", minLat)
-    .lte("latitude", maxLat)
-    .gte("longitude", minLng)
-    .lte("longitude", maxLng)
+    .gte("latitude", bbox.minLat)
+    .lte("latitude", bbox.maxLat)
+    .gte("longitude", bbox.minLng)
+    .lte("longitude", bbox.maxLng)
     .gte("price", priceMin)
     .lte("price", priceMax)
     .range(from, to)
@@ -137,9 +172,46 @@ export async function GET(request: Request) {
     if (escaped) req = req.ilike("location", `%${escaped}%`);
   }
 
-  const { data, error, count } = await req;
+  let { data, error, count } = await req;
   if (error) {
     return NextResponse.json({ error: mapApiUserMessage(error.message) }, { status: 400 });
+  }
+
+  let cityMatchRelaxed = false;
+  if (city?.replace(/[%_]/g, "") && (!data || data.length === 0)) {
+    let reqWide = supabase
+      .from("vehicles")
+      .select(
+        "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
+        { count: "exact" },
+      )
+      .eq("visibility", "network")
+      .eq("status", "available")
+      .not("latitude", "is", null)
+      .not("longitude", "is", null)
+      .gte("latitude", bbox.minLat)
+      .lte("latitude", bbox.maxLat)
+      .gte("longitude", bbox.minLng)
+      .lte("longitude", bbox.maxLng)
+      .gte("price", priceMin)
+      .lte("price", priceMax)
+      .range(from, to)
+      .order("created_at", { ascending: false });
+
+    if (query) {
+      const escaped = query.replace(/[%_]/g, "");
+      reqWide = reqWide.or(`brand.ilike.%${escaped}%,model.ilike.%${escaped}%`);
+    }
+    if (type === "stock" || type === "depot") {
+      reqWide = reqWide.eq("type", type);
+    }
+
+    const second = await reqWide;
+    if (!second.error && second.data && second.data.length > 0) {
+      data = second.data;
+      count = second.count;
+      cityMatchRelaxed = true;
+    }
   }
 
   const vehicleRows: ReturnType<typeof rowToVehicleCore>[] = (data ?? []).map((raw) =>
@@ -150,6 +222,7 @@ export async function GET(request: Request) {
 
   /** Véhicules réseau sans GPS en base : géocodage à la volée si la carte serait vide ou trop légère. */
   let looseErr: { message: string } | null = null;
+  let looseSkipCitySubstring = false;
   const maxGeocode =
     vehicleRows.length === 0 ? 22 : vehicleRows.length < 12 ? 10 : 0;
 
@@ -175,7 +248,32 @@ export async function GET(request: Request) {
       if (escaped) looseReq = looseReq.ilike("location", `%${escaped}%`);
     }
 
-    const { data: looseData, error: looseError } = await looseReq;
+    let { data: looseData, error: looseError } = await looseReq;
+
+    if (!looseError && city?.replace(/[%_]/g, "") && (!looseData || looseData.length === 0)) {
+      let looseWide = supabase
+        .from("vehicles")
+        .select(
+          "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
+        )
+        .eq("visibility", "network")
+        .eq("status", "available")
+        .or("latitude.is.null,longitude.is.null")
+        .gte("price", priceMin)
+        .lte("price", priceMax)
+        .order("created_at", { ascending: false })
+        .limit(LOOSE_FETCH_LIMIT);
+      if (type === "stock" || type === "depot") {
+        looseWide = looseWide.eq("type", type);
+      }
+      const looseSecond = await looseWide;
+      if (!looseSecond.error && looseSecond.data?.length) {
+        looseData = looseSecond.data;
+        cityMatchRelaxed = true;
+        looseSkipCitySubstring = true;
+      }
+    }
+
     if (looseError) {
       looseErr = looseError;
     } else {
@@ -187,7 +285,7 @@ export async function GET(request: Request) {
         const v = rowToVehicleCore(raw as unknown as VRow);
         if (seenIds.has(v.id)) continue;
         if (v.latitude != null && v.longitude != null) continue;
-        if (cityNorm && !v.location.toLowerCase().includes(cityNorm)) continue;
+        if (cityNorm && !looseSkipCitySubstring && !v.location.toLowerCase().includes(cityNorm)) continue;
         if (qNorm) {
           const b = v.brand.toLowerCase();
           const m = v.model.toLowerCase();
@@ -199,7 +297,7 @@ export async function GET(request: Request) {
         if (!coords) continue;
 
         if (
-          !inBoundingBox(coords.latitude, coords.longitude, minLat, maxLat, minLng, maxLng)
+          !inBoundingBox(coords.latitude, coords.longitude, bbox.minLat, bbox.maxLat, bbox.minLng, bbox.maxLng)
         ) {
           continue;
         }
@@ -294,6 +392,9 @@ export async function GET(request: Request) {
 
   if (vehicleRows.length === 0 && looseErr) {
     payload.warning = `Aucun véhicule avec coordonnées ; complément sans GPS impossible : ${mapApiUserMessage(looseErr.message)}`;
+  } else if (cityMatchRelaxed) {
+    payload.hint =
+      "Recherche élargie : la zone inclut la vue carte et ~50 km autour de la ville saisie ; les annonces affichées peuvent avoir une localisation texte différente (ex. code postal seul).";
   }
 
   return NextResponse.json(payload);

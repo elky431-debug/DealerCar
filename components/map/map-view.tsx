@@ -200,8 +200,14 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
           return;
         }
         setFetchError(null);
-        const payload = (await res.json()) as { items: MapVehicleItem[]; warning?: string };
-        setMapHint(typeof payload.warning === "string" ? payload.warning : null);
+        const payload = (await res.json()) as { items: MapVehicleItem[]; warning?: string; hint?: string };
+        setMapHint(
+          typeof payload.warning === "string"
+            ? payload.warning
+            : typeof payload.hint === "string"
+              ? payload.hint
+              : null,
+        );
         const next = payload.items ?? [];
         setItems(next);
         setDealerFilterId((prev) => (prev && next.some((v) => v.dealer_id === prev) ? prev : null));
@@ -345,7 +351,8 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Filtre les annonces dont la localisation contient ce texte. « Centrer » déplace la carte.
+              Filtre la localisation ; la recherche inclut aussi une zone d’environ 50 km autour de la ville
+              (même si la carte est ailleurs). « Centrer » déplace la vue.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2">
