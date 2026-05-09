@@ -122,6 +122,8 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [mapHint, setMapHint] = useState<string | null>(null);
   const [sqlCopied, setSqlCopied] = useState(false);
+  const [showVehiclesOnMap, setShowVehiclesOnMap] = useState(true);
+  const [showConcessionsOnMap, setShowConcessionsOnMap] = useState(true);
 
   const handleBoundsChange = useCallback((bbox: BBox, z: number) => {
     setBounds((prev) => (prev.every((v, i) => Math.abs(v - bbox[i]) < 1e-9) ? prev : bbox));
@@ -229,15 +231,17 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
 
   const points = useMemo<MapPoint[]>(
     () =>
-      items.map((vehicle) => ({
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [vehicle.longitude, vehicle.latitude],
-        },
-        properties: { cluster: false, vehicle },
-      })),
-    [items],
+      showVehiclesOnMap
+        ? items.map((vehicle) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [vehicle.longitude, vehicle.latitude],
+            },
+            properties: { cluster: false, vehicle },
+          }))
+        : [],
+    [items, showVehiclesOnMap],
   );
 
   const clusterIndex = useMemo(
@@ -250,6 +254,16 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   );
 
   const clustered = useMemo(() => clusterIndex.getClusters(bounds, zoom), [clusterIndex, bounds, zoom]);
+
+  function toggleVehiclesOnMap(next: boolean) {
+    if (!next && !showConcessionsOnMap) return;
+    setShowVehiclesOnMap(next);
+  }
+
+  function toggleConcessionsOnMap(next: boolean) {
+    if (!next && !showVehiclesOnMap) return;
+    setShowConcessionsOnMap(next);
+  }
 
   return (
     <div className="grid h-[calc(100vh-168px)] gap-4 lg:grid-cols-[340px_1fr]">
@@ -296,6 +310,33 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
               <option value="200">&lt; 200 km</option>
               <option value="500">&lt; 500 km</option>
             </Select>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Afficher sur la carte
+            </p>
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-border text-foreground"
+                checked={showVehiclesOnMap}
+                onChange={(e) => toggleVehiclesOnMap(e.target.checked)}
+              />
+              <span>Véhicules (prix et regroupements)</span>
+            </label>
+            <label className="mt-2 flex cursor-pointer items-center gap-2.5 text-sm">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-border text-foreground"
+                checked={showConcessionsOnMap}
+                onChange={(e) => toggleConcessionsOnMap(e.target.checked)}
+              />
+              <span>Concessions (partenaires)</span>
+            </label>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Au moins une couche reste active. Les filtres ci-dessus s’appliquent aux deux.
+            </p>
           </div>
         </div>
 
@@ -370,7 +411,13 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
                 ? `${filteredItems.length} véhicule(s) — cette concession`
                 : fetchError
                   ? "—"
-                  : `${items.length} véhicule(s) dans la zone${dealerPins.length ? ` · ${dealerPins.length} concession(s) sur la carte` : ""}`}
+                  : `${items.length} véhicule(s) · ${
+                      showVehiclesOnMap ? "véhicules sur la carte" : "véhicules masqués"
+                    } · ${
+                      showConcessionsOnMap
+                        ? `${dealerPins.length} concession(s)`
+                        : "concessions masquées"
+                    }`}
           </p>
           {!loading && !fetchError && items.length === 0 ? (
             <p className="mb-2 text-xs text-muted-foreground">
@@ -415,39 +462,43 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
             </div>
           </div>
 
-          {clustered.map((feature) => {
-            const [lng, lat] = feature.geometry.coordinates as [number, number];
-            if (feature.properties.cluster) {
-              const count = feature.properties.point_count;
-              return (
-                <Marker
-                  key={`cluster-${feature.id}`}
-                  position={[lat, lng]}
-                  icon={
-                    new DivIcon({
-                      className: "vehicle-cluster",
-                      html: `<div style="background:#111827;color:#fff;border-radius:9999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #fff">${count}</div>`,
-                      iconSize: [38, 38],
-                      iconAnchor: [19, 19],
-                    })
-                  }
+          {showVehiclesOnMap
+            ? clustered.map((feature) => {
+                const [lng, lat] = feature.geometry.coordinates as [number, number];
+                if (feature.properties.cluster) {
+                  const count = feature.properties.point_count;
+                  return (
+                    <Marker
+                      key={`cluster-${feature.id}`}
+                      position={[lat, lng]}
+                      icon={
+                        new DivIcon({
+                          className: "vehicle-cluster",
+                          html: `<div style="background:#111827;color:#fff;border-radius:9999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #fff">${count}</div>`,
+                          iconSize: [38, 38],
+                          iconAnchor: [19, 19],
+                        })
+                      }
+                    />
+                  );
+                }
+                return (
+                  <VehicleMarker
+                    key={`vehicle-${feature.properties.vehicle.id}`}
+                    vehicle={feature.properties.vehicle}
+                  />
+                );
+              })
+            : null}
+          {showConcessionsOnMap
+            ? dealerPins.map((pin) => (
+                <ConcessionMarker
+                  key={`concession-${pin.dealerId}`}
+                  pin={pin}
+                  onViewVehicles={(id) => setDealerFilterId(id)}
                 />
-              );
-            }
-            return (
-              <VehicleMarker
-                key={`vehicle-${feature.properties.vehicle.id}`}
-                vehicle={feature.properties.vehicle}
-              />
-            );
-          })}
-          {dealerPins.map((pin) => (
-            <ConcessionMarker
-              key={`concession-${pin.dealerId}`}
-              pin={pin}
-              onViewVehicles={(id) => setDealerFilterId(id)}
-            />
-          ))}
+              ))
+            : null}
         </MapContainer>
       </section>
     </div>
