@@ -131,6 +131,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
     const controller = new AbortController();
     const timeout = setTimeout(async () => {
       setLoading(true);
+      let abortedByUnmount = false;
       try {
         const url = new URL("/api/map/vehicles", window.location.origin);
         url.searchParams.set("minLng", String(bounds[0]));
@@ -161,13 +162,23 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
         const next = payload.items ?? [];
         setItems(next);
         setDealerFilterId((prev) => (prev && next.some((v) => v.dealer_id === prev) ? prev : null));
+      } catch (e) {
+        const isAbort =
+          (e instanceof DOMException && e.name === "AbortError") ||
+          (e instanceof Error && e.name === "AbortError");
+        if (isAbort) {
+          abortedByUnmount = true;
+          return;
+        }
+        setFetchError(e instanceof Error ? e.message : "Erreur réseau");
+        setItems([]);
       } finally {
-        setLoading(false);
+        if (!abortedByUnmount) setLoading(false);
       }
     }, 200);
     return () => {
-      controller.abort();
       clearTimeout(timeout);
+      controller.abort();
     };
   }, [bounds, filters, locCenter]);
 
