@@ -44,6 +44,15 @@ interface Filters {
   radiusKm: string;
 }
 
+function isSqlMigrationHint(message: string): boolean {
+  return (
+    message.includes("colonnes GPS") ||
+    message.includes("migration-map.sql") ||
+    message.includes("migration-v7") ||
+    message.includes("migration-v8")
+  );
+}
+
 function BoundsListener({
   onBoundsChange,
 }: {
@@ -96,7 +105,7 @@ function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => vo
   );
 }
 
-export function MapView() {
+export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) {
   const [filters, setFilters] = useState<Filters>({
     q: "",
     priceMin: "",
@@ -111,6 +120,7 @@ export function MapView() {
   const [locCenter, setLocCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [dealerFilterId, setDealerFilterId] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [sqlCopied, setSqlCopied] = useState(false);
 
   const handleBoundsChange = useCallback((bbox: BBox, z: number) => {
     setBounds((prev) => (prev.every((v, i) => Math.abs(v - bbox[i]) < 1e-9) ? prev : bbox));
@@ -290,9 +300,48 @@ export function MapView() {
             </div>
           ) : null}
           {fetchError ? (
-            <p className="mb-2 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-2 text-xs text-destructive">
-              {fetchError}
-            </p>
+            <div className="mb-2 space-y-2 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-2 text-xs text-destructive">
+              <p>{fetchError}</p>
+              {mapMigrationSql && isSqlMigrationHint(fetchError) ? (
+                <div className="space-y-2 border-t border-destructive/25 pt-2 text-foreground">
+                  <p className="text-[11px] text-muted-foreground">
+                    <strong className="text-foreground">Étapes :</strong> Supabase → ton projet →{" "}
+                    <a
+                      className="font-medium underline underline-offset-2"
+                      href="https://supabase.com/dashboard"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Tableau Supabase → SQL Editor
+                    </a>{" "}
+                    → colle le script ci-dessous → <strong>Run</strong> → recharge cette page puis
+                    ré-enregistre un véhicule ou « Mon garage ».
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      className="h-8 text-xs"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(mapMigrationSql);
+                          setSqlCopied(true);
+                          setTimeout(() => setSqlCopied(false), 2500);
+                        } catch {
+                          setSqlCopied(false);
+                        }
+                      }}
+                    >
+                      {sqlCopied ? "Copié" : "Copier le script SQL"}
+                    </Button>
+                  </div>
+                  <pre className="max-h-40 overflow-auto rounded-md border border-border/60 bg-muted/50 p-2 text-[10px] leading-relaxed text-foreground">
+                    {mapMigrationSql}
+                  </pre>
+                </div>
+              ) : null}
+            </div>
           ) : null}
           <p className="mb-2 text-xs text-muted-foreground">
             {loading
