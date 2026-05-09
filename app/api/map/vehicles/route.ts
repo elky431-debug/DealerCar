@@ -93,6 +93,7 @@ export async function GET(request: Request) {
   const priceMin = toNumber(searchParams.get("priceMin"), 0);
   const priceMax = toNumber(searchParams.get("priceMax"), Number.MAX_SAFE_INTEGER);
   const query = searchParams.get("q")?.trim();
+  const city = searchParams.get("city")?.trim();
   const type = searchParams.get("type");
   const radiusKm = toNumber(searchParams.get("radiusKm"), 0);
   const centerLat = toNumber(searchParams.get("centerLat"), 0);
@@ -131,6 +132,11 @@ export async function GET(request: Request) {
     req = req.eq("type", type);
   }
 
+  if (city) {
+    const escaped = city.replace(/[%_]/g, "");
+    if (escaped) req = req.ilike("location", `%${escaped}%`);
+  }
+
   const { data, error, count } = await req;
   if (error) {
     return NextResponse.json({ error: mapApiUserMessage(error.message) }, { status: 400 });
@@ -164,6 +170,10 @@ export async function GET(request: Request) {
     if (type === "stock" || type === "depot") {
       looseReq = looseReq.eq("type", type);
     }
+    if (city) {
+      const escaped = city.replace(/[%_]/g, "");
+      if (escaped) looseReq = looseReq.ilike("location", `%${escaped}%`);
+    }
 
     const { data: looseData, error: looseError } = await looseReq;
     if (looseError) {
@@ -171,11 +181,13 @@ export async function GET(request: Request) {
     } else {
       let geocoded = 0;
       const qNorm = query?.toLowerCase().replace(/[%_]/g, "") ?? "";
+      const cityNorm = city?.toLowerCase().replace(/[%_]/g, "") ?? "";
       for (const raw of looseData ?? []) {
         if (geocoded >= maxGeocode) break;
         const v = rowToVehicleCore(raw as unknown as VRow);
         if (seenIds.has(v.id)) continue;
         if (v.latitude != null && v.longitude != null) continue;
+        if (cityNorm && !v.location.toLowerCase().includes(cityNorm)) continue;
         if (qNorm) {
           const b = v.brand.toLowerCase();
           const m = v.model.toLowerCase();

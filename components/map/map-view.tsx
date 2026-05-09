@@ -13,7 +13,7 @@ import {
   useMap,
   useMapEvents,
 } from "react-leaflet";
-import { LocateFixed, Search } from "lucide-react";
+import { LocateFixed, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { publicImageUrl } from "@/lib/utils";
@@ -38,6 +38,7 @@ function offsetConcessionPosition(lat: number, lng: number, dealerId: string): [
 
 interface Filters {
   q: string;
+  city: string;
   priceMin: string;
   priceMax: string;
   type: "" | "stock" | "depot";
@@ -79,6 +80,22 @@ function BoundsListener({
   return null;
 }
 
+function FlyToCoords({
+  target,
+  onDone,
+}: {
+  target: { lat: number; lng: number; zoom: number } | null;
+  onDone: () => void;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!target) return;
+    map.setView([target.lat, target.lng], target.zoom);
+    onDone();
+  }, [target, map, onDone]);
+  return null;
+}
+
 function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => void }) {
   const map = useMap();
   return (
@@ -108,11 +125,13 @@ function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => vo
 export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) {
   const [filters, setFilters] = useState<Filters>({
     q: "",
+    city: "",
     priceMin: "",
     priceMax: "",
     type: "",
     radiusKm: "",
   });
+  const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const [bounds, setBounds] = useState<BBox>([-5.2, 41.2, 9.7, 51.2]);
   const [zoom, setZoom] = useState(6);
   const [items, setItems] = useState<MapVehicleItem[]>([]);
@@ -130,6 +149,24 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
     setZoom((prev) => (prev === z ? prev : z));
   }, []);
 
+  const consumeFlyTo = useCallback(() => setFlyTo(null), []);
+
+  async function centerMapOnCity() {
+    const q = filters.city.trim();
+    if (!q) return;
+    try {
+      const url = new URL("/api/geocode", window.location.origin);
+      url.searchParams.set("location", q);
+      const res = await fetch(url.toString());
+      if (!res.ok) return;
+      const data = (await res.json()) as { latitude?: number | null; longitude?: number | null };
+      if (data.latitude == null || data.longitude == null) return;
+      setFlyTo({ lat: data.latitude, lng: data.longitude, zoom: 11 });
+    } catch {
+      /* ignore */
+    }
+  }
+
   useEffect(() => {
     const controller = new AbortController();
     const timeout = setTimeout(async () => {
@@ -144,6 +181,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
         url.searchParams.set("page", "1");
         url.searchParams.set("limit", "250");
         if (filters.q) url.searchParams.set("q", filters.q);
+        if (filters.city.trim()) url.searchParams.set("city", filters.city.trim());
         if (filters.priceMin) url.searchParams.set("priceMin", filters.priceMin);
         if (filters.priceMax) url.searchParams.set("priceMax", filters.priceMax);
         if (filters.type) url.searchParams.set("type", filters.type);
@@ -277,6 +315,38 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
               value={filters.q}
               onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
             />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-muted-foreground" htmlFor="map-city">
+              Ville ou code postal
+            </label>
+            <div className="flex gap-2">
+              <Input
+                id="map-city"
+                className="min-w-0 flex-1"
+                placeholder="ex. Lyon, Paris, 33000…"
+                value={filters.city}
+                onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") void centerMapOnCity();
+                }}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="shrink-0 gap-1 px-2.5"
+                title="Centrer la carte sur cette ville"
+                disabled={!filters.city.trim()}
+                onClick={() => void centerMapOnCity()}
+              >
+                <MapPin className="h-4 w-4" />
+                <span className="hidden sm:inline">Centrer</span>
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Filtre les annonces dont la localisation contient ce texte. « Centrer » déplace la carte.
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Input
@@ -456,6 +526,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <BoundsListener onBoundsChange={handleBoundsChange} />
+          <FlyToCoords target={flyTo} onDone={consumeFlyTo} />
           <div className="leaflet-top leaflet-right">
             <div className="leaflet-control">
               <LocateButton onLocate={(lat, lng) => setLocCenter({ lat, lng })} />
