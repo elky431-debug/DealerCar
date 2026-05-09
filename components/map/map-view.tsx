@@ -143,6 +143,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   const [sqlCopied, setSqlCopied] = useState(false);
   const [showVehiclesOnMap, setShowVehiclesOnMap] = useState(true);
   const [showConcessionsOnMap, setShowConcessionsOnMap] = useState(true);
+  const [includeMine, setIncludeMine] = useState(false);
 
   const handleBoundsChange = useCallback((bbox: BBox, z: number) => {
     setBounds((prev) => (prev.every((v, i) => Math.abs(v - bbox[i]) < 1e-9) ? prev : bbox));
@@ -190,6 +191,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
           url.searchParams.set("centerLat", String(locCenter.lat));
           url.searchParams.set("centerLng", String(locCenter.lng));
         }
+        if (includeMine) url.searchParams.set("includeMine", "1");
 
         const res = await fetch(url.toString(), { signal: controller.signal });
         if (!res.ok) {
@@ -230,7 +232,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [bounds, filters, locCenter]);
+  }, [bounds, filters, locCenter, includeMine]);
 
   const dealerPins = useMemo<MapConcessionPin[]>(() => {
     const byDealer = new Map<string, MapVehicleItem[]>();
@@ -411,8 +413,17 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
               />
               <span>Concessions (partenaires)</span>
             </label>
+            <label className="mt-2 flex cursor-pointer items-center gap-2.5 text-sm">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-border text-foreground"
+                checked={includeMine}
+                onChange={(e) => setIncludeMine(e.target.checked)}
+              />
+              <span>Voir aussi mes véhicules (privés / réservés, avec GPS)</span>
+            </label>
             <p className="mt-2 text-[11px] text-muted-foreground">
-              Au moins une couche reste active. Les filtres ci-dessus s’appliquent aux deux.
+              Au moins une couche carte reste active. Les filtres s’appliquent au réseau et à votre stock.
             </p>
           </div>
         </div>

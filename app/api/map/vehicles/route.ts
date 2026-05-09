@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import { geocodeLocationNominatim, inBoundingBox } from "@/lib/geocode-nominatim";
 import type { VehicleImage } from "@/lib/types";
 
@@ -93,6 +93,11 @@ type VRow = {
 const GEOCODE_THROTTLE_MS = 450;
 const LOOSE_FETCH_LIMIT = 72;
 
+const MAP_VEHICLE_SELECT =
+  "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)";
+
+type SupabaseServer = Awaited<ReturnType<typeof getServerAuth>>["supabase"];
+
 function rowToVehicleCore(v: VRow) {
   const cover = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position)[0];
   const lat = v.latitude != null && v.latitude !== "" ? Number(v.latitude) : null;
@@ -115,9 +120,82 @@ function rowToVehicleCore(v: VRow) {
   };
 }
 
+type VehicleMapCore = ReturnType<typeof rowToVehicleCore>;
+
+async function appendOwnVehiclesForMap(
+  supabase: SupabaseServer,
+  userId: string,
+  vehicleRows: VehicleMapCore[],
+  seenIds: Set<string>,
+  opts: {
+    bbox: { minLat: number; maxLat: number; minLng: number; maxLng: number };
+    priceMin: number;
+    priceMax: number;
+    query?: string;
+    type?: string;
+    city?: string;
+    cityMatchRelaxed: boolean;
+  },
+): Promise<void> {
+  const buildOwn = (withCityIlike: boolean) => {
+    let r = supabase
+      .from("vehicles")
+      .select(MAP_VEHICLE_SELECT)
+      .eq("dealer_id", userId)
+      .in("status", ["available", "reserved"])
+      .not("latitude", "is", null)
+      .not("longitude", "is", null)
+      .gte("latitude", opts.bbox.minLat)
+      .lte("latitude", opts.bbox.maxLat)
+      .gte("longitude", opts.bbox.minLng)
+      .lte("longitude", opts.bbox.maxLng)
+      .gte("price", opts.priceMin)
+      .lte("price", opts.priceMax)
+      .order("created_at", { ascending: false })
+      .limit(120);
+
+    if (opts.query) {
+      const escaped = opts.query.replace(/[%_]/g, "");
+      r = r.or(`brand.ilike.%${escaped}%,model.ilike.%${escaped}%`);
+    }
+    if (opts.type === "stock" || opts.type === "depot") {
+      r = r.eq("type", opts.type);
+    }
+    if (withCityIlike && opts.city) {
+      const escaped = opts.city.replace(/[%_]/g, "");
+      if (escaped) r = r.ilike("location", `%${escaped}%`);
+    }
+    return r;
+  };
+
+  let { data, error } = await buildOwn(true);
+  if (
+    !error &&
+    (!data || data.length === 0) &&
+    (opts.city?.replace(/[%_]/g, "") || opts.cityMatchRelaxed)
+  ) {
+    const wide = await buildOwn(false);
+    if (!wide.error && wide.data?.length) {
+      data = wide.data;
+    }
+  }
+
+  if (error || !data?.length) return;
+
+  for (const raw of data) {
+    const v = rowToVehicleCore(raw as unknown as VRow);
+    if (seenIds.has(v.id)) continue;
+    vehicleRows.push(v);
+    seenIds.add(v.id);
+  }
+}
+
 export async function GET(request: Request) {
-  const supabase = createClient();
+  const { supabase, user } = await getServerAuth();
   const { searchParams } = new URL(request.url);
+
+  const includeMine =
+    searchParams.get("includeMine") === "1" || searchParams.get("includeMine") === "true";
 
   const minLat = toNumber(searchParams.get("minLat"), -90);
   const maxLat = toNumber(searchParams.get("maxLat"), 90);
@@ -141,10 +219,7 @@ export async function GET(request: Request) {
 
   let req = supabase
     .from("vehicles")
-    .select(
-      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
-      { count: "exact" },
-    )
+    .select(MAP_VEHICLE_SELECT, { count: "exact" })
     .eq("visibility", "network")
     .eq("status", "available")
     .not("latitude", "is", null)
@@ -181,10 +256,7 @@ export async function GET(request: Request) {
   if (city?.replace(/[%_]/g, "") && (!data || data.length === 0)) {
     let reqWide = supabase
       .from("vehicles")
-      .select(
-        "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
-        { count: "exact" },
-      )
+      .select(MAP_VEHICLE_SELECT, { count: "exact" })
       .eq("visibility", "network")
       .eq("status", "available")
       .not("latitude", "is", null)
@@ -220,6 +292,18 @@ export async function GET(request: Request) {
 
   const seenIds = new Set(vehicleRows.map((r) => r.id));
 
+  if (includeMine && user?.id) {
+    await appendOwnVehiclesForMap(supabase, user.id, vehicleRows, seenIds, {
+      bbox,
+      priceMin,
+      priceMax,
+      query: query ?? undefined,
+      type: type === "stock" || type === "depot" ? type : undefined,
+      city: city ?? undefined,
+      cityMatchRelaxed,
+    });
+  }
+
   /** Véhicules réseau sans GPS en base : géocodage à la volée si la carte serait vide ou trop légère. */
   let looseErr: { message: string } | null = null;
   let looseSkipCitySubstring = false;
@@ -229,9 +313,7 @@ export async function GET(request: Request) {
   if (maxGeocode > 0 && vehicleRows.length < limit) {
     let looseReq = supabase
       .from("vehicles")
-      .select(
-        "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
-      )
+      .select(MAP_VEHICLE_SELECT)
       .eq("visibility", "network")
       .eq("status", "available")
       .or("latitude.is.null,longitude.is.null")
@@ -253,9 +335,7 @@ export async function GET(request: Request) {
     if (!looseError && city?.replace(/[%_]/g, "") && (!looseData || looseData.length === 0)) {
       let looseWide = supabase
         .from("vehicles")
-        .select(
-          "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
-        )
+        .select(MAP_VEHICLE_SELECT)
         .eq("visibility", "network")
         .eq("status", "available")
         .or("latitude.is.null,longitude.is.null")
@@ -387,7 +467,7 @@ export async function GET(request: Request) {
     items: filtered,
     page,
     limit,
-    total: count ?? filtered.length,
+    total: filtered.length,
   };
 
   if (vehicleRows.length === 0 && looseErr) {
