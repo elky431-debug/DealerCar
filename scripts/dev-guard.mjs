@@ -31,10 +31,15 @@ const SILENT = args.has("--silent");
 
 const log = (...a) => !SILENT && console.log(...a);
 const warn = (...a) => console.warn(...a);
+const isWin = process.platform === "win32";
 
 /* ────────── 1. Kill rogue Next processes ────────── */
 
 function killNextProcesses() {
+  if (isWin) {
+    /* Windows : pas de `ps`/`grep` fiables en shell par défaut — on s’appuie sur freePorts() */
+    return;
+  }
   // patterns à killer : `next dev`, `next-server`, `next build`, `next start`
   // On ne tue PAS le `dev-guard` lui-même.
   const myPid = process.pid;
@@ -63,9 +68,49 @@ function killNextProcesses() {
 
 /* ────────── 2. Free ports 3000-3005 ────────── */
 
+function pidsListeningOnPortWindows(port) {
+  const pids = new Set();
+  try {
+    const out = execSync("netstat -ano", {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    const needle = `:${port}`;
+    for (const line of out.split("\n")) {
+      if (!line.includes("LISTENING") || !line.includes(needle)) continue;
+      const parts = line.trim().split(/\s+/);
+      const pid = parseInt(parts[parts.length - 1], 10);
+      if (pid > 0) pids.add(pid);
+    }
+  } catch {
+    /* netstat indisponible */
+  }
+  return [...pids];
+}
+
 function freePorts() {
   let freed = 0;
-  for (const port of [3000, 3001, 3002, 3003, 3004, 3005]) {
+  const ports = [3000, 3001, 3002, 3003, 3004, 3005];
+
+  if (isWin) {
+    for (const port of ports) {
+      for (const pid of pidsListeningOnPortWindows(port)) {
+        try {
+          execSync(`taskkill /F /PID ${pid}`, {
+            stdio: ["ignore", "ignore", "ignore"],
+            windowsHide: true,
+          });
+          freed++;
+        } catch {
+          /* process déjà mort ou accès refusé */
+        }
+      }
+    }
+    if (freed > 0) log(`✓ ${freed} processus Windows libérant le(s) port(s) 3000-3005`);
+    return;
+  }
+
+  for (const port of ports) {
     try {
       const out = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN -t`, {
         encoding: "utf-8",

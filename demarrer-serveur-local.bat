@@ -23,6 +23,20 @@ if not exist "package.json" (
 )
 
 echo.
+echo Dossier du projet ^(doit contenir package.json^) :
+cd
+echo.
+
+echo === Vérification rapide ^(port 3000, chemins^) ===
+call npm run doctor
+if errorlevel 1 (
+  echo.
+  echo [ERREUR] npm run doctor a échoué. Vérifiez que vous êtes dans le bon dossier.
+  pause
+  exit /b 1
+)
+
+echo.
 echo === DealerLink — installation des dépendances ^(si besoin^) ===
 call npm install
 if errorlevel 1 (
@@ -34,7 +48,8 @@ if errorlevel 1 (
 
 echo.
 echo === Démarrage du serveur ===
-echo Ouvrez dans le navigateur : http://localhost:3000
+echo Ouvrez dans le navigateur : http://127.0.0.1:3000  ^(ou localhost:3000^)
+echo Si une ERREUR rouge apparaît ci-dessous, le serveur n'a PAS demarre — copiez tout le texte.
 echo Laissez CETTE fenêtre ouverte. Fermez avec Ctrl+C pour arrêter.
 echo.
 call npm run dev
