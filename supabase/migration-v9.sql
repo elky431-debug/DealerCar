@@ -1,5 +1,10 @@
 -- ============================================================
 -- migration-v9.sql — Profil concession (logo, bannière, réseaux)
+--
+-- Applique sur ton projet Supabase :
+--   • SQL Editor : coller ce fichier → Run
+--   • Ou en local : npm run db:setup  (inclut ce fichier si DATABASE_URL est dans .env.local)
+--   • Ou seulement ce fichier : npm run db:sql -- supabase/migration-v9.sql
 -- ============================================================
 
 alter table public.profiles

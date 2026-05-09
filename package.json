@@ -14,6 +14,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "db:setup": "node scripts/db-setup.mjs",
+    "db:sql": "node scripts/apply-sql-file.mjs",
     "import:ademe": "node scripts/import-ademe.mjs"
   },
   "dependencies": {
