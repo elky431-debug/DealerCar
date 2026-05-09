@@ -55,7 +55,10 @@ console.log(`
 
 2) Dans CE dossier, dans un terminal :
      npm install
-     npm run dev
+     npm run dev:quick
+
+   ^ dev:quick demarre Next SANS l'etape "predev" ^(moins de blocages sous Windows^).
+   Alternative : npm run dev ^(avec nettoyage des ports avant^).
 
 3) Attendez "Ready" puis ouvrez :
      http://127.0.0.1:3000

@@ -169,13 +169,17 @@ function cleanNext() {
 
 log("→ Dev guard…");
 
-killNextProcesses();
-freePorts();
+try {
+  killNextProcesses();
+  freePorts();
 
-const reason = isCacheSuspect();
-if (FORCE_CLEAN || reason) {
-  if (reason) log(`⚠ ${reason} → reset`);
-  cleanNext();
+  const reason = isCacheSuspect();
+  if (FORCE_CLEAN || reason) {
+    if (reason) log(`⚠ ${reason} → reset`);
+    cleanNext();
+  }
+} catch (e) {
+  warn("⚠ dev-guard (ignoré, le serveur peut quand même démarrer) :", e?.message ?? e);
 }
 
 log("✓ Prêt pour next dev\n");

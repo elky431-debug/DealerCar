@@ -30,10 +30,7 @@ echo.
 echo === Vérification rapide ^(port 3000, chemins^) ===
 call npm run doctor
 if errorlevel 1 (
-  echo.
-  echo [ERREUR] npm run doctor a échoué. Vérifiez que vous êtes dans le bon dossier.
-  pause
-  exit /b 1
+  echo [AVERTISSEMENT] doctor a signale un souci — on tente quand meme le serveur.
 )
 
 echo.
@@ -47,11 +44,14 @@ if errorlevel 1 (
 )
 
 echo.
-echo === Démarrage du serveur ===
-echo Ouvrez dans le navigateur : http://127.0.0.1:3000  ^(ou localhost:3000^)
-echo Si une ERREUR rouge apparaît ci-dessous, le serveur n'a PAS demarre — copiez tout le texte.
-echo Laissez CETTE fenêtre ouverte. Fermez avec Ctrl+C pour arrêter.
+echo === Démarrage du serveur ^(mode direct, sans etape predev bloquante^) ===
+echo Ouvrez : http://127.0.0.1:3000
+echo Si le port 3000 est pris, fermez cette fenetre et dans cmd tapez : npm run dev:quick:3001
+echo Puis ouvrez : http://127.0.0.1:3001
 echo.
-call npm run dev
+echo Si une ERREUR rouge apparait, copiez TOUT le texte de cette fenetre.
+echo Laissez la fenetre OUVERTE tant que vous testez le site. Ctrl+C pour arreter.
+echo.
+call npm run dev:quick
 echo.
 pause
