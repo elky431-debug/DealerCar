@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   let req = supabase
     .from("vehicles")
     .select(
-      "id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
+      "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position),profiles(company_name,phone,location,latitude,longitude)",
       { count: "exact" },
     )
     .eq("visibility", "network")
@@ -69,12 +69,64 @@ export async function GET(request: Request) {
   const { data, error, count } = await req;
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  const rows = (data ?? []).map((v) => {
-    const cover = ((v.vehicle_images ?? []) as VehicleImage[])
-      .slice()
-      .sort((a, b) => a.position - b.position)[0];
+  type Row = {
+    id: string;
+    dealer_id: string;
+    brand: string;
+    model: string;
+    year: number;
+    mileage: number;
+    price: number;
+    location: string;
+    type: string;
+    status: string;
+    visibility: string;
+    latitude: number | string | null;
+    longitude: number | string | null;
+    vehicle_images: Pick<VehicleImage, "storage_path" | "position">[] | null;
+    profiles:
+      | {
+          company_name: string;
+          phone: string;
+          location: string;
+          latitude: number | string | null;
+          longitude: number | string | null;
+        }
+      | {
+          company_name: string;
+          phone: string;
+          location: string;
+          latitude: number | string | null;
+          longitude: number | string | null;
+        }[]
+      | null;
+  };
+
+  const rows = (data ?? []).map((raw) => {
+    const v = raw as unknown as Row;
+    const cover = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position)[0];
+    const prof = Array.isArray(v.profiles) ? v.profiles[0] ?? null : v.profiles;
     return {
-      ...v,
+      id: v.id,
+      dealer_id: v.dealer_id,
+      brand: v.brand,
+      model: v.model,
+      year: v.year,
+      mileage: v.mileage,
+      price: Number(v.price),
+      location: v.location,
+      type: v.type,
+      status: v.status,
+      visibility: v.visibility,
+      latitude: Number(v.latitude),
+      longitude: Number(v.longitude),
+      dealer: {
+        company_name: prof?.company_name ?? "—",
+        phone: prof?.phone ?? "",
+        location: prof?.location ?? "",
+        latitude: prof?.latitude != null ? Number(prof.latitude) : null,
+        longitude: prof?.longitude != null ? Number(prof.longitude) : null,
+      },
       image: cover?.storage_path ?? null,
     };
   });

@@ -9,6 +9,8 @@ export interface Profile {
   company_name: string;
   phone: string;
   location: string;
+  latitude: number | null;
+  longitude: number | null;
   siret: string | null;
   specialties: string | null;
   created_at: string;

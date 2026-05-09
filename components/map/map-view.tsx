@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { publicImageUrl } from "@/lib/utils";
 import type { MapVehicleItem } from "@/components/map/vehicle-popup";
+import { ConcessionMarker, type MapConcessionPin } from "@/components/map/concession-marker";
 import { VehicleMarker } from "@/components/map/vehicle-marker";
 
 type ClusterProps = { cluster: true; point_count: number; point_count_abbreviated: number };
@@ -95,6 +96,7 @@ export function MapView() {
   const [items, setItems] = useState<MapVehicleItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [locCenter, setLocCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [dealerFilterId, setDealerFilterId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -121,7 +123,9 @@ export function MapView() {
         const res = await fetch(url.toString(), { signal: controller.signal });
         if (!res.ok) return;
         const payload = (await res.json()) as { items: MapVehicleItem[] };
-        setItems(payload.items ?? []);
+        const next = payload.items ?? [];
+        setItems(next);
+        setDealerFilterId((prev) => (prev && next.some((v) => v.dealer_id === prev) ? prev : null));
       } finally {
         setLoading(false);
       }
@@ -131,6 +135,46 @@ export function MapView() {
       clearTimeout(timeout);
     };
   }, [bounds, filters, locCenter]);
+
+  const dealerPins = useMemo<MapConcessionPin[]>(() => {
+    const byDealer = new Map<string, MapVehicleItem[]>();
+    for (const v of items) {
+      const list = byDealer.get(v.dealer_id) ?? [];
+      list.push(v);
+      byDealer.set(v.dealer_id, list);
+    }
+    const pins: MapConcessionPin[] = [];
+    for (const [dealerId, vehs] of byDealer) {
+      const dealer = vehs[0]!.dealer;
+      let lat = dealer.latitude;
+      let lng = dealer.longitude;
+      if (lat == null || lng == null) {
+        lat = vehs.reduce((s, x) => s + x.latitude, 0) / vehs.length;
+        lng = vehs.reduce((s, x) => s + x.longitude, 0) / vehs.length;
+      } else {
+        lat = Number(lat);
+        lng = Number(lng);
+      }
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+      pins.push({
+        dealerId,
+        dealer,
+        latitude: lat,
+        longitude: lng,
+        vehicleCount: vehs.length,
+      });
+    }
+    return pins;
+  }, [items]);
+
+  const filteredItems = useMemo(
+    () => (dealerFilterId ? items.filter((v) => v.dealer_id === dealerFilterId) : items),
+    [items, dealerFilterId],
+  );
+
+  const filteredDealerName = dealerFilterId
+    ? items.find((v) => v.dealer_id === dealerFilterId)?.dealer.company_name
+    : null;
 
   const points = useMemo<MapPoint[]>(
     () =>
@@ -205,11 +249,29 @@ export function MapView() {
         </div>
 
         <div className="mt-3 min-h-0 flex-1 overflow-auto pr-1">
+          {dealerFilterId && filteredDealerName ? (
+            <div className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-teal-200/80 bg-teal-50/80 px-2.5 py-2 text-xs dark:border-teal-900/50 dark:bg-teal-950/40">
+              <span className="min-w-0 truncate font-medium text-teal-900 dark:text-teal-100">
+                {filteredDealerName}
+              </span>
+              <button
+                type="button"
+                className="shrink-0 rounded-md px-2 py-1 font-medium text-teal-800 underline-offset-2 hover:underline dark:text-teal-200"
+                onClick={() => setDealerFilterId(null)}
+              >
+                Tout afficher
+              </button>
+            </div>
+          ) : null}
           <p className="mb-2 text-xs text-muted-foreground">
-            {loading ? "Chargement..." : `${items.length} véhicule(s) dans la zone`}
+            {loading
+              ? "Chargement..."
+              : dealerFilterId
+                ? `${filteredItems.length} véhicule(s) — cette concession`
+                : `${items.length} véhicule(s) dans la zone`}
           </p>
           <ul className="space-y-2">
-            {items.map((v) => (
+            {filteredItems.map((v) => (
               <li key={v.id} className="rounded-xl border border-border/60 bg-background p-2.5">
                 <a href={`/garage/vehicules/${v.id}`} className="flex gap-2">
                   <div className="h-12 w-16 overflow-hidden rounded-md bg-muted">
@@ -275,6 +337,13 @@ export function MapView() {
               />
             );
           })}
+          {dealerPins.map((pin) => (
+            <ConcessionMarker
+              key={`concession-${pin.dealerId}`}
+              pin={pin}
+              onViewVehicles={(id) => setDealerFilterId(id)}
+            />
+          ))}
         </MapContainer>
       </section>
     </div>

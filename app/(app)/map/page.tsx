@@ -14,7 +14,7 @@ export default async function MapPage() {
       <PageHeader
         eyebrow="Carte"
         title="Vue carte des véhicules réseau"
-        description="Explorez les véhicules disponibles par zone géographique et trouvez rapidement les opportunités proches."
+        description="Repérez les concessions partenaires et les véhicules réseau sur la carte. Touchez une concession pour filtrer ses annonces."
       />
       <PageBody className="pt-0">
         <MapView />

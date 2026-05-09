@@ -13,9 +13,13 @@ create table if not exists public.profiles (
   company_name  text not null,
   phone         text not null,
   location      text not null,
+  latitude      double precision,
+  longitude     double precision,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
+
+create index if not exists idx_profiles_map on public.profiles(latitude, longitude);
 
 create or replace function public.handle_new_user()
 returns trigger

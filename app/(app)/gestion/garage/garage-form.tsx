@@ -30,12 +30,28 @@ export function GarageForm({ userId, email, defaults }: Props) {
     defaultValues: defaults,
   });
 
+  async function geocodeLocation(location: string): Promise<{ latitude: number | null; longitude: number | null }> {
+    try {
+      const url = new URL("/api/geocode", window.location.origin);
+      url.searchParams.set("location", location);
+      const response = await fetch(url.toString());
+      if (!response.ok) return { latitude: null, longitude: null };
+      const data = (await response.json()) as { latitude: number | null; longitude: number | null };
+      return { latitude: data.latitude ?? null, longitude: data.longitude ?? null };
+    } catch {
+      return { latitude: null, longitude: null };
+    }
+  }
+
   async function onSubmit(values: ProfileInput) {
     const supabase = createClient();
+    const coords = await geocodeLocation(values.location);
     const payload = {
       ...values,
       siret: values.siret?.replace(/\s/g, "") || null,
       specialties: values.specialties || null,
+      latitude: coords.latitude,
+      longitude: coords.longitude,
     };
     const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
     if (error) {
@@ -106,6 +122,7 @@ export function GarageForm({ userId, email, defaults }: Props) {
               htmlFor="location"
               required
               error={errors.location?.message}
+              hint="Sert aussi à placer votre concession sur la carte réseau."
             >
               <Input id="location" {...register("location")} placeholder="Lyon" />
             </Field>

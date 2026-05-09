@@ -4,8 +4,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatMileage, formatPrice, publicImageUrl } from "@/lib/utils";
 
+/** Infos concession affichées sur la carte (profil marchand). */
+export interface MapDealerInfo {
+  company_name: string;
+  phone: string;
+  location: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export interface MapVehicleItem {
   id: string;
+  dealer_id: string;
+  dealer: MapDealerInfo;
   brand: string;
   model: string;
   year: number;
