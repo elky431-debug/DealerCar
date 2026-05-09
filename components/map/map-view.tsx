@@ -120,6 +120,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   const [locCenter, setLocCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [dealerFilterId, setDealerFilterId] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [mapHint, setMapHint] = useState<string | null>(null);
   const [sqlCopied, setSqlCopied] = useState(false);
 
   const handleBoundsChange = useCallback((bbox: BBox, z: number) => {
@@ -154,11 +155,13 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
         if (!res.ok) {
           const body = (await res.json().catch(() => ({}))) as { error?: string };
           setFetchError(body.error ?? `Erreur ${res.status}`);
+          setMapHint(null);
           setItems([]);
           return;
         }
         setFetchError(null);
-        const payload = (await res.json()) as { items: MapVehicleItem[] };
+        const payload = (await res.json()) as { items: MapVehicleItem[]; warning?: string };
+        setMapHint(typeof payload.warning === "string" ? payload.warning : null);
         const next = payload.items ?? [];
         setItems(next);
         setDealerFilterId((prev) => (prev && next.some((v) => v.dealer_id === prev) ? prev : null));
@@ -171,6 +174,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
           return;
         }
         setFetchError(e instanceof Error ? e.message : "Erreur réseau");
+        setMapHint(null);
         setItems([]);
       } finally {
         if (!abortedByUnmount) setLoading(false);
@@ -309,6 +313,11 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
                 Tout afficher
               </button>
             </div>
+          ) : null}
+          {mapHint ? (
+            <p className="mb-2 rounded-lg border border-amber-200/80 bg-amber-50/90 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+              {mapHint}
+            </p>
           ) : null}
           {fetchError ? (
             <div className="mb-2 space-y-2 rounded-lg border border-destructive/40 bg-destructive/10 px-2.5 py-2 text-xs text-destructive">

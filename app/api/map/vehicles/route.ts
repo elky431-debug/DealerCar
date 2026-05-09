@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { geocodeLocationNominatim, inBoundingBox } from "@/lib/geocode-nominatim";
 import type { VehicleImage } from "@/lib/types";
 
 function toNumber(value: string | null, fallback: number): number {
@@ -38,6 +39,48 @@ type ProfileRow = {
   latitude?: number | null;
   longitude?: number | null;
 };
+
+type VRow = {
+  id: string;
+  dealer_id: string;
+  brand: string;
+  model: string;
+  year: number;
+  mileage: number;
+  price: number;
+  location: string;
+  type: string;
+  status: string;
+  visibility: string;
+  latitude: number | string | null;
+  longitude: number | string | null;
+  vehicle_images: Pick<VehicleImage, "storage_path" | "position">[] | null;
+};
+
+const GEOCODE_THROTTLE_MS = 450;
+const LOOSE_FETCH_LIMIT = 72;
+
+function rowToVehicleCore(v: VRow) {
+  const cover = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position)[0];
+  const lat = v.latitude != null && v.latitude !== "" ? Number(v.latitude) : null;
+  const lng = v.longitude != null && v.longitude !== "" ? Number(v.longitude) : null;
+  return {
+    id: v.id,
+    dealer_id: v.dealer_id,
+    brand: v.brand,
+    model: v.model,
+    year: v.year,
+    mileage: v.mileage,
+    price: Number(v.price),
+    location: v.location,
+    type: v.type,
+    status: v.status,
+    visibility: v.visibility,
+    latitude: lat != null && Number.isFinite(lat) ? lat : null,
+    longitude: lng != null && Number.isFinite(lng) ? lng : null,
+    image: cover?.storage_path ?? null,
+  };
+}
 
 export async function GET(request: Request) {
   const supabase = createClient();
@@ -93,43 +136,77 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: mapApiUserMessage(error.message) }, { status: 400 });
   }
 
-  type VRow = {
-    id: string;
-    dealer_id: string;
-    brand: string;
-    model: string;
-    year: number;
-    mileage: number;
-    price: number;
-    location: string;
-    type: string;
-    status: string;
-    visibility: string;
-    latitude: number | string | null;
-    longitude: number | string | null;
-    vehicle_images: Pick<VehicleImage, "storage_path" | "position">[] | null;
-  };
+  const vehicleRows: ReturnType<typeof rowToVehicleCore>[] = (data ?? []).map((raw) =>
+    rowToVehicleCore(raw as unknown as VRow),
+  );
 
-  const vehicleRows = (data ?? []).map((raw) => {
-    const v = raw as unknown as VRow;
-    const cover = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position)[0];
-    return {
-      id: v.id,
-      dealer_id: v.dealer_id,
-      brand: v.brand,
-      model: v.model,
-      year: v.year,
-      mileage: v.mileage,
-      price: Number(v.price),
-      location: v.location,
-      type: v.type,
-      status: v.status,
-      visibility: v.visibility,
-      latitude: Number(v.latitude),
-      longitude: Number(v.longitude),
-      image: cover?.storage_path ?? null,
-    };
-  });
+  const seenIds = new Set(vehicleRows.map((r) => r.id));
+
+  /** Véhicules réseau sans GPS en base : géocodage à la volée si la carte serait vide ou trop légère. */
+  let looseErr: { message: string } | null = null;
+  const maxGeocode =
+    vehicleRows.length === 0 ? 22 : vehicleRows.length < 12 ? 10 : 0;
+
+  if (maxGeocode > 0 && vehicleRows.length < limit) {
+    let looseReq = supabase
+      .from("vehicles")
+      .select(
+        "id,dealer_id,brand,model,year,mileage,price,location,type,status,visibility,latitude,longitude,vehicle_images(storage_path,position)",
+      )
+      .eq("visibility", "network")
+      .eq("status", "available")
+      .or("latitude.is.null,longitude.is.null")
+      .gte("price", priceMin)
+      .lte("price", priceMax)
+      .order("created_at", { ascending: false })
+      .limit(LOOSE_FETCH_LIMIT);
+
+    if (type === "stock" || type === "depot") {
+      looseReq = looseReq.eq("type", type);
+    }
+
+    const { data: looseData, error: looseError } = await looseReq;
+    if (looseError) {
+      looseErr = looseError;
+    } else {
+      let geocoded = 0;
+      const qNorm = query?.toLowerCase().replace(/[%_]/g, "") ?? "";
+      for (const raw of looseData ?? []) {
+        if (geocoded >= maxGeocode) break;
+        const v = rowToVehicleCore(raw as unknown as VRow);
+        if (seenIds.has(v.id)) continue;
+        if (v.latitude != null && v.longitude != null) continue;
+        if (qNorm) {
+          const b = v.brand.toLowerCase();
+          const m = v.model.toLowerCase();
+          if (!b.includes(qNorm) && !m.includes(qNorm)) continue;
+        }
+
+        const coords = await geocodeLocationNominatim(v.location, { throttleMs: GEOCODE_THROTTLE_MS });
+        geocoded++;
+        if (!coords) continue;
+
+        if (
+          !inBoundingBox(coords.latitude, coords.longitude, minLat, maxLat, minLng, maxLng)
+        ) {
+          continue;
+        }
+
+        void supabase
+          .from("vehicles")
+          .update({ latitude: coords.latitude, longitude: coords.longitude })
+          .eq("id", v.id);
+
+        vehicleRows.push({
+          ...v,
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        });
+        seenIds.add(v.id);
+        if (vehicleRows.length >= limit) break;
+      }
+    }
+  }
 
   const dealerIds = [...new Set(vehicleRows.map((r) => r.dealer_id))];
   const profileById = new Map<string, ProfileRow>();
@@ -150,19 +227,44 @@ export async function GET(request: Request) {
     }
   }
 
-  const items = vehicleRows.map((r) => {
-    const p = profileById.get(r.dealer_id);
-    return {
-      ...r,
-      dealer: {
-        company_name: p?.company_name ?? "—",
-        phone: p?.phone ?? "",
-        location: p?.location ?? "",
-        latitude: p?.latitude != null ? Number(p.latitude) : null,
-        longitude: p?.longitude != null ? Number(p.longitude) : null,
-      },
-    };
-  });
+  let profileGeocodes = 0;
+  const MAX_PROFILE_GEOCODE = 6;
+  for (const id of dealerIds) {
+    if (profileGeocodes >= MAX_PROFILE_GEOCODE) break;
+    const p = profileById.get(id);
+    if (!p?.location?.trim()) continue;
+    if (p.latitude != null && p.longitude != null) continue;
+    const c = await geocodeLocationNominatim(p.location, { throttleMs: GEOCODE_THROTTLE_MS });
+    profileGeocodes++;
+    if (!c) continue;
+    profileById.set(id, {
+      ...p,
+      latitude: c.latitude,
+      longitude: c.longitude,
+    });
+    void supabase
+      .from("profiles")
+      .update({ latitude: c.latitude, longitude: c.longitude })
+      .eq("id", id);
+  }
+
+  let items = vehicleRows
+    .filter((r) => r.latitude != null && r.longitude != null)
+    .map((r) => {
+      const p = profileById.get(r.dealer_id);
+      return {
+        ...r,
+        latitude: r.latitude as number,
+        longitude: r.longitude as number,
+        dealer: {
+          company_name: p?.company_name ?? "—",
+          phone: p?.phone ?? "",
+          location: p?.location ?? "",
+          latitude: p?.latitude != null ? Number(p.latitude) : null,
+          longitude: p?.longitude != null ? Number(p.longitude) : null,
+        },
+      };
+    });
 
   const filtered =
     radiusKm > 0
@@ -171,10 +273,16 @@ export async function GET(request: Request) {
         )
       : items;
 
-  return NextResponse.json({
+  const payload: Record<string, unknown> = {
     items: filtered,
     page,
     limit,
     total: count ?? filtered.length,
-  });
+  };
+
+  if (vehicleRows.length === 0 && looseErr) {
+    payload.warning = `Aucun véhicule avec coordonnées ; complément sans GPS impossible : ${mapApiUserMessage(looseErr.message)}`;
+  }
+
+  return NextResponse.json(payload);
 }
