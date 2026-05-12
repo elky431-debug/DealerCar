@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
-const PUBLIC_PATHS = ["/login", "/register", "/auth/callback"];
+/** Routes accessibles sans session (visiteurs). */
+const PUBLIC_PATHS = ["/", "/login", "/register", "/auth/callback"];
 
 function hasSupabaseAuthCookie(request: NextRequest): boolean {
   return request.cookies.getAll().some((cookie) => {
@@ -18,7 +19,7 @@ export async function updateSession(request: NextRequest) {
   const hasAuthCookie = hasSupabaseAuthCookie(request);
 
   if (!isSupabaseConfigured()) {
-    if (!isPublic && pathname !== "/") {
+    if (!isPublic) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("next", pathname);
@@ -27,7 +28,7 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
-  if (!hasAuthCookie && !isPublic && pathname !== "/") {
+  if (!hasAuthCookie && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);

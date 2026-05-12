@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Car, Plus, Menu, X, LogOut } from "lucide-react";
+import { Car, Home, Plus, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggleButton } from "@/components/theme-toggle";
 import { SidebarNav } from "@/components/sidebar-nav";
@@ -96,6 +96,18 @@ export function AppShell({
       >
         <BrandHeader />
 
+        <div className="border-b border-border/40 px-2.5 py-2">
+          <Button
+            variant="outline"
+            size="sm"
+            href="/"
+            className="h-9 w-full justify-start gap-2 border-border/80 text-[13px] font-medium"
+          >
+            <Home className="h-4 w-4 shrink-0" aria-hidden />
+            Retour à l&apos;accueil
+          </Button>
+        </div>
+
         <QuickAddCTA />
 
         <SidebarNav variant="drawer" />
@@ -133,6 +145,14 @@ export function AppShell({
             </div>
 
             <div className="px-3 pt-3">
+              <Link
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className="mb-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-border/80 bg-background text-[13px] font-medium text-foreground shadow-sm transition-colors hover:bg-accent"
+              >
+                <Home className="h-4 w-4 shrink-0" aria-hidden />
+                Retour à l&apos;accueil
+              </Link>
               <Link
                 href="/garage/vehicules/nouveau"
                 onClick={() => setMobileOpen(false)}
