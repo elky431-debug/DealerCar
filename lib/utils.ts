@@ -87,17 +87,18 @@ export function formatRelative(value: string | Date | null | undefined): string 
 }
 
 export function publicImageUrl(storagePath: string): string {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/+$/, "");
   if (!base) return storagePath;
-  return `${base}/storage/v1/object/public/vehicle-images/${storagePath}`;
+  const path = storagePath.replace(/^\/+/, "");
+  return `${base}/storage/v1/object/public/vehicle-images/${path}`;
 }
 
 /** URL publique bucket branding concession (logo / bannière). */
 export function dealerBrandingPublicUrl(storagePath: string | null | undefined): string | null {
   if (!storagePath?.trim()) return null;
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/+$/, "");
   if (!base) return null;
-  return `${base}/storage/v1/object/public/dealer-branding/${storagePath}`;
+  return `${base}/storage/v1/object/public/dealer-branding/${storagePath.trim().replace(/^\/+/, "")}`;
 }
 
 /**
