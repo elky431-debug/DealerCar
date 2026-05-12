@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "./login-form";
+import { DownloadProjectContextLink } from "@/components/download-project-context-link";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,9 @@ export default function LoginPage() {
             Créer un compte
           </Link>
         </p>
+        <div className="mt-6 flex justify-center border-t border-border/60 pt-6">
+          <DownloadProjectContextLink variant="text" />
+        </div>
       </CardContent>
     </Card>
   );

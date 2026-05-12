@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { GarageForm } from "./garage-form";
+import { DownloadProjectContextLink } from "@/components/download-project-context-link";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
@@ -46,6 +47,9 @@ export default async function GarageProfilePage() {
             banner_storage_path: profile?.banner_storage_path ?? "",
           }}
         />
+        <div className="mt-8 flex justify-center border-t border-border/60 pt-6">
+          <DownloadProjectContextLink variant="text" />
+        </div>
       </PageBody>
     </>
   );

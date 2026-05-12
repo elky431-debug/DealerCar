@@ -14,6 +14,7 @@ Stack : Next.js 14 (App Router) · TypeScript · Tailwind · Supabase (Auth + Po
 
 À la racine : **`CLAUDE-CONTEXTE-PROJET-DEALERLINK.md`** (identique en **`.txt`** si ton navigateur bloque le `.md`).
 
+- **Depuis l’app (bouton)** : page d’accueil (non connecté), pages **Connexion** / **Inscription**, et **Gestion → Mon garage** — lien « Télécharger la doc projet » (fichier `CLAUDE-CONTEXTE-PROJET-DEALERLINK.md` via `/api/docs/contexte-projet`).
 - **Depuis GitHub** : ouvre le fichier sur la branche où il existe (souvent `cursor/dealer-garage-profile-764b`), clique sur **Raw**, puis *Enregistrer sous…* (Ctrl+S). Lien direct Raw (branche ci-dessus) :  
   [CLAUDE-CONTEXTE-PROJET-DEALERLINK.txt](https://raw.githubusercontent.com/elky431-debug/DealerCar/cursor/dealer-garage-profile-764b/CLAUDE-CONTEXTE-PROJET-DEALERLINK.txt)
 - **En local** : après `git pull`, le fichier est dans le dossier du projet (racine). Dans Cursor : panneau **Explorer** → clic droit sur le fichier → **Reveal in File Explorer** (ou copier le contenu).
