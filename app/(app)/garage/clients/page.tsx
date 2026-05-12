@@ -2,22 +2,20 @@ import { Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { ClientsList } from "./clients-list";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_LEAD_LIST_SELECT } from "@/lib/data/lead-select";
 import type { LeadWithVehicle, Vehicle } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const [{ data: leads }, { data: vehicles }] = await Promise.all([
     supabase
       .from("vehicle_leads")
-      .select("*, vehicles(id, brand, model, year)")
+      .select(VEHICLE_LEAD_LIST_SELECT)
       .eq("dealer_id", user.id)
       .order("created_at", { ascending: false }),
     supabase
@@ -27,7 +25,7 @@ export default async function ClientsPage() {
       .order("created_at", { ascending: false }),
   ]);
 
-  const list = (leads ?? []) as LeadWithVehicle[];
+  const list = (leads ?? []) as unknown as LeadWithVehicle[];
   const vehiclesList = (vehicles ?? []) as Pick<Vehicle, "id" | "brand" | "model" | "year">[];
 
   return (

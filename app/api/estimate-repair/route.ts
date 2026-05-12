@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ChatCompletionContentPart } from "openai/resources/index.mjs";
-import { OPENAI_MODEL, getOpenAIClient, parseJsonFromText } from "@/lib/openai";
+import { OPENAI_MODEL, getOpenAIClient, parseJsonFromText, openAiCompletionAbort } from "@/lib/openai";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -112,21 +112,30 @@ Règles :
   });
 
   try {
-    const response = await client.chat.completions.create({
-      model: OPENAI_MODEL,
-      max_tokens: 1500,
-      response_format: { type: "json_object" },
-      messages: [
+    const { signal, clear } = openAiCompletionAbort();
+    let response;
+    try {
+      response = await client.chat.completions.create(
         {
-          role: "system",
-          content:
-            "Tu es un expert français en estimation de réparation automobile (carrosserie, mécanique, peinture). " +
-            "Tu travailles pour un marchand auto pro. " +
-            "Tu es précis, conservateur et tu ne retournes JAMAIS rien d'autre qu'un JSON valide.",
+          model: OPENAI_MODEL,
+          max_tokens: 1500,
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content:
+                "Tu es un expert français en estimation de réparation automobile (carrosserie, mécanique, peinture). " +
+                "Tu travailles pour un marchand auto pro. " +
+                "Tu es précis, conservateur et tu ne retournes JAMAIS rien d'autre qu'un JSON valide.",
+            },
+            { role: "user", content: userContent },
+          ],
         },
-        { role: "user", content: userContent },
-      ],
-    });
+        { signal },
+      );
+    } finally {
+      clear();
+    }
 
     const text = response.choices[0]?.message?.content?.trim();
     if (!text) {
@@ -137,6 +146,12 @@ Règles :
     return NextResponse.json({ success: true, estimate });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erreur d'analyse";
+    if (msg === "The user aborted a request." || msg.includes("abort")) {
+      return NextResponse.json(
+        { error: "Analyse trop longue, réessayez avec moins de photos." },
+        { status: 408 },
+      );
+    }
     const status =
       msg.includes("rate") || msg.includes("quota") || msg.includes("429")
         ? 429

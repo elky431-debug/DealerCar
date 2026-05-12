@@ -2,27 +2,25 @@ import { redirect } from "next/navigation";
 import { Megaphone } from "lucide-react";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_DETAIL_SELECT } from "@/lib/data/vehicle-selects";
 import type { VehicleWithRelations } from "@/lib/types";
 import { ListingsManager } from "./listings-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AnnoncesPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const { data } = await supabase
     .from("vehicles")
-    .select("*, vehicle_images(*)")
+    .select(VEHICLE_DETAIL_SELECT)
     .eq("dealer_id", user.id)
     .neq("status", "sold")
     .order("created_at", { ascending: false });
 
-  const vehicles = (data ?? []) as VehicleWithRelations[];
+  const vehicles = (data ?? []) as unknown as VehicleWithRelations[];
   vehicles.forEach((v) => {
     v.vehicle_images = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position);
   });

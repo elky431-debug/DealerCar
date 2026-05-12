@@ -4,7 +4,8 @@ import { PageBody, PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_COST_LIST_SELECT } from "@/lib/data/document-cost-selects";
 import { formatDate, formatPrice, publicImageUrl, cn } from "@/lib/utils";
 import {
   COST_CATEGORY_LABELS,
@@ -22,20 +23,13 @@ interface CostWithVehicle extends VehicleCost {
 }
 
 export default async function FraisPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
+  const costJoin = `${VEHICLE_COST_LIST_SELECT}, vehicles(id, brand, model, year, status, vehicle_images(storage_path, position))`;
+
   const [{ data: costsData }, { data: vehiclesData }] = await Promise.all([
-    supabase
-      .from("vehicle_costs")
-      .select(
-        "*, vehicles(id, brand, model, year, status, vehicle_images(storage_path, position))",
-      )
-      .eq("dealer_id", user.id)
-      .order("date", { ascending: false }),
+    supabase.from("vehicle_costs").select(costJoin).eq("dealer_id", user.id).order("date", { ascending: false }),
     supabase
       .from("vehicles")
       .select("id, brand, model, year, status, vehicle_images(storage_path, position)")
@@ -44,7 +38,7 @@ export default async function FraisPage() {
       .order("created_at", { ascending: false }),
   ]);
 
-  const costs = (costsData ?? []) as CostWithVehicle[];
+  const costs = (costsData ?? []) as unknown as CostWithVehicle[];
   const vehicles = (vehiclesData ?? []) as (Pick<
     Vehicle,
     "id" | "brand" | "model" | "year" | "status"

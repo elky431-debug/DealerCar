@@ -10,6 +10,15 @@ Trois blocs :
 
 Stack : Next.js 14 (App Router) · TypeScript · Tailwind · Supabase (Auth + Postgres + Storage).
 
+### Dossier contexte (Claude, documentation)
+
+À la racine : **`CLAUDE-CONTEXTE-PROJET-DEALERLINK.md`** (identique en **`.txt`** si ton navigateur bloque le `.md`).
+
+- **Depuis l’app (bouton)** : page d’accueil (non connecté), pages **Connexion** / **Inscription**, et **Gestion → Mon garage** — lien « Télécharger la doc projet » (fichier `CLAUDE-CONTEXTE-PROJET-DEALERLINK.md` via `/api/docs/contexte-projet`).
+- **Depuis GitHub** : ouvre le fichier sur la branche où il existe (souvent `cursor/dealer-garage-profile-764b`), clique sur **Raw**, puis *Enregistrer sous…* (Ctrl+S). Lien direct Raw (branche ci-dessus) :  
+  [CLAUDE-CONTEXTE-PROJET-DEALERLINK.txt](https://raw.githubusercontent.com/elky431-debug/DealerCar/cursor/dealer-garage-profile-764b/CLAUDE-CONTEXTE-PROJET-DEALERLINK.txt)
+- **En local** : après `git pull`, le fichier est dans le dossier du projet (racine). Dans Cursor : panneau **Explorer** → clic droit sur le fichier → **Reveal in File Explorer** (ou copier le contenu).
+
 ---
 
 ## 🚀 Mise en route
@@ -46,7 +55,11 @@ Cela crée :
 npm run dev
 ```
 
-L'app tourne sur [http://localhost:3000](http://localhost:3000).
+L'app tourne sur [http://localhost:3001](http://localhost:3001) (ou [http://127.0.0.1:3001](http://127.0.0.1:3001)).
+
+Si le navigateur affiche **ERR_CONNECTION_REFUSED** : le serveur n'est pas lancé. Ouvre un terminal dans le dossier du projet, exécute `npm install` si besoin, puis **`npm run dev`** et attends le message « Ready » avant d'actualiser la page sur le **port 3001**.
+
+Sous Windows, tu peux aussi double-cliquer sur `demarrer-serveur-local.bat` dans l'explorateur de fichiers.
 
 ---
 

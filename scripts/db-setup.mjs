@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Setup Storage (buckets + policies) sur Supabase.
+ * Setup Storage (buckets + policies) sur Supabase, migrations SQL utiles (dont dealer-branding v9).
  *
  * Prérequis : DATABASE_URL dans .env.local
  * Récupère-la dans Supabase → Project Settings → Database → Connection String → URI
@@ -40,6 +40,8 @@ const sqlFiles = [
   "supabase/migration-v4.sql",
   "supabase/migration-v5.sql",
   "supabase/migration-v6.sql",
+  "supabase/migration-v9.sql",
+  "supabase/migration-v10.sql",
 ];
 
 const client = new pg.Client({
@@ -66,7 +68,7 @@ try {
 
   // Vérification finale
   const { rows } = await client.query(
-    `select id, public from storage.buckets where id in ('vehicle-images','vehicle-documents') order by id`,
+    `select id, public from storage.buckets where id in ('vehicle-images','vehicle-documents','dealer-branding') order by id`,
   );
   console.log("Buckets en place :");
   for (const row of rows) {

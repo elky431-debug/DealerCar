@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { TrendingUp } from "lucide-react";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 import type { Vehicle } from "@/lib/types";
 import { SalesHistory } from "./sales-history";
 
@@ -13,10 +13,7 @@ export default async function VentesPage({
 }: {
   searchParams: { period?: string; sort?: string };
 }) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const { data } = await supabase

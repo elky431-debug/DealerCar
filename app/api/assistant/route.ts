@@ -78,8 +78,9 @@ const LEAD_STATUS_FR: Record<string, string> = {
 async function buildSystemPrompt(): Promise<string> {
   const supabase = createClient();
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   if (!user) {
     return `Tu es l'assistant DealerLink.\n\n${RESPONSE_RULES}`;
   }

@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const supabaseHost = (() => {
+  const raw = (process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co").trim().replace(/\/+$/, "");
   try {
-    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co").host;
+    return new URL(raw).hostname;
   } catch {
     return "placeholder.supabase.co";
   }
@@ -9,6 +10,12 @@ const supabaseHost = (() => {
 
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -16,17 +23,15 @@ const nextConfig = {
         hostname: supabaseHost,
         pathname: "/storage/v1/object/public/**",
       },
-      // Allow any Supabase project host to avoid preview breakage
-      // when env changes and dev server cache gets stale.
+      // Un segment sous-domaine (ex. ref.supabase.co) — `**` n’est pas fiable selon les versions Next.
       {
         protocol: "https",
-        hostname: "**.supabase.co",
+        hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
-      // Signed URLs can also be used in some views.
       {
         protocol: "https",
-        hostname: "**.supabase.co",
+        hostname: "*.supabase.co",
         pathname: "/storage/v1/object/sign/**",
       },
     ],

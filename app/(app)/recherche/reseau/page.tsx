@@ -3,7 +3,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleCard } from "@/components/vehicle-card";
 import { SearchFilters } from "./search-filters";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_CARD_LIST_SELECT } from "@/lib/data/vehicle-selects";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -19,15 +20,12 @@ interface Props {
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   let query = supabase
     .from("vehicles")
-    .select("*, vehicle_images(*)")
+    .select(VEHICLE_CARD_LIST_SELECT)
     .eq("visibility", "network")
     .eq("status", "available")
     .neq("dealer_id", user.id)
@@ -50,7 +48,7 @@ export default async function SearchPage({ searchParams }: Props) {
     supabase.from("favorites").select("vehicle_id").eq("dealer_id", user.id),
   ]);
 
-  const list = (vehiclesRes.data ?? []) as VehicleWithRelations[];
+  const list = (vehiclesRes.data ?? []) as unknown as VehicleWithRelations[];
   const favSet = new Set((favRes.data ?? []).map((f) => f.vehicle_id));
   list.forEach((v) => {
     v.vehicle_images = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position);

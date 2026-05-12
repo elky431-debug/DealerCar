@@ -115,6 +115,15 @@ export const leadSchema = z
 
 export type LeadInput = z.infer<typeof leadSchema>;
 
+const optionalUrl = z
+  .string()
+  .max(500)
+  .optional()
+  .or(z.literal(""))
+  .refine((s) => !s?.trim() || /^https?:\/\/.+/i.test(s.trim()), {
+    message: "URL invalide (https://…)",
+  });
+
 export const profileSchema = z.object({
   company_name: z.string().min(2, "Nom d'entreprise requis"),
   phone: z.string().min(6, "Téléphone requis"),
@@ -127,5 +136,13 @@ export const profileSchema = z.object({
       message: "SIRET = 14 chiffres",
     }),
   specialties: z.string().max(500, "500 caractères max").optional().or(z.literal("")),
+  tagline: z.string().max(140, "140 caractères max").optional().or(z.literal("")),
+  website_url: optionalUrl,
+  social_facebook_url: optionalUrl,
+  social_instagram_url: optionalUrl,
+  social_linkedin_url: optionalUrl,
+  social_x_url: optionalUrl,
+  logo_storage_path: z.string().max(500).optional().or(z.literal("")),
+  banner_storage_path: z.string().max(500).optional().or(z.literal("")),
 });
 export type ProfileInput = z.infer<typeof profileSchema>;

@@ -11,6 +11,14 @@ export interface Profile {
   location: string;
   siret: string | null;
   specialties: string | null;
+  logo_storage_path?: string | null;
+  banner_storage_path?: string | null;
+  tagline?: string | null;
+  website_url?: string | null;
+  social_facebook_url?: string | null;
+  social_instagram_url?: string | null;
+  social_linkedin_url?: string | null;
+  social_x_url?: string | null;
   created_at: string;
   updated_at: string;
 }

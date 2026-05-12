@@ -1,0 +1,20 @@
+/** Colonnes profil pour layout / shell (pas de `select('*')`). */
+export const PROFILE_APP_SELECT = [
+  "id",
+  "email",
+  "company_name",
+  "phone",
+  "location",
+  "siret",
+  "specialties",
+  "logo_storage_path",
+  "banner_storage_path",
+  "tagline",
+  "website_url",
+  "social_facebook_url",
+  "social_instagram_url",
+  "social_linkedin_url",
+  "social_x_url",
+  "created_at",
+  "updated_at",
+].join(",");
