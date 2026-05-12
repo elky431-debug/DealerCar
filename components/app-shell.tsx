@@ -1,16 +1,21 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Car, Plus, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AssistantWidget } from "@/components/assistant-widget";
 import { ThemeToggleButton } from "@/components/theme-toggle";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
+
+const AssistantWidgetLazy = dynamic(
+  () => import("@/components/assistant-widget").then((m) => m.AssistantWidget),
+  { ssr: false },
+);
 
 export function AppShell({
   profile,
@@ -22,26 +27,39 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [assistantReady, setAssistantReady] = useState(false);
 
   // Fermeture auto du drawer mobile à chaque changement de route
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  // Prefetch major app routes to reduce click-to-navigation latency.
+  // Prefetch minimal et différé pour éviter de charger agressivement au boot.
   useEffect(() => {
-    const routes = [
-      "/dashboard",
-      "/garage/vehicules",
-      "/garage/vehicules/nouveau",
-      "/garage/clients",
-      "/recherche/reseau",
-      "/map",
-    ];
-    for (const route of routes) {
-      router.prefetch(route);
+    const trigger = () => {
+      // Routes les plus fréquentes seulement.
+      router.prefetch("/dashboard");
+      router.prefetch("/garage/vehicules");
+    };
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void) => number })
+      .requestIdleCallback;
+    if (ric) {
+      const id = ric(trigger);
+      return () => {
+        if ((window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback) {
+          (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback!(id);
+        }
+      };
     }
+    const t = window.setTimeout(trigger, 600);
+    return () => clearTimeout(t);
   }, [router]);
+
+  // Charge l'assistant après le rendu initial pour fluidifier le premier paint.
+  useEffect(() => {
+    const t = window.setTimeout(() => setAssistantReady(true), 1200);
+    return () => clearTimeout(t);
+  }, []);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -167,7 +185,7 @@ export function AppShell({
         <main className="min-w-0 flex-1">{children}</main>
       </div>
 
-      <AssistantWidget />
+      {assistantReady && <AssistantWidgetLazy />}
     </div>
   );
 }

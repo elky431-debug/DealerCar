@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive" | "success";
@@ -31,25 +32,35 @@ export interface ButtonProps
   variant?: Variant;
   size?: Size;
   loading?: boolean;
+  /** Si défini, rend un lien Next avec les mêmes styles qu’un bouton. */
+  href?: string;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", loading, disabled, children, ...props }, ref) => {
+  (
+    { className, variant = "primary", size = "md", loading, disabled, children, href, ...props },
+    ref,
+  ) => {
+    const classes = cn(
+      "inline-flex select-none items-center justify-center gap-2 rounded-lg font-medium tracking-tight transition-all duration-150",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      "disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none",
+      "active:scale-[0.98]",
+      VARIANTS[variant],
+      SIZES[size],
+      className,
+    );
+
+    if (href) {
+      return (
+        <Link href={href} className={classes}>
+          {children}
+        </Link>
+      );
+    }
+
     return (
-      <button
-        ref={ref}
-        disabled={disabled || loading}
-        className={cn(
-          "inline-flex select-none items-center justify-center gap-2 rounded-lg font-medium tracking-tight transition-all duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none",
-          "active:scale-[0.98]",
-          VARIANTS[variant],
-          SIZES[size],
-          className,
-        )}
-        {...props}
-      >
+      <button ref={ref} disabled={disabled || loading} className={classes} {...props}>
         {loading && (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
         )}

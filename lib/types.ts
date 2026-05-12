@@ -289,3 +289,123 @@ export const INSPECTION_DECISION_LABELS: Record<InspectionDecision, string> = {
   no_go: "À éviter",
   uncertain: "Incertain",
 };
+
+// ---------- Recherche client (sourcing) ----------
+
+export type ClientSearchStatus =
+  | "active"
+  | "vehicle_found"
+  | "negotiating"
+  | "completed"
+  | "abandoned";
+
+export type ClientSearchPriority = "normal" | "urgent" | "premium";
+
+export type ClientSearchGearbox = "automatic" | "manual";
+
+export type SourceFollowUpStatus = "no_response" | "pending" | "vehicle_found" | "declined";
+
+export type ClientSearchVehicleSlot = "saved" | "proposed" | "seller_contacted";
+
+export interface SourcingContact {
+  id: string;
+  dealer_id: string;
+  garage_name: string;
+  contact_name: string | null;
+  phone: string | null;
+  city: string | null;
+  specialty: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientSearch {
+  id: string;
+  dealer_id: string;
+  client_name: string;
+  client_phone: string | null;
+  client_notes: string | null;
+  brand: string;
+  model: string;
+  version: string | null;
+  fuel: string | null;
+  gearbox: ClientSearchGearbox | null;
+  budget_min: number | null;
+  budget_max: number | null;
+  mileage_max: number | null;
+  year_min: number | null;
+  geo_zone: string | null;
+  distance_max_km: number | null;
+  priority: ClientSearchPriority;
+  status: ClientSearchStatus;
+  internal_notes: string | null;
+  sourcing_progress: number;
+  is_rare: boolean;
+  difficulty_score: number | null;
+  eta_days_min: number | null;
+  eta_days_max: number | null;
+  last_opened_at: string | null;
+  cached_match_count: number;
+  cached_match_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientSearchSourceAssignment {
+  id: string;
+  search_id: string;
+  contact_id: string;
+  follow_up_status: SourceFollowUpStatus;
+  last_contacted_at: string | null;
+  response_received: string | null;
+  vehicle_available: boolean | null;
+  created_at: string;
+  updated_at: string;
+  sourcing_contacts?: SourcingContact | null;
+}
+
+export interface ClientSearchVehicleRow {
+  id: string;
+  search_id: string;
+  vehicle_id: string;
+  slot: ClientSearchVehicleSlot;
+  notes: string | null;
+  compatibility_score: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClientSearchEvent {
+  id: string;
+  search_id: string;
+  event_type: string;
+  payload: Record<string, unknown>;
+  created_at: string;
+}
+
+export const CLIENT_SEARCH_STATUS_LABELS: Record<ClientSearchStatus, string> = {
+  active: "Active",
+  vehicle_found: "Véhicule trouvé",
+  negotiating: "En négociation",
+  completed: "Terminée",
+  abandoned: "Abandonnée",
+};
+
+export const CLIENT_SEARCH_PRIORITY_LABELS: Record<ClientSearchPriority, string> = {
+  normal: "Normale",
+  urgent: "Urgente",
+  premium: "Premium",
+};
+
+export const SOURCE_FOLLOW_UP_LABELS: Record<SourceFollowUpStatus, string> = {
+  no_response: "Pas répondu",
+  pending: "En attente",
+  vehicle_found: "Véhicule trouvé",
+  declined: "Refus",
+};
+
+export const CLIENT_SEARCH_VEHICLE_SLOT_LABELS: Record<ClientSearchVehicleSlot, string> = {
+  saved: "Enregistré",
+  proposed: "Proposé au client",
+  seller_contacted: "Vendeur contacté",
+};

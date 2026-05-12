@@ -40,6 +40,9 @@ const sqlFiles = [
   "supabase/migration-v4.sql",
   "supabase/migration-v5.sql",
   "supabase/migration-v6.sql",
+  "supabase/migration-v7.sql",
+  "supabase/migration-v8.sql",
+  "supabase/migration-v9.sql",
 ];
 
 const client = new pg.Client({

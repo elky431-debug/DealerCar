@@ -1,4 +1,4 @@
-import { TabsNav } from "@/components/ui/tabs";
+import { RechercheLayoutShell } from "@/components/recherche/recherche-layout-shell";
 import { getCachedFavCount } from "@/lib/data/layout-cache";
 import { getServerAuth } from "@/lib/supabase/server";
 
@@ -12,16 +12,5 @@ export default async function RechercheLayout({ children }: { children: React.Re
     favCount = await getCachedFavCount(user.id);
   }
 
-  return (
-    <>
-      <TabsNav
-        tabs={[
-          { href: "/recherche/reseau", label: "Réseau" },
-          { href: "/recherche/marche", label: "Marché web" },
-          { href: "/recherche/favoris", label: "Favoris", count: favCount },
-        ]}
-      />
-      {children}
-    </>
-  );
+  return <RechercheLayoutShell favCount={favCount}>{children}</RechercheLayoutShell>;
 }
