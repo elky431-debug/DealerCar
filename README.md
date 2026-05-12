@@ -46,9 +46,9 @@ Cela crée :
 npm run dev
 ```
 
-L'app tourne sur [http://localhost:3000](http://localhost:3000) (ou [http://127.0.0.1:3000](http://127.0.0.1:3000)).
+L'app tourne sur [http://localhost:3001](http://localhost:3001) (ou [http://127.0.0.1:3001](http://127.0.0.1:3001)).
 
-Si le navigateur affiche **ERR_CONNECTION_REFUSED** : le serveur n'est pas lancé. Ouvre un terminal dans le dossier du projet, exécute `npm install` si besoin, puis **`npm run dev`** et attends le message « Ready » avant d'actualiser la page.
+Si le navigateur affiche **ERR_CONNECTION_REFUSED** : le serveur n'est pas lancé. Ouvre un terminal dans le dossier du projet, exécute `npm install` si besoin, puis **`npm run dev`** et attends le message « Ready » avant d'actualiser la page sur le **port 3001**.
 
 Sous Windows, tu peux aussi double-cliquer sur `demarrer-serveur-local.bat` dans l'explorateur de fichiers.
 
