@@ -6,7 +6,8 @@ import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleCard } from "@/components/vehicle-card";
 import { VehicleListFilters } from "./list-filters";
 import { StatsRibbon } from "./stats-ribbon";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_CARD_LIST_SELECT } from "@/lib/data/vehicle-selects";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -16,15 +17,12 @@ interface PageProps {
 }
 
 export default async function VehiclesListPage({ searchParams }: PageProps) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
-  let query = supabase
+  let filtered = supabase
     .from("vehicles")
-    .select("*, vehicle_images(*)")
+    .select(VEHICLE_CARD_LIST_SELECT)
     .eq("dealer_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -33,25 +31,24 @@ export default async function VehiclesListPage({ searchParams }: PageProps) {
   const visibility = searchParams.visibility;
   const q = searchParams.q?.trim();
 
-  if (status && ["available", "reserved", "sold"].includes(status)) query = query.eq("status", status);
-  if (type && ["stock", "depot"].includes(type)) query = query.eq("type", type);
+  if (status && ["available", "reserved", "sold"].includes(status)) filtered = filtered.eq("status", status);
+  if (type && ["stock", "depot"].includes(type)) filtered = filtered.eq("type", type);
   if (visibility && ["private", "network"].includes(visibility))
-    query = query.eq("visibility", visibility);
+    filtered = filtered.eq("visibility", visibility);
   if (q) {
-    query = query.or(`brand.ilike.%${q}%,model.ilike.%${q}%`);
+    filtered = filtered.or(`brand.ilike.%${q}%,model.ilike.%${q}%`);
   }
 
-  const { data: vehicles } = await query;
-  const list = (vehicles ?? []) as VehicleWithRelations[];
+  const [{ data: vehicles }, { data: allVehicles }] = await Promise.all([
+    filtered,
+    supabase.from("vehicles").select("status, visibility, price").eq("dealer_id", user.id),
+  ]);
+
+  const list = (vehicles ?? []) as unknown as VehicleWithRelations[];
   list.forEach((v) => {
     v.vehicle_images = (v.vehicle_images ?? []).slice().sort((a, b) => a.position - b.position);
   });
 
-  // Global stats (unfiltered) for the ribbon
-  const { data: allVehicles } = await supabase
-    .from("vehicles")
-    .select("status, visibility, price")
-    .eq("dealer_id", user.id);
   const all = allVehicles ?? [];
   const total = all.length;
   const available = all.filter((v) => v.status === "available").length;

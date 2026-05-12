@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import type { VehicleInspection } from "@/lib/types";
 import { InspectionWizard } from "./inspection-wizard";
+import { getServerAuth } from "@/lib/supabase/server";
+import { INSPECTION_DETAIL_SELECT } from "@/lib/data/inspection-selects";
+import type { VehicleInspection } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +18,12 @@ interface Props {
  * expérience immersive : une étape à la fois, illustration en hero.
  */
 export default async function InspectionDetailPage({ params }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: inspection } = await supabase
     .from("vehicle_inspections")
-    .select("*")
+    .select(INSPECTION_DETAIL_SELECT)
     .eq("id", params.id)
     .eq("dealer_id", user.id)
     .maybeSingle<VehicleInspection>();

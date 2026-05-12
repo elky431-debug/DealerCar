@@ -26,7 +26,10 @@ import { DocumentSection } from "@/components/document-section";
 import { LeadsSection } from "./leads-section";
 import { CostsSection } from "./costs-section";
 import { EcoSpecsCard } from "@/components/eco-specs-card";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_DETAIL_SELECT } from "@/lib/data/vehicle-selects";
+import { VEHICLE_DOCUMENT_LIST_SELECT, VEHICLE_COST_LIST_SELECT } from "@/lib/data/document-cost-selects";
+import { VEHICLE_LEAD_DETAIL_SELECT } from "@/lib/data/lead-select";
 import { findVehicleSpecsForVehicle } from "@/lib/vehicle-specs";
 import { formatMileage, formatPrice, formatTitle } from "@/lib/utils";
 import {
@@ -49,15 +52,12 @@ interface Props {
 }
 
 export default async function VehicleDetailPage({ params, searchParams }: Props) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: vehicle } = await supabase
     .from("vehicles")
-    .select("*, vehicle_images(*)")
+    .select(VEHICLE_DETAIL_SELECT)
     .eq("id", params.id)
     .maybeSingle<VehicleWithRelations>();
 
@@ -76,27 +76,27 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("*")
+      .select("id, company_name, phone, location, email")
       .eq("id", vehicle.dealer_id)
       .maybeSingle<Profile>(),
     isOwner
       ? supabase
           .from("vehicle_documents")
-          .select("*")
+          .select(VEHICLE_DOCUMENT_LIST_SELECT)
           .eq("vehicle_id", vehicle.id)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] as VehicleDocument[] }),
     isOwner
       ? supabase
           .from("vehicle_leads")
-          .select("*")
+          .select(VEHICLE_LEAD_DETAIL_SELECT)
           .eq("vehicle_id", vehicle.id)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] as LeadWithVehicle[] }),
     isOwner
       ? supabase
           .from("vehicle_costs")
-          .select("*")
+          .select(VEHICLE_COST_LIST_SELECT)
           .eq("vehicle_id", vehicle.id)
           .order("date", { ascending: false })
       : Promise.resolve({ data: [] as VehicleCost[] }),

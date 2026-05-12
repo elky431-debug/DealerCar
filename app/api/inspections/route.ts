@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getApiUser } from "@/lib/supabase/server";
+import {
+  INSPECTION_DETAIL_SELECT,
+  INSPECTION_LIST_SELECT,
+} from "@/lib/data/inspection-selects";
 import type { VehicleInspection } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -8,22 +12,19 @@ export const dynamic = "force-dynamic";
  * GET /api/inspections — liste les inspections du dealer.
  */
 export async function GET() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getApiUser();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { data, error } = await supabase
     .from("vehicle_inspections")
-    .select("*")
+    .select(INSPECTION_LIST_SELECT)
     .eq("dealer_id", user.id)
     .order("updated_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ inspections: data as VehicleInspection[] });
+  return NextResponse.json({ inspections: data as unknown as VehicleInspection[] });
 }
 
 /**
@@ -31,10 +32,7 @@ export async function GET() {
  * Body : { title, vehicle_brand?, vehicle_model?, vehicle_year? }
  */
 export async function POST(req: Request) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getApiUser();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   let body: {
@@ -65,11 +63,11 @@ export async function POST(req: Request) {
       current_step: 1,
       steps_state: {},
     })
-    .select("*")
+    .select(INSPECTION_DETAIL_SELECT)
     .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ inspection: data as VehicleInspection });
+  return NextResponse.json({ inspection: data as unknown as VehicleInspection });
 }

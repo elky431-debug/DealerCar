@@ -21,6 +21,18 @@ export function getOpenAIClient(): OpenAI {
 /** Modèle utilisé pour vision (estimation, OCR) et chat (assistant). */
 export const OPENAI_MODEL = "gpt-4o";
 
+/** Timeout par défaut pour complétions non streamées (ms). */
+export const OPENAI_COMPLETION_TIMEOUT_MS = 25_000;
+
+export function openAiCompletionAbort(): { signal: AbortSignal; clear: () => void } {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), OPENAI_COMPLETION_TIMEOUT_MS);
+  return {
+    signal: controller.signal,
+    clear: () => clearTimeout(timer),
+  };
+}
+
 /**
  * Extrait un objet JSON d'une réponse qui pourrait contenir
  * du markdown (```json ... ```) ou du texte autour.

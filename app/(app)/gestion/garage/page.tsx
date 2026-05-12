@@ -2,21 +2,19 @@ import { redirect } from "next/navigation";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { GarageForm } from "./garage-form";
 import { DownloadProjectContextLink } from "@/components/download-project-context-link";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { PROFILE_APP_SELECT } from "@/lib/data/profile-select";
 import type { Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function GarageProfilePage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PROFILE_APP_SELECT)
     .eq("id", user.id)
     .maybeSingle<Profile>();
 

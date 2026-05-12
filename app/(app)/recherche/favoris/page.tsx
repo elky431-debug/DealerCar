@@ -2,21 +2,19 @@ import { Heart } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { VehicleCard } from "@/components/vehicle-card";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { VEHICLE_CARD_LIST_SELECT } from "@/lib/data/vehicle-selects";
 import type { VehicleWithRelations } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function FavorisPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data: favs } = await supabase
     .from("favorites")
-    .select("vehicle_id, created_at, vehicles(*, vehicle_images(*))")
+    .select(`vehicle_id, created_at, vehicles(${VEHICLE_CARD_LIST_SELECT})`)
     .eq("dealer_id", user.id)
     .order("created_at", { ascending: false });
 

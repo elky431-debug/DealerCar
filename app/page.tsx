@@ -3,13 +3,10 @@ import { redirect } from "next/navigation";
 import { ArrowRight, Car, Network, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DownloadProjectContextLink } from "@/components/download-project-context-link";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
 
 export default async function HomePage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getServerAuth();
 
   if (user) {
     redirect("/dashboard");

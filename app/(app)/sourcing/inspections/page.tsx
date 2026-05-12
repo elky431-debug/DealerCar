@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/server";
+import { INSPECTION_LIST_SELECT } from "@/lib/data/inspection-selects";
 import { formatRelative, formatTitle } from "@/lib/utils";
 import {
   INSPECTION_DECISION_LABELS,
@@ -19,19 +20,16 @@ import { NewInspectionButton } from "./new-inspection-button";
 export const dynamic = "force-dynamic";
 
 export default async function InspectionsPage() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
   if (!user) return null;
 
   const { data } = await supabase
     .from("vehicle_inspections")
-    .select("*")
+    .select(INSPECTION_LIST_SELECT)
     .eq("dealer_id", user.id)
     .order("updated_at", { ascending: false });
 
-  const inspections = (data ?? []) as VehicleInspection[];
+  const inspections = (data ?? []) as unknown as VehicleInspection[];
 
   return (
     <>

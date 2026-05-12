@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getApiUser } from "@/lib/supabase/server";
+import { INSPECTION_DETAIL_SELECT } from "@/lib/data/inspection-selects";
 import type {
   InspectionDecision,
   InspectionStepState,
@@ -35,10 +36,7 @@ export async function PATCH(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getApiUser();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   let body: PatchBody;
@@ -100,13 +98,13 @@ export async function PATCH(
     .update(update)
     .eq("id", params.id)
     .eq("dealer_id", user.id)
-    .select("*")
+    .select(INSPECTION_DETAIL_SELECT)
     .single();
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ inspection: data as VehicleInspection });
+  return NextResponse.json({ inspection: data as unknown as VehicleInspection });
 }
 
 /**
@@ -116,10 +114,7 @@ export async function DELETE(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getApiUser();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { error } = await supabase

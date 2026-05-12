@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { OPENAI_MODEL, getOpenAIClient, parseJsonFromText } from "@/lib/openai";
+import { OPENAI_MODEL, getOpenAIClient, parseJsonFromText, openAiCompletionAbort } from "@/lib/openai";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -63,31 +63,35 @@ export async function POST(req: Request) {
   }
 
   try {
-    const response = await client.chat.completions.create({
-      model: OPENAI_MODEL,
-      max_tokens: 1000,
-      response_format: { type: "json_object" },
-      messages: [
+    const { signal, clear } = openAiCompletionAbort();
+    let response;
+    try {
+      response = await client.chat.completions.create(
         {
-          role: "system",
-          content:
-            "Tu es un expert français en lecture de cartes grises (certificats d'immatriculation). " +
-            "Tu lis avec précision les champs A, B, D.1, D.2, D.3, F.1, P.1, P.3, P.6, S.1. " +
-            "Tu retournes UNIQUEMENT un objet JSON valide.",
-        },
-        {
-          role: "user",
-          content: [
+          model: OPENAI_MODEL,
+          max_tokens: 1000,
+          response_format: { type: "json_object" },
+          messages: [
             {
-              type: "image_url",
-              image_url: {
-                url: `data:${image.type};base64,${image.base64}`,
-                detail: "high",
-              },
+              role: "system",
+              content:
+                "Tu es un expert français en lecture de cartes grises (certificats d'immatriculation). " +
+                "Tu lis avec précision les champs A, B, D.1, D.2, D.3, F.1, P.1, P.3, P.6, S.1. " +
+                "Tu retournes UNIQUEMENT un objet JSON valide.",
             },
             {
-              type: "text",
-              text: `Lis cette image (réponse en json) et retourne ce JSON exact :
+              role: "user",
+              content: [
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${image.type};base64,${image.base64}`,
+                    detail: "high",
+                  },
+                },
+                {
+                  type: "text",
+                  text: `Lis cette image (réponse en json) et retourne ce JSON exact :
 {
   "is_carte_grise": boolean,                  // true si c'est bien une carte grise française, sinon false
   "plate_number": string | null,              // champ A, format AB-123-CD ou ancien
@@ -109,11 +113,16 @@ Règles strictes :
 - Pour le carburant, normalise vers les 5 valeurs autorisées (ES → "Essence", GO → "Diesel", EH/EE → "Hybride", EL → "Électrique", GP → "GPL").
 - Si un champ est partiellement lisible mais douteux, mets-le à null et ajoute son nom dans unreadable_fields.
 - Ne devine jamais. Mieux vaut null qu'une erreur.`,
+                },
+              ],
             },
           ],
         },
-      ],
-    });
+        { signal },
+      );
+    } finally {
+      clear();
+    }
 
     const text = response.choices[0]?.message?.content?.trim();
     if (!text) {
@@ -124,6 +133,12 @@ Règles strictes :
     return NextResponse.json({ success: true, data });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Erreur d'analyse";
+    if (msg === "The user aborted a request." || msg.includes("abort")) {
+      return NextResponse.json(
+        { error: "Lecture trop longue, réessayez avec une photo plus nette." },
+        { status: 408 },
+      );
+    }
     const status =
       msg.includes("rate") || msg.includes("quota") || msg.includes("429")
         ? 429
