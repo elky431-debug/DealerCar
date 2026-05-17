@@ -122,7 +122,7 @@ export function SalesHistory({ sales, defaults }: Props) {
             className={cn(
               "h-9 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
               period === p.v
-                ? "border-foreground bg-foreground text-background"
+                ? "border-primary bg-primary text-white"
                 : "border-border/70 bg-card text-foreground hover:border-foreground/40",
             )}
           >

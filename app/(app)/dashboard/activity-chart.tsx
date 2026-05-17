@@ -353,7 +353,7 @@ function Tooltip({ datum, xPercent }: { datum: DayDatum; xPercent: number }) {
       <p className="mb-1 font-semibold capitalize tracking-tight">{formatted}</p>
       <div className="space-y-0.5">
         <p className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#D99330]" />
           <span className="tabular font-semibold">{datum.added}</span>
           <span className="text-muted-foreground">
             ajouté{datum.added > 1 ? "s" : ""}

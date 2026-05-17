@@ -85,9 +85,9 @@ export function CostsSection({
   return (
     <div className="space-y-6">
       {/* IA banner */}
-      <div className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-blue-200/70 bg-gradient-to-br from-blue-50/80 via-card to-card p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_4px_14px_-2px_hsl(221_83%_53%/0.4)]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)]">
             <Sparkles className="h-5 w-5" />
           </span>
           <div>
@@ -181,7 +181,7 @@ export function CostsSection({
                           {c.source === "ia_estimation" && (
                             <span
                               title="Estimation IA"
-                              className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded bg-blue-100 text-blue-700"
+                              className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded bg-primary/15 text-primary"
                             >
                               <Sparkles className="h-2.5 w-2.5" />
                             </span>

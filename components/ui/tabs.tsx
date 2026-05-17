@@ -30,8 +30,8 @@ export function TabsNav({ tabs, className }: TabsNavProps) {
               className={cn(
                 "relative flex shrink-0 items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium tracking-tight transition-all duration-200",
                 active
-                  ? "bg-foreground text-background shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)]"
-                  : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
+                  ? "tab-pill-active"
+                  : "text-muted-foreground hover:bg-primary/[0.08] hover:text-foreground",
               )}
             >
               <span>{tab.label}</span>
@@ -40,7 +40,7 @@ export function TabsNav({ tabs, className }: TabsNavProps) {
                   className={cn(
                     "inline-flex h-4 min-w-[20px] items-center justify-center rounded-full px-1 text-[10.5px] font-semibold tabular",
                     active
-                      ? "bg-background/20 text-background"
+                      ? "bg-white/25 text-white"
                       : "bg-foreground/[0.06] text-foreground/70",
                   )}
                 >

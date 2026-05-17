@@ -34,8 +34,8 @@ export function GestionTabs() {
               className={cn(
                 "relative flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-1.5 text-[13px] font-medium tracking-tight transition-all duration-200",
                 active
-                  ? "bg-foreground text-background shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)]"
-                  : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
+                  ? "tab-pill-active"
+                  : "text-muted-foreground hover:bg-primary/[0.08] hover:text-foreground",
               )}
             >
               <span>{tab.label}</span>
@@ -44,9 +44,7 @@ export function GestionTabs() {
                   className={cn(
                     "inline-flex h-4 items-center rounded-full px-1.5 text-[9.5px] font-bold uppercase tracking-wider",
                     active
-                      ? tab.badge === "V2"
-                        ? "bg-background/15 text-background/80"
-                        : "bg-background/20 text-background"
+                      ? "bg-white/25 text-white"
                       : tab.badge === "V2"
                         ? "bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-200"
                         : "bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200",

@@ -124,7 +124,7 @@ export function OcrCarteGriseModal({ open, onClose, onApply }: Props) {
       size="lg"
       title={
         <span className="inline-flex items-center gap-2">
-          <Camera className="h-4 w-4 text-blue-600" />
+          <Camera className="h-4 w-4 text-primary" />
           Scanner la carte grise
         </span>
       }
@@ -137,9 +137,9 @@ export function OcrCarteGriseModal({ open, onClose, onApply }: Props) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="group flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 transition-colors hover:border-blue-400 hover:bg-blue-50/40"
+              className="group flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 transition-colors hover:border-primary/50 hover:bg-primary/10"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
                 <Upload className="h-4.5 w-4.5" />
               </span>
               <p className="text-[14px] font-medium">Choisir un fichier</p>
@@ -149,9 +149,9 @@ export function OcrCarteGriseModal({ open, onClose, onApply }: Props) {
             </button>
             <label
               htmlFor="cg-cam"
-              className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 transition-colors hover:border-blue-400 hover:bg-blue-50/40 sm:cursor-pointer"
+              className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 transition-colors hover:border-primary/50 hover:bg-primary/10 sm:cursor-pointer"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
                 <Camera className="h-4.5 w-4.5" />
               </span>
               <p className="text-[14px] font-medium">Prendre une photo</p>
@@ -275,10 +275,10 @@ function ResultPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-blue-50/70 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-primary/10 p-4">
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-blue-700" />
-          <span className="text-[13px] font-medium text-blue-900">
+          <CheckCircle2 className="h-4 w-4 text-primary" />
+          <span className="text-[13px] font-medium text-foreground">
             {filledCount} champ{filledCount > 1 ? "s" : ""} extrait
             {filledCount > 1 ? "s" : ""}
           </span>

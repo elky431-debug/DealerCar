@@ -11,7 +11,7 @@ export default function ClientSearchesPage() {
   return (
     <PageBody className="min-w-0 max-w-full overflow-x-hidden px-0 pb-10 pt-0 sm:pb-12">
       <div
-        className={`border-b border-border/50 bg-background/85 backdrop-blur-xl ${CS_PAGE_GUTTER} py-8 md:py-10`}
+        className={`border-b page-header-bar ${CS_PAGE_GUTTER} py-8 md:py-10`}
       >
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0 space-y-4">

@@ -95,7 +95,7 @@ export default function NewClientSearchPage() {
 
   return (
     <PageBody className="min-w-0 max-w-full overflow-x-hidden px-0 pb-12 pt-0">
-      <div className={`border-b border-border/50 bg-background/85 backdrop-blur-xl ${CS_PAGE_GUTTER} py-8`}>
+      <div className={`border-b page-header-bar ${CS_PAGE_GUTTER} py-8`}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 space-y-3">
             <Link

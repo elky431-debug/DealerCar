@@ -58,12 +58,12 @@ const CS_LABEL =
   "text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500";
 const CS_SECTION_TITLE = "text-sm font-semibold text-gray-900 dark:text-zinc-100";
 const CS_INPUT =
-  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:bg-white transition-colors";
+  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:bg-white transition-colors";
 const CS_TEXTAREA =
-  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:bg-white transition-colors resize-none";
+  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:bg-white transition-colors resize-none";
 const CS_SURFACE = "rounded-xl border border-slate-200/70 bg-white shadow-sm";
 const CS_CARD_AI =
-  "rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-4 shadow-sm";
+  "rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-4 shadow-sm";
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -270,7 +270,7 @@ export function ClientSearchDetail({ id }: { id: string }) {
   const bestScore = matches?.strong[0]?.compatibility_score ?? null;
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="recherche-pro-bg flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       {/* Tabs — mobile uniquement (&lt; lg) */}
       <div className="flex shrink-0 items-center gap-1 border-b border-gray-100 bg-white/95 px-3 py-2 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/95 lg:hidden">
         {(
@@ -287,7 +287,7 @@ export function ClientSearchDetail({ id }: { id: string }) {
             className={cn(
               "flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all duration-200",
               workspaceTab === key
-                ? "bg-blue-600 text-white shadow-sm"
+                ? "bg-primary text-white shadow-sm"
                 : "text-gray-500 hover:bg-gray-50 dark:text-zinc-400 dark:hover:bg-zinc-800",
             )}
           >
@@ -317,7 +317,7 @@ export function ClientSearchDetail({ id }: { id: string }) {
         {/* Colonne 2 — fiche sourcing */}
         <main
           className={cn(
-            "min-w-0 flex-1 overflow-y-auto bg-slate-50",
+            "min-w-0 flex-1 overflow-y-auto",
             workspaceTab === "market" ? "block" : "hidden",
             "lg:block",
           )}
@@ -339,7 +339,7 @@ export function ClientSearchDetail({ id }: { id: string }) {
 
               {loadMatches && !matches ? (
                 <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white py-16 shadow-sm">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   <p className="text-sm font-semibold text-slate-900">Analyse du marché…</p>
                   <p className="max-w-xs text-center text-xs text-slate-500">
                     Matching stock & réseau — quelques secondes.
@@ -510,12 +510,12 @@ function SearchListColumn({
                 className={cn(
                   "mx-4 my-2 block cursor-pointer rounded-xl border p-5 transition-all duration-150",
                   active
-                    ? "border-blue-200 bg-blue-50 shadow-sm dark:border-blue-900 dark:bg-blue-950/40"
+                    ? "border-primary/25 bg-primary/10 shadow-sm dark:border-primary/30 dark:bg-primary/10"
                     : "border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700",
                 )}
               >
                 <div className="mb-2.5 flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-bold text-white">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/100 to-primary text-xs font-bold text-white">
                     {initialsFromName(s.client_name)}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -538,7 +538,7 @@ function SearchListColumn({
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600 tabular-nums dark:bg-blue-950/50 dark:text-blue-400">
+                  <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary tabular-nums dark:bg-primary/10 dark:text-primary/70">
                     {budgetA} – {budgetB}
                   </span>
                   <span className="text-xs text-gray-400 tabular-nums dark:text-zinc-500">
@@ -561,7 +561,7 @@ function PremiumMainHeader({ searchId, search }: { searchId: string; search: Cli
     <header className="px-8 pb-6 pt-8">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-base font-bold text-white shadow-lg shadow-blue-600/25">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/100 to-primary text-base font-bold text-white shadow-lg shadow-primary/25">
             {initialsFromName(search.client_name)}
           </span>
           <div className="min-w-0">
@@ -638,8 +638,8 @@ function SearchStatsGrid({
       label: "Meilleur match",
       value: loadMatches ? "…" : bestScore != null ? `${Math.round(bestScore)} %` : "—",
       icon: Sparkles,
-      iconColor: "text-blue-600",
-      iconBg: "bg-blue-50",
+      iconColor: "text-primary",
+      iconBg: "bg-primary/10",
     },
     {
       label: "Annonces listées",
@@ -767,7 +767,7 @@ function ResumeSearchSection({
             <div className="space-y-2">
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                  className="h-full rounded-full bg-primary transition-all duration-300"
                   style={{ width: `${progressDraft}%` }}
                 />
               </div>
@@ -785,7 +785,7 @@ function ResumeSearchSection({
                   );
                   if (v !== search.sourcing_progress) onPatch({ sourcing_progress: v });
                 }}
-                  className="min-w-0 flex-1 cursor-pointer accent-blue-600"
+                  className="min-w-0 flex-1 cursor-pointer accent-primary"
                 />
                 <Input
                   type="number"
@@ -807,13 +807,13 @@ function ResumeSearchSection({
           </Field>
         </div>
 
-        <div className="rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-5 shadow-sm">
+        <div className="rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-5 shadow-sm">
           <div className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
               <Target className="h-4 w-4" />
             </span>
             <div className="min-w-0 space-y-1.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600/80">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-primary/80">
                 Terrain & cache
               </p>
               {search.difficulty_score != null && (
@@ -824,7 +824,7 @@ function ResumeSearchSection({
               )}
               {search.eta_days_min != null && search.eta_days_max != null && (
                 <p className="flex items-center gap-1.5 text-sm text-slate-600">
-                  <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
                   Estimation {search.eta_days_min}–{search.eta_days_max} jours
                 </p>
               )}
@@ -859,7 +859,7 @@ function HintsPremiumSection({ hints }: { hints: SourcingHint[] }) {
   return (
     <section>
       <div className="mb-3 flex items-center gap-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary">
           <Bot className="h-4 w-4" />
         </span>
         <div>
@@ -871,13 +871,13 @@ function HintsPremiumSection({ hints }: { hints: SourcingHint[] }) {
         {hints.map((h) => (
           <div
             key={h.title}
-            className="rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-5"
+            className="rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-5"
           >
-            <p className="mb-3 text-sm font-semibold text-blue-700">{h.title}</p>
+            <p className="mb-3 text-sm font-semibold text-primary">{h.title}</p>
             <ul className="space-y-2">
               {h.lines.map((line, i) => (
                 <li key={`${h.title}-${i}`} className="flex items-start gap-2 text-sm text-gray-600">
-                  <span className="mt-0.5 shrink-0 text-blue-400">•</span>
+                  <span className="mt-0.5 shrink-0 text-primary/70">•</span>
                   <span>{line}</span>
                 </li>
               ))}
@@ -1319,7 +1319,7 @@ function ProWorkspacePanel({
 
       <div className={cn(CS_CARD_AI, "mx-4 mb-4 space-y-4")}>
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
             <Bot className="h-4 w-4" />
           </span>
           <div>

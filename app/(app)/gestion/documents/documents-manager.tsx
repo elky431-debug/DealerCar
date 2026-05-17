@@ -185,7 +185,7 @@ export function DocumentsManager({ initialDocs, vehicles }: Props) {
                       className={cn(
                         "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset",
                         ADMIN_DOCUMENT_CATEGORIES.includes(doc.category)
-                          ? "bg-blue-50 text-blue-700 ring-blue-200"
+                          ? "bg-primary/10 text-primary ring-primary/20"
                           : "bg-muted text-foreground/70 ring-border",
                       )}
                     >
@@ -313,7 +313,7 @@ function FilterPill({
       className={cn(
         "relative inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
         active
-          ? "border-foreground bg-foreground text-background"
+          ? "border-primary bg-primary text-white"
           : "border-border/70 bg-card text-foreground hover:border-foreground/40",
       )}
     >

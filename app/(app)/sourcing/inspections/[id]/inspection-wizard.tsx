@@ -253,7 +253,7 @@ export function InspectionWizard({ inspection: initial }: Props) {
   const isLastStep = currentIdx === INSPECTION_STEPS_COUNT - 1;
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background">
+    <div className="min-h-[calc(100vh-4rem)]">
       <WizardTopBar
         title={inspection.title}
         currentIdx={currentIdx}
@@ -389,7 +389,7 @@ function WizardFooter({
   onValidate: () => void;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/90 backdrop-blur-xl">
+    <div className="page-header-bar fixed inset-x-0 bottom-0 z-30 border-t">
       <div className="mx-auto flex max-w-[760px] items-center gap-3 px-4 py-3 sm:px-6">
         <Button
           variant="ghost"

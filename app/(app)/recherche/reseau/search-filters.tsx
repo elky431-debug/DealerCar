@@ -110,7 +110,7 @@ function NumChip({
     <label
       className={cn(
         "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
-        active ? "border-foreground bg-foreground text-background" : "border-border/70 bg-card",
+        active ? "border-primary bg-primary text-white" : "border-border/70 bg-card",
       )}
     >
       <span className={cn(active ? "text-background/70" : "text-muted-foreground")}>{label}</span>
@@ -146,7 +146,7 @@ function TextChip({
     <label
       className={cn(
         "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
-        active ? "border-foreground bg-foreground text-background" : "border-border/70 bg-card",
+        active ? "border-primary bg-primary text-white" : "border-border/70 bg-card",
       )}
     >
       <span className={cn(active ? "text-background/70" : "text-muted-foreground")}>{label}</span>
@@ -180,7 +180,7 @@ function SelectChip({
       className={cn(
         "relative inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
         active
-          ? "border-foreground bg-foreground text-background"
+          ? "border-primary bg-primary text-white"
           : "border-border/70 bg-card text-foreground hover:border-foreground/40",
       )}
     >

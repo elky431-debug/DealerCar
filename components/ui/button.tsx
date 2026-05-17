@@ -7,7 +7,7 @@ type Size = "sm" | "md" | "lg" | "icon";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "bg-foreground text-background shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)] hover:bg-foreground/90 active:bg-foreground focus-visible:ring-foreground/30",
+    "bg-primary text-primary-foreground shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)] hover:bg-primary/90 active:bg-primary/95 focus-visible:ring-primary/40",
   secondary:
     "bg-card text-foreground border border-border/70 shadow-sm hover:bg-accent focus-visible:ring-ring/30",
   outline:

@@ -87,10 +87,10 @@ export default async function FraisPage() {
       />
       <PageBody className="space-y-6">
         {/* Banner IA */}
-        <div className="relative overflow-hidden rounded-2xl border border-blue-200/70 bg-gradient-to-br from-blue-50/80 via-card to-card p-5 sm:p-6">
+        <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-[0_6px_20px_-4px_hsl(221_83%_53%/0.5)]">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_6px_20px_-4px_hsl(var(--primary)/0.5)]">
                 <Sparkles className="h-5 w-5" />
               </span>
               <div>
@@ -175,7 +175,7 @@ export default async function FraisPage() {
                             <p className="text-[12px] text-muted-foreground">
                               {info.count} ligne{info.count > 1 ? "s" : ""}
                               {info.iaCount > 0 && (
-                                <span className="ml-2 inline-flex items-center gap-1 text-blue-700">
+                                <span className="ml-2 inline-flex items-center gap-1 text-primary">
                                   <Sparkles className="h-2.5 w-2.5" />
                                   {info.iaCount} IA
                                 </span>
@@ -242,7 +242,7 @@ export default async function FraisPage() {
                             {c.source === "ia_estimation" && (
                               <span
                                 title="Estimation IA"
-                                className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded bg-blue-100 text-blue-700"
+                                className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded bg-primary/15 text-primary"
                               >
                                 <Sparkles className="h-2.5 w-2.5" />
                               </span>
@@ -306,7 +306,7 @@ export default async function FraisPage() {
                           {v.year}
                         </p>
                       </div>
-                      <Sparkles className="h-3.5 w-3.5 text-blue-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                      <Sparkles className="h-3.5 w-3.5 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
                     </Link>
                   );
                 })}

@@ -185,7 +185,7 @@ export function RepairEstimateModal({ open, onClose, vehicleId, userId, onSaved 
       size="lg"
       title={
         <span className="inline-flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-blue-600" />
+          <Sparkles className="h-4 w-4 text-primary" />
           Estimer les réparations par photo
         </span>
       }
@@ -198,11 +198,11 @@ export function RepairEstimateModal({ open, onClose, vehicleId, userId, onSaved 
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "group flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/40",
+              "group flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/70 bg-muted/30 px-4 py-8 text-center transition-colors hover:border-primary/50 hover:bg-primary/10",
               images.length >= MAX_PHOTOS && "pointer-events-none opacity-50",
             )}
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
               <Upload className="h-4.5 w-4.5" />
             </span>
             <p className="text-[14px] font-medium">
@@ -334,7 +334,7 @@ function EstimateResult({
     vendre_en_etat: {
       label: "Vendre en l'état",
       icon: <CheckCircle2 className="h-4 w-4" />,
-      tone: "bg-blue-50 text-blue-700",
+      tone: "bg-primary/10 text-primary",
     },
     declarer_annonce: {
       label: "Déclarer dans l'annonce",
@@ -347,10 +347,10 @@ function EstimateResult({
   return (
     <div className="space-y-4">
       {/* Header info */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-blue-50/70 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-primary/10 p-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-blue-600" />
-          <span className="text-[13px] font-medium text-blue-900">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span className="text-[13px] font-medium text-foreground">
             Analyse Claude Vision
           </span>
         </div>

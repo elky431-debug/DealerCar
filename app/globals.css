@@ -202,17 +202,38 @@
    * Fond d’espace « Recherche client » — mailles douces, lisible clair/sombre.
    */
   .recherche-pro-bg {
-    background-color: hsl(var(--background));
+    background-color: #fafaf8;
     background-image:
-      radial-gradient(ellipse 120% 90% at 0% -40%, hsl(var(--primary) / 0.14), transparent 58%),
-      radial-gradient(ellipse 90% 70% at 100% -10%, hsl(262 75% 58% / 0.09), transparent 52%),
-      radial-gradient(ellipse 60% 50% at 50% 100%, hsl(var(--muted) / 0.85), transparent 70%);
+      radial-gradient(circle, rgba(0, 0, 0, 0.065) 1px, transparent 1px),
+      radial-gradient(ellipse 120% 90% at 0% -40%, hsl(var(--primary) / 0.12), transparent 58%),
+      radial-gradient(ellipse 90% 70% at 100% -10%, hsl(var(--primary) / 0.08), transparent 52%);
+    background-size: 22px 22px, auto, auto;
   }
   .dark .recherche-pro-bg {
+    background-color: hsl(var(--background));
     background-image:
       radial-gradient(ellipse 120% 90% at 0% -40%, hsl(var(--primary) / 0.18), transparent 58%),
-      radial-gradient(ellipse 90% 70% at 100% -10%, hsl(262 70% 50% / 0.12), transparent 52%),
+      radial-gradient(ellipse 90% 70% at 100% -10%, hsl(var(--primary) / 0.12), transparent 52%),
       radial-gradient(ellipse 60% 50% at 50% 100%, hsl(var(--muted) / 0.35), transparent 70%);
+    background-size: auto;
+  }
+
+  /* Panneaux accent (ex-bandeaux bleus) */
+  .brand-panel {
+    @apply overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card;
+  }
+
+  .brand-panel-icon {
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)];
+  }
+
+  /* Onglet / nav pill actif */
+  .tab-pill-active {
+    @apply bg-[#D99330] text-white shadow-[0_4px_14px_-4px_rgba(217,147,48,0.35)];
+  }
+
+  .page-header-bar {
+    @apply border-border/50 bg-white/90 backdrop-blur-xl;
   }
 
   /* Carte annonce sourcing — élévation premium */

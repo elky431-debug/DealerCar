@@ -133,7 +133,7 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
 
   const aiFieldClass = (key: string) =>
     aiFilledFields.has(key)
-      ? "border-blue-300 bg-blue-50/40 focus-visible:border-blue-500 focus-visible:ring-blue-200/50"
+      ? "border-primary/40 bg-primary/10 focus-visible:border-primary focus-visible:ring-primary/20/50"
       : "";
 
   async function geocodeLocation(location: string): Promise<{ latitude: number | null; longitude: number | null }> {
@@ -249,9 +249,9 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* OCR Banner */}
       {!isEdit && (
-        <div className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-blue-200/70 bg-gradient-to-br from-blue-50/80 via-card to-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-[0_4px_14px_-2px_hsl(221_83%_53%/0.4)]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)]">
               <Camera className="h-5 w-5" />
             </span>
             <div>
@@ -279,9 +279,9 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
           <CardDescription>
             Les champs marqués d'un <span className="text-destructive">*</span> sont obligatoires.
             {aiFilledFields.size > 0 && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 ring-1 ring-inset ring-blue-200">
+              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary ring-1 ring-inset ring-primary/20">
                 <Sparkles className="h-2.5 w-2.5" />
-                Champs en bleu : pré-remplis par l'IA
+                Champs en orange : pré-remplis par l&apos;IA
               </span>
             )}
           </CardDescription>
@@ -543,7 +543,7 @@ function AiLabel({ base, filled }: { base: string; filled: boolean }) {
   return (
     <span className="inline-flex items-center gap-1.5">
       {base}
-      <Sparkles className="h-3 w-3 text-blue-600" />
+      <Sparkles className="h-3 w-3 text-primary" />
     </span>
   );
 }

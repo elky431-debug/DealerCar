@@ -32,7 +32,7 @@ interface Props {
 
 export function VehicleDetailTabs({ base, active, tabs }: Props) {
   return (
-    <div className="sticky top-0 z-20 -mt-2 border-b border-border/70 bg-background/85 backdrop-blur-xl">
+    <div className="sticky top-0 z-20 -mt-2 border-b page-header-bar">
       <nav className="flex gap-0.5 overflow-x-auto px-5 sm:px-10">
         {tabs.map((t) => {
           const isActive = active === t.id;

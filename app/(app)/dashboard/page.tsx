@@ -198,7 +198,7 @@ export default async function DashboardPage() {
   > & { vehicle_images: { storage_path: string; position: number }[] })[];
 
   return (
-    <div className="min-h-full bg-[#F8FAFC]">
+    <div className="min-h-full">
       <PageHeader
         eyebrow="Tableau de bord"
         title={`Bonjour ${profile?.company_name ?? ""}`.trim()}
