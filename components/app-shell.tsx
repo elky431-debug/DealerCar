@@ -113,19 +113,18 @@ export function AppShell({
       .toUpperCase() ?? "·";
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="dealerlink-surface relative min-h-screen">
       {/* Soft top gradient for atmospheric depth */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_80%_at_70%_0%,hsl(var(--primary)/0.06),transparent_60%)]"
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[420px] bg-[radial-gradient(80%_80%_at_70%_0%,hsl(var(--primary)/0.1),transparent_60%)]"
       />
 
       {/* ───────── Desktop sidebar (fixed width for smoother perf) ───────── */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col overflow-visible",
-          "border-r border-border/60 bg-card shadow-[0_0_24px_-16px_rgba(15,23,42,0.15)]",
-          "w-[220px] md:flex",
+          "app-sidebar fixed inset-y-0 left-0 z-40 hidden w-[220px] flex-col overflow-visible md:flex",
+          "border-r shadow-[0_0_24px_-16px_rgba(15,23,42,0.08)]",
         )}
       >
         <BrandHeader collapsed={false} />
@@ -164,7 +163,7 @@ export function AppShell({
             className="absolute inset-0 bg-foreground/40"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="relative z-10 flex h-full w-72 flex-col border-r border-border/70 bg-card shadow-2xl">
+          <aside className="app-sidebar relative z-10 flex h-full w-72 flex-col border-r shadow-2xl">
             <div className="flex h-16 items-center gap-3 border-b border-border px-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
                 <Car className="h-[18px] w-[18px]" />
@@ -221,7 +220,7 @@ export function AppShell({
         style={{ "--sidebar-width": SIDEBAR_WIDTH_EXPANDED } as React.CSSProperties}
       >
         {/* Mobile topbar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur md:hidden">
+        <header className="app-topbar sticky top-0 z-30 flex h-14 items-center justify-between border-b px-4 md:hidden">
           <Button
             variant="ghost"
             size="icon"
@@ -234,7 +233,7 @@ export function AppShell({
             <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
               <Car className="h-3.5 w-3.5" />
             </span>
-            DealerLink
+            Dealer<span className="text-[#D99330]">Link</span>
           </span>
           <Link href="/garage/vehicules/nouveau" aria-label="Ajouter un véhicule">
             <Button size="icon" variant="ghost">
@@ -268,7 +267,7 @@ function BrandHeader({ collapsed }: { collapsed: boolean }) {
       </span>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[15px] font-semibold tracking-tight">
-          DealerLink
+          Dealer<span className="text-[#D99330]">Link</span>
         </span>
       )}
     </div>

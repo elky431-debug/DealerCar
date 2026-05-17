@@ -198,15 +198,15 @@ function Item({
     iconOnly ? "justify-center gap-0 px-2" : "gap-3 px-3",
     isDisabled && "cursor-not-allowed opacity-50",
     !isDisabled && active
-      ? "bg-gradient-to-r from-foreground to-foreground/90 text-background shadow-[0_10px_24px_-12px_hsl(var(--foreground)/0.65)]"
+      ? "bg-[#D99330] text-white shadow-[0_10px_24px_-12px_rgba(217,147,48,0.45)]"
       : !isDisabled
-        ? "text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground"
+        ? "text-muted-foreground hover:bg-[#D99330]/[0.08] hover:text-foreground"
         : "text-muted-foreground",
   );
 
   // Drawer mobile : barrette colorée à gauche pour l'item actif
   const drawerActiveBar = variant === "drawer" && active && (
-    <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-foreground" />
+    <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-[#D99330]" />
   );
 
   if (isDisabled) {

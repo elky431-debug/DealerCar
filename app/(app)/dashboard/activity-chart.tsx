@@ -82,7 +82,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
             Activité — <span className="capitalize">{monthLabel}</span>
           </p>
           <p className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[14px]">
-            <Legend dot="bg-emerald-500" count={totalAdded} label="ajouté" />
+            <Legend dot="bg-[#D99330]" count={totalAdded} label="ajouté" />
             <Legend dot="bg-foreground" count={totalSold} label="vendu" />
           </p>
         </div>
@@ -127,8 +127,8 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
           >
             <defs>
               <linearGradient id={gradAdded} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(16 185 129)" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="rgb(16 185 129)" stopOpacity="0" />
+                <stop offset="0%" stopColor="rgb(217 147 48)" stopOpacity="0.28" />
+                <stop offset="100%" stopColor="rgb(217 147 48)" stopOpacity="0" />
               </linearGradient>
               <linearGradient id={gradSold} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="rgb(15 23 42)" stopOpacity="0.18" />
@@ -167,7 +167,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                   <path
                     d={addedPath}
                     fill="none"
-                    stroke="rgb(16 185 129)"
+                    stroke="rgb(217 147 48)"
                     strokeWidth={2.5}
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -206,7 +206,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                         cx={x}
                         cy={y}
                         r={hovered === i ? 7 : 5}
-                        fill="rgb(16 185 129)"
+                        fill="rgb(217 147 48)"
                         fillOpacity={hovered === i ? 0.18 : 0.12}
                         className="transition-all"
                       />
@@ -214,7 +214,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                         cx={x}
                         cy={y}
                         r={hovered === i ? 4.5 : 3.2}
-                        fill="rgb(16 185 129)"
+                        fill="rgb(217 147 48)"
                         stroke="rgb(255 255 255)"
                         strokeWidth={1.5}
                         className="transition-all"

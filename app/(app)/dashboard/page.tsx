@@ -292,7 +292,7 @@ export default async function DashboardPage() {
             }
             href="/garage/clients"
             icon={Users}
-            tone="blue"
+            tone="brand"
           />
           <InventoryCard
             label="Visibles réseau"
@@ -488,15 +488,15 @@ function InventoryCard({
   sub: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  tone?: "default" | "emerald" | "amber" | "blue";
+  tone?: "default" | "emerald" | "amber" | "brand";
 }) {
   const accent =
     tone === "emerald"
       ? "bg-emerald-50 text-emerald-700"
       : tone === "amber"
         ? "bg-amber-50 text-amber-700"
-        : tone === "blue"
-          ? "bg-blue-50 text-blue-700"
+        : tone === "brand"
+          ? "bg-primary/10 text-primary"
           : "bg-muted text-foreground/70";
 
   return (
@@ -535,7 +535,7 @@ function FeedItem({ event }: { event: { type: "added" | "sold" | "lead"; when: s
       verb: "Vendu",
     },
     lead: {
-      dot: "bg-blue-500",
+      dot: "bg-primary",
       icon: <Users className="h-3 w-3" />,
       verb: "Lead",
     },

@@ -26,7 +26,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH_SCRIPT }} />
       </head>
-      <body className="min-h-screen bg-background font-sans">
+      <body className="min-h-screen bg-background font-sans antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
