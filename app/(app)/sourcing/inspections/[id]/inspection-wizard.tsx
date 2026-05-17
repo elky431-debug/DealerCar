@@ -16,64 +16,59 @@ import { useDebouncedCallback } from "@/lib/use-debounced";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
-  INSPECTION_STEPS,
-  INSPECTION_STEPS_COUNT,
-  countCompleted,
-} from "@/lib/inspection-steps";
+  countCompletedForSteps,
+  normalizeStepsConfig,
+  resolveInspectionSteps,
+  type InspectionStepsConfig,
+} from "@/lib/inspection-steps-config";
 import type { InspectionStepState, VehicleInspection } from "@/lib/types";
 import { StepRenderer } from "./step-renderer";
 import { StepHero } from "./step-hero";
 import { WizardTopBar } from "./wizard-topbar";
+import { InspectionStepsEditor } from "./inspection-steps-editor";
 
 interface Props {
   inspection: VehicleInspection;
 }
 
-/**
- * Wizard "focus mode".
- *
- *   ┌──────────────────────────────────────────┐
- *   │  ←  Inspection X       • • • • •     [4/10 ▼]   │  topbar sticky
- *   ├──────────────────────────────────────────┤
- *   │   ╔══════════════════════════════════╗   │
- *   │   ║   Hero illustration + n° + titre  ║   │  step hero
- *   │   ╚══════════════════════════════════╝   │
- *   │       Description, tips, checklist…       │  body centré max-w-2xl
- *   ├──────────────────────────────────────────┤
- *   │   [Précédent]  • progression •  [Valider] │  footer fixe
- *   └──────────────────────────────────────────┘
- *
- * On NE voit PAS toutes les étapes en sidebar (UX demandée).
- * Pour sauter à une autre étape : picker dans la topbar.
- *
- * Raccourcis :  ←  étape précédente   |   →  étape suivante
- */
 export function InspectionWizard({ inspection: initial }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [inspection, setInspection] = useState(initial);
+  const [stepsEditorOpen, setStepsEditorOpen] = useState(false);
   const [savingState, setSavingState] = useState<"idle" | "saving" | "saved">(
     "idle",
   );
 
-  const [currentIdx, setCurrentIdx] = useState(
-    Math.max(0, (initial.current_step ?? 1) - 1),
+  const activeSteps = useMemo(
+    () => resolveInspectionSteps(inspection.steps_config),
+    [inspection.steps_config],
   );
-  const currentStep = INSPECTION_STEPS[currentIdx];
+  const stepsCount = activeSteps.length;
 
-  // Pour animer la transition de step (fade subtil)
+  const [currentIdx, setCurrentIdx] = useState(() => {
+    const max = Math.max(0, resolveInspectionSteps(initial.steps_config).length - 1);
+    return Math.min(max, Math.max(0, (initial.current_step ?? 1) - 1));
+  });
+
+  const currentStep = activeSteps[currentIdx];
+
   const [transitionKey, setTransitionKey] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const completedCount = useMemo(
-    () => countCompleted(inspection.steps_state ?? {}),
-    [inspection.steps_state],
+    () => countCompletedForSteps(activeSteps, inspection.steps_state ?? {}),
+    [activeSteps, inspection.steps_state],
   );
-  const progressPct = Math.round(
-    (completedCount / INSPECTION_STEPS_COUNT) * 100,
-  );
+  const progressPct = stepsCount
+    ? Math.round((completedCount / stepsCount) * 100)
+    : 0;
 
-  /* ─── Patch serveur ─── */
+  useEffect(() => {
+    if (currentIdx >= stepsCount && stepsCount > 0) {
+      setCurrentIdx(stepsCount - 1);
+    }
+  }, [currentIdx, stepsCount]);
 
   const sendPatch = useCallback(
     async (
@@ -81,6 +76,7 @@ export function InspectionWizard({ inspection: initial }: Props) {
         | { step_patch: { id: string; state: InspectionStepState } }
         | { current_step: number }
         | { complete: boolean }
+        | { steps_config: InspectionStepsConfig }
         | Partial<
             Pick<
               VehicleInspection,
@@ -106,7 +102,11 @@ export function InspectionWizard({ inspection: initial }: Props) {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error ?? "Erreur de sauvegarde");
-        setInspection(json.inspection as VehicleInspection);
+        const updated = json.inspection as VehicleInspection;
+        setInspection(updated);
+        const resolved = resolveInspectionSteps(updated.steps_config);
+        const maxIdx = Math.max(0, resolved.length - 1);
+        setCurrentIdx((idx) => Math.min(idx, maxIdx));
         setSavingState("saved");
         setTimeout(() => setSavingState("idle"), 1500);
       } catch (err) {
@@ -121,8 +121,6 @@ export function InspectionWizard({ inspection: initial }: Props) {
   );
 
   const debouncedPatch = useDebouncedCallback(sendPatch, 700);
-
-  /* ─── Mutations locales optimistes ─── */
 
   const updateStepState = useCallback(
     (stepId: string, patch: Partial<InspectionStepState>) => {
@@ -163,46 +161,41 @@ export function InspectionWizard({ inspection: initial }: Props) {
     [debouncedPatch],
   );
 
-  /* ─── Navigation ─── */
-
   const goTo = useCallback(
     (idx: number) => {
-      const clamped = Math.max(0, Math.min(INSPECTION_STEPS_COUNT - 1, idx));
+      if (stepsCount === 0) return;
+      const clamped = Math.max(0, Math.min(stepsCount - 1, idx));
       if (clamped === currentIdx) return;
       setCurrentIdx(clamped);
       setTransitionKey((k) => k + 1);
-      // Scroll en haut du contenu, pas du document complet (la topbar reste sticky)
       window.scrollTo({ top: 0, behavior: "smooth" });
       sendPatch({ current_step: clamped + 1 });
     },
-    [currentIdx, sendPatch],
+    [currentIdx, sendPatch, stepsCount],
   );
 
   const validateAndNext = useCallback(() => {
+    if (!currentStep) return;
     const stepId = currentStep.id;
     updateStepState(stepId, { done: true });
-    if (currentIdx < INSPECTION_STEPS_COUNT - 1) {
-      // Petit délai pour laisser voir le check
+    if (currentIdx < stepsCount - 1) {
       setTimeout(() => goTo(currentIdx + 1), 220);
     } else {
       sendPatch({ complete: true });
       toast.success("Consultation terminée", "Bonne décision !");
     }
-  }, [currentStep.id, currentIdx, goTo, sendPatch, toast, updateStepState]);
+  }, [currentStep, currentIdx, goTo, sendPatch, stepsCount, toast, updateStepState]);
 
   const skip = useCallback(() => {
-    if (currentIdx < INSPECTION_STEPS_COUNT - 1) goTo(currentIdx + 1);
-  }, [currentIdx, goTo]);
+    if (currentIdx < stepsCount - 1) goTo(currentIdx + 1);
+  }, [currentIdx, goTo, stepsCount]);
 
   const back = useCallback(() => {
     if (currentIdx > 0) goTo(currentIdx - 1);
   }, [currentIdx, goTo]);
 
-  /* ─── Raccourcis clavier ←  →  ─── */
-
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      // Ne pas intercepter si l'utilisateur tape dans un input/textarea
       const t = e.target as HTMLElement | null;
       const isTyping =
         t &&
@@ -213,7 +206,7 @@ export function InspectionWizard({ inspection: initial }: Props) {
 
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        if (currentIdx < INSPECTION_STEPS_COUNT - 1) goTo(currentIdx + 1);
+        if (currentIdx < stepsCount - 1) goTo(currentIdx + 1);
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (currentIdx > 0) goTo(currentIdx - 1);
@@ -221,9 +214,7 @@ export function InspectionWizard({ inspection: initial }: Props) {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [currentIdx, goTo]);
-
-  /* ─── Suppression ─── */
+  }, [currentIdx, goTo, stepsCount]);
 
   const [deleting, setDeleting] = useState(false);
   async function deleteInspection() {
@@ -248,27 +239,53 @@ export function InspectionWizard({ inspection: initial }: Props) {
     }
   }
 
+  async function saveStepsConfig(config: InspectionStepsConfig) {
+    await sendPatch({ steps_config: normalizeStepsConfig(config) });
+  }
+
+  if (!currentStep) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 px-6">
+        <p className="text-muted-foreground">Aucune étape active.</p>
+        <Button onClick={() => setStepsEditorOpen(true)}>Configurer les étapes</Button>
+        <InspectionStepsEditor
+          open={stepsEditorOpen}
+          onClose={() => setStepsEditorOpen(false)}
+          initialConfig={inspection.steps_config}
+          onSave={saveStepsConfig}
+        />
+      </div>
+    );
+  }
+
   const stepState = inspection.steps_state?.[currentStep.id] ?? {};
   const isStepDone = Boolean(stepState.done);
-  const isLastStep = currentIdx === INSPECTION_STEPS_COUNT - 1;
+  const isLastStep = currentIdx === stepsCount - 1;
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       <WizardTopBar
         title={inspection.title}
+        steps={activeSteps}
         currentIdx={currentIdx}
         stepsState={inspection.steps_state ?? {}}
         onNavigate={goTo}
         savingState={savingState}
         completedCount={completedCount}
+        onEditSteps={() => setStepsEditorOpen(true)}
       />
 
-      {/* Container centré, max 720px pour la lisibilité */}
+      <InspectionStepsEditor
+        open={stepsEditorOpen}
+        onClose={() => setStepsEditorOpen(false)}
+        initialConfig={inspection.steps_config}
+        onSave={saveStepsConfig}
+      />
+
       <main
         ref={contentRef}
         className="mx-auto w-full max-w-[760px] px-4 pb-32 pt-6 sm:px-6 sm:pt-10"
       >
-        {/* Animation fade entre étapes via key */}
         <div key={transitionKey} className="space-y-6 animate-in">
           <StepHero step={currentStep} done={isStepDone} />
 
@@ -328,7 +345,6 @@ export function InspectionWizard({ inspection: initial }: Props) {
           )}
         </div>
 
-        {/* Lien suppression discret en bas du contenu */}
         <div className="mt-12 flex justify-center pt-6">
           <button
             type="button"
@@ -346,9 +362,9 @@ export function InspectionWizard({ inspection: initial }: Props) {
         </div>
       </main>
 
-      {/* Footer fixe : nav prev/next */}
       <WizardFooter
         currentIdx={currentIdx}
+        stepsCount={stepsCount}
         progressPct={progressPct}
         completedCount={completedCount}
         isStepDone={isStepDone}
@@ -363,10 +379,9 @@ export function InspectionWizard({ inspection: initial }: Props) {
   );
 }
 
-/* ─────────────────── Footer fixe ─────────────────── */
-
 function WizardFooter({
   currentIdx,
+  stepsCount,
   progressPct,
   completedCount,
   isStepDone,
@@ -378,6 +393,7 @@ function WizardFooter({
   onValidate,
 }: {
   currentIdx: number;
+  stepsCount: number;
   progressPct: number;
   completedCount: number;
   isStepDone: boolean;
@@ -401,18 +417,16 @@ function WizardFooter({
           <span className="hidden sm:inline">Précédent</span>
         </Button>
 
-        {/* Progress circulaire au centre */}
         <div className="hidden flex-1 items-center justify-center gap-3 sm:flex">
           <ProgressRing pct={progressPct} />
           <div className="text-[11.5px] leading-tight">
             <p className="font-semibold tabular-nums text-foreground">
-              {completedCount}/{INSPECTION_STEPS_COUNT}
+              {completedCount}/{stepsCount}
             </p>
             <p className="text-muted-foreground">étapes validées</p>
           </div>
         </div>
 
-        {/* Mobile : barre simple au centre */}
         <div className="flex flex-1 items-center justify-center gap-2 sm:hidden">
           <div className="h-1.5 w-full max-w-[140px] overflow-hidden rounded-full bg-muted">
             <div
@@ -456,8 +470,6 @@ function WizardFooter({
     </div>
   );
 }
-
-/* ─────────────────── Anneau de progression SVG ─────────────────── */
 
 function ProgressRing({ pct }: { pct: number }) {
   const size = 32;

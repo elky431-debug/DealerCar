@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerAuth } from "@/lib/supabase/server";
+import {
+  normalizeStepsConfig,
+  validateStepsConfig,
+  type InspectionStepsConfig,
+} from "@/lib/inspection-steps-config";
 import type {
   InspectionDecision,
   InspectionStepState,
@@ -24,6 +29,8 @@ interface PatchBody {
   decision_notes?: string | null;
   /** Marque l'inspection comme terminée (set completed_at = now). */
   complete?: boolean;
+  /** Personnalisation des étapes (ordre, retrait défaut, étapes custom). */
+  steps_config?: InspectionStepsConfig;
 }
 
 /**
@@ -48,7 +55,7 @@ export async function PATCH(
   // Lire l'existant pour le merge de steps_state (un PATCH simple écrase tout sinon)
   const { data: existing, error: readErr } = await supabase
     .from("vehicle_inspections")
-    .select("steps_state")
+    .select("steps_state, current_step")
     .eq("id", params.id)
     .eq("dealer_id", user.id)
     .maybeSingle();
@@ -72,6 +79,18 @@ export async function PATCH(
   if (body.decision !== undefined) update.decision = body.decision;
   if (body.decision_notes !== undefined) update.decision_notes = body.decision_notes;
   if (body.complete) update.completed_at = new Date().toISOString();
+
+  if (body.steps_config !== undefined) {
+    const validation = validateStepsConfig(body.steps_config);
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
+    }
+    const normalized = normalizeStepsConfig(body.steps_config);
+    update.steps_config = normalized;
+    const maxStep = normalized.stepIds.length;
+    const cur = (existing.current_step as number) ?? 1;
+    if (cur > maxStep) update.current_step = maxStep;
+  }
 
   // Merge step_patch sur steps_state existant
   if (body.step_patch) {

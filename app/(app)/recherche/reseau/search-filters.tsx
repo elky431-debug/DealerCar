@@ -110,10 +110,10 @@ function NumChip({
     <label
       className={cn(
         "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
-        active ? "border-primary bg-primary text-white" : "border-border/70 bg-card",
+        active ? "dl-chip-on border" : "dl-chip-off border",
       )}
     >
-      <span className={cn(active ? "text-background/70" : "text-muted-foreground")}>{label}</span>
+      <span className={cn(active ? "text-white/70" : "text-muted-foreground")}>{label}</span>
       <input
         type="number"
         inputMode="numeric"
@@ -122,10 +122,10 @@ function NumChip({
         placeholder="—"
         className={cn(
           "w-16 bg-transparent tabular outline-none placeholder:text-current/40",
-          active ? "text-background placeholder:text-background/40" : "text-foreground",
+          active ? "text-white placeholder:text-white/40" : "text-foreground",
         )}
       />
-      {suffix && <span className={cn(active ? "text-background/70" : "text-muted-foreground")}>{suffix}</span>}
+      {suffix && <span className={cn(active ? "text-white/70" : "text-muted-foreground")}>{suffix}</span>}
     </label>
   );
 }
@@ -146,10 +146,10 @@ function TextChip({
     <label
       className={cn(
         "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
-        active ? "border-primary bg-primary text-white" : "border-border/70 bg-card",
+        active ? "dl-chip-on border" : "dl-chip-off border",
       )}
     >
-      <span className={cn(active ? "text-background/70" : "text-muted-foreground")}>{label}</span>
+      <span className={cn(active ? "text-white/70" : "text-muted-foreground")}>{label}</span>
       <input
         type="text"
         value={value}
@@ -157,7 +157,7 @@ function TextChip({
         placeholder={placeholder}
         className={cn(
           "w-24 bg-transparent outline-none placeholder:text-current/40",
-          active ? "text-background placeholder:text-background/40" : "text-foreground",
+          active ? "text-white placeholder:text-white/40" : "text-foreground",
         )}
       />
     </label>
@@ -180,8 +180,8 @@ function SelectChip({
       className={cn(
         "relative inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-colors",
         active
-          ? "border-primary bg-primary text-white"
-          : "border-border/70 bg-card text-foreground hover:border-foreground/40",
+          ? "dl-chip-on border"
+          : "dl-chip-off border text-foreground",
       )}
     >
       <span>{current.label}</span>

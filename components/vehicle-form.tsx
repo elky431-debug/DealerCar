@@ -249,9 +249,9 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* OCR Banner */}
       {!isEdit && (
-        <div className="flex flex-col gap-3 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="dl-brand-banner flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)]">
+            <span className="dl-icon-mark h-10 w-10">
               <Camera className="h-5 w-5" />
             </span>
             <div>
