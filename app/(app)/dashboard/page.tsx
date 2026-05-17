@@ -496,7 +496,7 @@ function InventoryCard({
       : tone === "amber"
         ? "bg-amber-50 text-amber-700"
         : tone === "brand"
-          ? "bg-primary/10 text-primary"
+          ? "bg-[#d99330]/10 text-[#b07824]"
           : "bg-muted text-foreground/70";
 
   return (

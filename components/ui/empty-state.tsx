@@ -18,7 +18,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
       )}
     >
       {icon && (
-        <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_8px_20px_-8px_hsl(var(--foreground)/0.4)]">
+        <div className="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl dl-icon-mark shadow-[0_8px_20px_-8px_hsl(var(--foreground)/0.4)]">
           {icon}
           <span className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
         </div>

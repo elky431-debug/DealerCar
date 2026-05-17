@@ -23,7 +23,7 @@ export function GestionTabs() {
   const pathname = usePathname();
   return (
     <div className="px-5 pt-6 sm:px-10">
-      <nav className="inline-flex flex-wrap items-center gap-1 rounded-2xl border border-border/60 bg-card p-1 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)]">
+      <nav className="dl-tabs-track flex-wrap rounded-2xl">
         {TABS.map((tab) => {
           const active =
             pathname === tab.href || pathname.startsWith(`${tab.href}/`);
@@ -32,10 +32,8 @@ export function GestionTabs() {
               key={tab.href}
               href={tab.href}
               className={cn(
-                "relative flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-1.5 text-[13px] font-medium tracking-tight transition-all duration-200",
-                active
-                  ? "tab-pill-active"
-                  : "text-muted-foreground hover:bg-primary/[0.08] hover:text-foreground",
+                "relative flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-[13px] font-medium tracking-tight transition-all duration-200",
+                active ? "dl-tab-active" : "dl-tab-inactive",
               )}
             >
               <span>{tab.label}</span>

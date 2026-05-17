@@ -134,7 +134,7 @@ function FilterChip({
       className={cn(
         "relative inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium transition-all",
         active
-          ? "border-primary bg-primary text-white shadow-sm"
+          ? "dl-chip-on border shadow-sm"
           : "border-border/70 bg-card text-foreground hover:border-foreground/40",
       )}
     >

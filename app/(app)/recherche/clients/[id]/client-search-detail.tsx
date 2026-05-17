@@ -57,13 +57,10 @@ const PAD_INNER = "p-6";
 const CS_LABEL =
   "text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500";
 const CS_SECTION_TITLE = "text-sm font-semibold text-gray-900 dark:text-zinc-100";
-const CS_INPUT =
-  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:bg-white transition-colors";
-const CS_TEXTAREA =
-  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-primary/40 focus:bg-white transition-colors resize-none";
-const CS_SURFACE = "rounded-xl border border-slate-200/70 bg-white shadow-sm";
-const CS_CARD_AI =
-  "rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-4 shadow-sm";
+const CS_INPUT = "dl-input bg-gray-50/80 focus:bg-white";
+const CS_TEXTAREA = "dl-input min-h-[88px] resize-none bg-gray-50/80 focus:bg-white";
+const CS_SURFACE = "dl-card rounded-xl shadow-sm";
+const CS_CARD_AI = "dl-brand-banner p-4 shadow-sm";
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -287,7 +284,7 @@ export function ClientSearchDetail({ id }: { id: string }) {
             className={cn(
               "flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all duration-200",
               workspaceTab === key
-                ? "bg-primary text-white shadow-sm"
+                ? "bg-gray-900 text-white shadow-sm"
                 : "text-gray-500 hover:bg-gray-50 dark:text-zinc-400 dark:hover:bg-zinc-800",
             )}
           >
@@ -767,7 +764,7 @@ function ResumeSearchSection({
             <div className="space-y-2">
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-300"
+                  className="h-full rounded-full bg-[#d99330] transition-all duration-300"
                   style={{ width: `${progressDraft}%` }}
                 />
               </div>
@@ -807,7 +804,7 @@ function ResumeSearchSection({
           </Field>
         </div>
 
-        <div className="rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-5 shadow-sm">
+        <div className="dl-brand-banner p-5 shadow-sm">
           <div className="flex items-start gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
               <Target className="h-4 w-4" />
@@ -871,7 +868,7 @@ function HintsPremiumSection({ hints }: { hints: SourcingHint[] }) {
         {hints.map((h) => (
           <div
             key={h.title}
-            className="rounded-xl border border-primary/20 bg-gradient-to-b from-primary/10 to-white p-5"
+            className="dl-brand-banner p-5"
           >
             <p className="mb-3 text-sm font-semibold text-primary">{h.title}</p>
             <ul className="space-y-2">
@@ -1000,7 +997,7 @@ function VehicleMatchCard({
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent"
           />
           {vehicle.is_new_listing && (
-            <span className="absolute left-3 top-3 rounded-lg bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground shadow-md">
+            <span className="absolute left-3 top-3 rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-md">
               Nouveau
             </span>
           )}
@@ -1319,7 +1316,7 @@ function ProWorkspacePanel({
 
       <div className={cn(CS_CARD_AI, "mx-4 mb-4 space-y-4")}>
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg dl-icon-mark">
             <Bot className="h-4 w-4" />
           </span>
           <div>

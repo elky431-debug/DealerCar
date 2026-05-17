@@ -235,7 +235,7 @@ function StepPicker({
                     done
                       ? "bg-success text-success-foreground ring-success"
                       : isCurrent
-                      ? "bg-primary text-white ring-primary"
+                      ? "dl-icon-mark ring-primary"
                       : "bg-background text-muted-foreground ring-border",
                   )}
                 >

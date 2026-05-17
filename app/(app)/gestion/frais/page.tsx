@@ -87,10 +87,10 @@ export default async function FraisPage() {
       />
       <PageBody className="space-y-6">
         {/* Banner IA */}
-        <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-5 sm:p-6">
+        <div className="dl-brand-banner relative p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_6px_20px_-4px_hsl(var(--primary)/0.5)]">
+              <span className="dl-icon-mark h-12 w-12 rounded-2xl">
                 <Sparkles className="h-5 w-5" />
               </span>
               <div>
