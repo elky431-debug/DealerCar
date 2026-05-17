@@ -17,9 +17,10 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, rmSync, statSync, readdirSync } from "node:fs";
+import { existsSync, rmSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -120,9 +121,50 @@ function cleanNext() {
   }
 }
 
+/* ────────── 4. Supabase env ────────── */
+
+function isPlaceholder(value) {
+  const v = value?.trim() ?? "";
+  if (!v) return true;
+  return (
+    /^https:\/\/x+\.supabase\.co$/i.test(v) ||
+    /^eyJhbGciOi\.\.\.$/i.test(v) ||
+    /^your[-_]/i.test(v) ||
+    /^xxx/i.test(v)
+  );
+}
+
+function assertSupabaseEnv() {
+  const envLocal = join(root, ".env.local");
+  if (existsSync(envLocal)) {
+    loadEnv({ path: envLocal, quiet: true });
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!existsSync(envLocal)) {
+    console.error("\n❌ Fichier .env.local introuvable.\n");
+    console.error("   cp .env.example .env.local");
+    console.error("   Puis renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    console.error("   (Supabase → Project Settings → API)\n");
+    process.exit(1);
+  }
+
+  if (isPlaceholder(url) || isPlaceholder(key)) {
+    console.error("\n❌ Variables Supabase manquantes ou encore aux valeurs d'exemple dans .env.local.\n");
+    console.error("   NEXT_PUBLIC_SUPABASE_URL");
+    console.error("   NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    console.error("\n   https://supabase.com/dashboard/project/_/settings/api\n");
+    process.exit(1);
+  }
+}
+
 /* ────────── Run ────────── */
 
 log("→ Dev guard…");
+
+assertSupabaseEnv();
 
 killNextProcesses();
 freePorts();
