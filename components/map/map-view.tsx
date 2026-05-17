@@ -100,7 +100,7 @@ function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => vo
   return (
     <button
       type="button"
-      className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-md transition-all hover:bg-gray-50 hover:shadow-lg"
+      className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-md transition-all hover:border-brand/30 hover:shadow-lg"
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
           ({ coords }) => {
@@ -310,11 +310,11 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   }
 
   const fieldInput =
-    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 transition-all";
+    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all";
   const fieldInputCompact =
-    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 transition-all";
+    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm placeholder:text-slate-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all";
   const fieldSelect =
-    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 transition-all cursor-pointer appearance-none bg-[length:1rem] bg-[right_0.65rem_center] bg-no-repeat pr-8";
+    "w-full px-3 py-2.5 text-sm bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-all cursor-pointer appearance-none bg-[length:1rem] bg-[right_0.65rem_center] bg-no-repeat pr-8";
   const selectChevron =
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.06l3.71-3.83a.75.75 0 1 1 1.08 1.04l-4.25 4.39a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E\")";
 
@@ -350,11 +350,14 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
       <aside className="flex w-[320px] shrink-0 flex-col overflow-hidden border-r border-slate-200/90 bg-slate-50/95 shadow-[inset_-1px_0_0_rgba(255,255,255,0.6)]">
         <div className="shrink-0 border-b border-slate-200/80 bg-white px-4 pb-4 pt-5">
           <div className="mb-3 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white shadow-md shadow-brand/25">
               <MapPin className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">Carte</p>
+              <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                Carte
+              </p>
               <h2 className="text-base font-semibold tracking-tight text-slate-900">Véhicules réseau</h2>
             </div>
           </div>
@@ -391,7 +394,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
                 type="button"
                 title="Centrer la carte sur cette ville"
                 disabled={!filters.city.trim()}
-                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2.5 text-xs font-semibold text-white shadow-sm shadow-blue-600/30 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2.5 text-xs font-semibold text-white shadow-sm shadow-brand/30 transition-all hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
                 onClick={() => void centerMapOnCity()}
               >
                 <MapPin className="h-3.5 w-3.5" />
@@ -450,7 +453,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
 
           <div className="rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-sm ring-1 ring-slate-900/[0.03]">
             <div className="mb-2.5 flex items-center gap-2">
-              <Layers className="h-3.5 w-3.5 text-blue-600" />
+              <Layers className="h-3.5 w-3.5 text-brand" />
               <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 Afficher sur la carte
               </p>
@@ -466,14 +469,14 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
                     className={cn(
                       "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all",
                       layer.active
-                        ? "border-blue-200 bg-blue-50/90 text-blue-950 shadow-sm ring-1 ring-blue-500/10"
+                        ? "border-brand/25 bg-brand/10 text-brand-dark shadow-sm ring-1 ring-brand/10"
                         : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white",
                     )}
                   >
                     <span
                       className={cn(
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-                        layer.active ? "bg-blue-600 text-white" : "bg-white text-slate-500 ring-1 ring-slate-200",
+                        layer.active ? "bg-brand text-white" : "bg-white text-slate-500 ring-1 ring-slate-200",
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -485,7 +488,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
                     <span
                       className={cn(
                         "h-2 w-2 shrink-0 rounded-full",
-                        layer.active ? "bg-blue-500" : "bg-slate-300",
+                        layer.active ? "bg-brand" : "bg-slate-300",
                       )}
                     />
                   </button>
@@ -494,15 +497,15 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
             </div>
           </div>
 
-          <div className="min-h-0 overflow-auto">
+          <div className="min-h-0 overflow-auto rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm ring-1 ring-slate-900/[0.03]">
           {dealerFilterId && filteredDealerName ? (
-            <div className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-teal-200/80 bg-teal-50/80 px-2.5 py-2 text-xs dark:border-teal-900/50 dark:bg-teal-950/40">
-              <span className="min-w-0 truncate font-medium text-teal-900 dark:text-teal-100">
+            <div className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-brand/25 bg-brand/10 px-2.5 py-2 text-xs">
+              <span className="min-w-0 truncate font-medium text-brand-dark">
                 {filteredDealerName}
               </span>
               <button
                 type="button"
-                className="shrink-0 rounded-md px-2 py-1 font-medium text-teal-800 underline-offset-2 hover:underline dark:text-teal-200"
+                className="shrink-0 rounded-md px-2 py-1 font-medium text-brand underline-offset-2 hover:underline"
                 onClick={() => setDealerFilterId(null)}
               >
                 Tout afficher
