@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, Car, Network, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DownloadProjectContextLink } from "@/components/download-project-context-link";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
@@ -80,8 +81,11 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <footer className="container py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} DealerLink — MVP
+      <footer className="container flex flex-col items-center gap-4 py-10 text-center">
+        <DownloadProjectContextLink />
+        <p className="text-sm text-muted-foreground">
+          © {new Date().getFullYear()} DealerLink — MVP
+        </p>
       </footer>
     </div>
   );

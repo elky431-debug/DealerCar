@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/components/ui/toast";
 import { createClient } from "@/lib/supabase/client";
 import { registerSchema, type RegisterInput } from "@/lib/validators";
+import { DownloadProjectContextLink } from "@/components/download-project-context-link";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -109,6 +110,9 @@ export default function RegisterPage() {
             Se connecter
           </Link>
         </p>
+        <div className="mt-6 flex justify-center border-t border-border/60 pt-6">
+          <DownloadProjectContextLink variant="text" />
+        </div>
       </CardContent>
     </Card>
   );

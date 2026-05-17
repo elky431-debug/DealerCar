@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { PageBody, PageHeader } from "@/components/page-header";
 import { GarageForm } from "./garage-form";
+import { DownloadProjectContextLink } from "@/components/download-project-context-link";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
@@ -36,8 +37,19 @@ export default async function GarageProfilePage() {
             location: profile?.location ?? "",
             siret: profile?.siret ?? "",
             specialties: profile?.specialties ?? "",
+            tagline: profile?.tagline ?? "",
+            website_url: profile?.website_url ?? "",
+            social_facebook_url: profile?.social_facebook_url ?? "",
+            social_instagram_url: profile?.social_instagram_url ?? "",
+            social_linkedin_url: profile?.social_linkedin_url ?? "",
+            social_x_url: profile?.social_x_url ?? "",
+            logo_storage_path: profile?.logo_storage_path ?? "",
+            banner_storage_path: profile?.banner_storage_path ?? "",
           }}
         />
+        <div className="mt-8 flex justify-center border-t border-border/60 pt-6">
+          <DownloadProjectContextLink variant="text" />
+        </div>
       </PageBody>
     </>
   );

@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "predev": "node scripts/dev-guard.mjs",
-    "dev": "next dev",
-    "dev:fresh": "node scripts/dev-guard.mjs --clean && next dev",
+    "dev": "next dev -H 0.0.0.0 -p 3001",
+    "dev:fresh": "node scripts/dev-guard.mjs --clean && next dev -H 0.0.0.0 -p 3001",
     "dev:stop": "node scripts/dev-guard.mjs --silent",
     "prebuild": "node scripts/build-guard.mjs",
     "build": "next build",
@@ -14,6 +14,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "db:setup": "node scripts/db-setup.mjs",
+    "db:sql": "node scripts/apply-sql-file.mjs",
     "import:ademe": "node scripts/import-ademe.mjs"
   },
   "dependencies": {
