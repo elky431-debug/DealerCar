@@ -46,7 +46,7 @@ if (rDev.ok) {
   console.log(`\nPort ${DEV_PORT} : OK (Next peut écouter ici).`);
 } else {
   console.error(`\nPort ${DEV_PORT} : BLOQUÉ ou déjà utilisé —`, rDev.err);
-  console.error(`  → Fermez l’autre programme ou lancez : npm run dev:3000 (port 3000)\n`);
+  console.error(`  → Fermez l’autre programme qui utilise ce port, puis relancez npm run dev\n`);
 }
 
 console.log(`
@@ -67,5 +67,5 @@ console.log(`
 
 5) Double-clic : demarrer-serveur-local.bat
 
-6) Si le port ${DEV_PORT} pose problème : npm run dev:3000 puis http://127.0.0.1:3000
+6) Si le port ${DEV_PORT} est occupé : fermez l’autre app (autre Next, Docker…) puis relancez.
 `);

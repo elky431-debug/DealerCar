@@ -7,7 +7,7 @@
  *
  * Actions :
  *   1. Tue TOUS les `next dev` / `next-server` / `next build` en cours.
- *   2. Libère le port dev (3456) + 3000-3005 si encore occupés.
+ *   2. Libère le port dev (3000) + 3001-3005 si encore occupés.
  *   3. Détecte les caches .next incohérents (pas de manifests, mtime ancien…)
  *      et propose / force un reset.
  *

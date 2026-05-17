@@ -27,7 +27,7 @@ echo Dossier du projet ^(doit contenir package.json^) :
 cd
 echo.
 
-echo === Vérification rapide ^(port 3456, chemins^) ===
+echo === Vérification rapide ^(port 3000, chemins^) ===
 call npm run doctor
 if errorlevel 1 (
   echo [AVERTISSEMENT] doctor a signale un souci — on tente quand meme le serveur.
@@ -45,9 +45,8 @@ if errorlevel 1 (
 
 echo.
 echo === Démarrage du serveur ^(mode direct, sans etape predev bloquante^) ===
-echo Ouvrez : http://127.0.0.1:3456
-echo Si le port 3456 est pris : double-clic sur demarrer-sur-port-3000.bat
-echo   ou dans cmd : npm run dev:3000  puis http://127.0.0.1:3000
+echo Ouvrez : http://127.0.0.1:3000
+echo Si le port 3000 est pris : fermez l autre application ou changez de port dans package.json
 echo.
 echo Si une ERREUR rouge apparait, copiez TOUT le texte de cette fenetre.
 echo Laissez la fenetre OUVERTE tant que vous testez le site. Ctrl+C pour arreter.
