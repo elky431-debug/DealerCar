@@ -99,10 +99,9 @@ function FlyToCoords({
 function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => void }) {
   const map = useMap();
   return (
-    <Button
-      size="sm"
-      variant="secondary"
-      className="gap-1.5"
+    <button
+      type="button"
+      className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-md transition-all hover:bg-gray-50 hover:shadow-lg"
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
           ({ coords }) => {
@@ -118,7 +117,7 @@ function LocateButton({ onLocate }: { onLocate: (lat: number, lng: number) => vo
     >
       <LocateFixed className="h-4 w-4" />
       Me localiser
-    </Button>
+    </button>
   );
 }
 
@@ -311,124 +310,153 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
     setShowConcessionsOnMap(next);
   }
 
+  const fieldInput =
+    "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:bg-white transition-colors";
+  const fieldInputCompact =
+    "px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 transition-colors";
+  const fieldSelect =
+    "px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:border-blue-300 transition-colors cursor-pointer";
+
   return (
-    <div className="grid h-[calc(100vh-168px)] gap-4 lg:grid-cols-[340px_1fr]">
-      <aside className="order-2 flex min-h-0 flex-col rounded-2xl border border-border/60 bg-card p-3 lg:order-1">
-        <div className="space-y-2">
+    <div className="flex h-[calc(100vh-0px)] min-h-0 flex-1 overflow-hidden">
+      <aside className="flex w-[300px] shrink-0 flex-col overflow-y-auto border-r border-gray-100 bg-white">
+        <div className="border-b border-gray-100 px-4 pb-3 pt-4">
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Carte</p>
+          </div>
+          <h2 className="text-sm font-semibold text-gray-900">Véhicules réseau</h2>
+        </div>
+        <div className="px-4 py-3">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <Input
-              className="pl-9"
+              className={`${fieldInput} h-auto pl-9 shadow-none ring-0`}
               placeholder="Marque, modèle…"
               value={filters.q}
               onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
             />
           </div>
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-medium text-muted-foreground" htmlFor="map-city">
-              Ville ou code postal
-            </label>
-            <div className="flex gap-2">
-              <Input
-                id="map-city"
-                className="min-w-0 flex-1"
-                placeholder="ex. Lyon, Paris, 33000…"
-                value={filters.city}
-                onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void centerMapOnCity();
-                }}
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="shrink-0 gap-1 px-2.5"
-                title="Centrer la carte sur cette ville"
-                disabled={!filters.city.trim()}
-                onClick={() => void centerMapOnCity()}
-              >
-                <MapPin className="h-4 w-4" />
-                <span className="hidden sm:inline">Centrer</span>
-              </Button>
-            </div>
-            <p className="text-[10px] text-muted-foreground">
-              Filtre la localisation ; la recherche inclut aussi une zone d’environ 50 km autour de la ville
-              (même si la carte est ailleurs). « Centrer » déplace la vue.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              placeholder="Prix min"
-              type="number"
-              value={filters.priceMin}
-              onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))}
-            />
-            <Input
-              placeholder="Prix max"
-              type="number"
-              value={filters.priceMax}
-              onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Select
-              value={filters.type}
-              onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as Filters["type"] }))}
-            >
-              <option value="">Type</option>
-              <option value="stock">Stock</option>
-              <option value="depot">Dépôt</option>
-            </Select>
-            <Select
-              value={filters.radiusKm}
-              onChange={(e) => setFilters((f) => ({ ...f, radiusKm: e.target.value }))}
-            >
-              <option value="">Rayon</option>
-              <option value="100">&lt; 100 km</option>
-              <option value="200">&lt; 200 km</option>
-              <option value="500">&lt; 500 km</option>
-            </Select>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Afficher sur la carte
-            </p>
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-border text-foreground"
-                checked={showVehiclesOnMap}
-                onChange={(e) => toggleVehiclesOnMap(e.target.checked)}
-              />
-              <span>Véhicules (prix et regroupements)</span>
-            </label>
-            <label className="mt-2 flex cursor-pointer items-center gap-2.5 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-border text-foreground"
-                checked={showConcessionsOnMap}
-                onChange={(e) => toggleConcessionsOnMap(e.target.checked)}
-              />
-              <span>Concessions (partenaires)</span>
-            </label>
-            <label className="mt-2 flex cursor-pointer items-center gap-2.5 text-sm">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-border text-foreground"
-                checked={includeMine}
-                onChange={(e) => setIncludeMine(e.target.checked)}
-              />
-              <span>Voir aussi mes véhicules (privés / réservés, avec GPS)</span>
-            </label>
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              Au moins une couche carte reste active. Les filtres s’appliquent au réseau et à votre stock.
-            </p>
-          </div>
         </div>
 
-        <div className="mt-3 min-h-0 flex-1 overflow-auto pr-1">
+        <div className="my-1 h-px bg-gray-100" />
+
+        <div className="px-4 py-3">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            Localisation
+          </p>
+          <div className="flex gap-2">
+            <Input
+              id="map-city"
+              className={`min-w-0 flex-1 ${fieldInputCompact} h-auto shadow-none ring-0`}
+              placeholder="ex. Lyon, Paris, 33000…"
+              value={filters.city}
+              onChange={(e) => setFilters((f) => ({ ...f, city: e.target.value }))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void centerMapOnCity();
+              }}
+            />
+            <button
+              type="button"
+              title="Centrer la carte sur cette ville"
+              disabled={!filters.city.trim()}
+              className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => void centerMapOnCity()}
+            >
+              <MapPin className="h-4 w-4" />
+              Centrer
+            </button>
+          </div>
+          <p className="mt-1 text-[11px] text-gray-400">Rayon ~50 km autour de la ville</p>
+        </div>
+
+        <div className="my-1 h-px bg-gray-100" />
+
+        <div className="grid grid-cols-2 gap-2 px-4 py-3">
+          <Input
+            placeholder="Prix min"
+            type="number"
+            className={`${fieldInputCompact} h-auto shadow-none ring-0`}
+            value={filters.priceMin}
+            onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value }))}
+          />
+          <Input
+            placeholder="Prix max"
+            type="number"
+            className={`${fieldInputCompact} h-auto shadow-none ring-0`}
+            value={filters.priceMax}
+            onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value }))}
+          />
+        </div>
+
+        <div className="my-1 h-px bg-gray-100" />
+
+        <div className="grid grid-cols-2 gap-2 px-4 py-3">
+          <Select
+            className={`${fieldSelect} h-auto shadow-none ring-0`}
+            value={filters.type}
+            onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as Filters["type"] }))}
+          >
+            <option value="">Type</option>
+            <option value="stock">Stock</option>
+            <option value="depot">Dépôt</option>
+          </Select>
+          <Select
+            className={`${fieldSelect} h-auto shadow-none ring-0`}
+            value={filters.radiusKm}
+            onChange={(e) => setFilters((f) => ({ ...f, radiusKm: e.target.value }))}
+          >
+            <option value="">Rayon</option>
+            <option value="100">&lt; 100 km</option>
+            <option value="200">&lt; 200 km</option>
+            <option value="500">&lt; 500 km</option>
+          </Select>
+        </div>
+
+        <div className="my-1 h-px bg-gray-100" />
+
+        <div className="px-4 py-3">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            Afficher sur la carte
+          </p>
+          <label className="group flex cursor-pointer items-center gap-2.5 py-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 cursor-pointer rounded border-gray-300 accent-blue-600"
+              checked={showVehiclesOnMap}
+              onChange={(e) => toggleVehiclesOnMap(e.target.checked)}
+            />
+            <span className="text-sm text-gray-700 transition-colors group-hover:text-gray-900">
+              Véhicules (prix et regroupements)
+            </span>
+          </label>
+          <label className="group flex cursor-pointer items-center gap-2.5 py-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 cursor-pointer rounded border-gray-300 accent-blue-600"
+              checked={showConcessionsOnMap}
+              onChange={(e) => toggleConcessionsOnMap(e.target.checked)}
+            />
+            <span className="text-sm text-gray-700 transition-colors group-hover:text-gray-900">
+              Concessions (partenaires)
+            </span>
+          </label>
+          <label className="group flex cursor-pointer items-center gap-2.5 py-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 cursor-pointer rounded border-gray-300 accent-blue-600"
+              checked={includeMine}
+              onChange={(e) => setIncludeMine(e.target.checked)}
+            />
+            <span className="text-sm text-gray-700 transition-colors group-hover:text-gray-900">
+              Voir aussi mes véhicules (privés / réservés, avec GPS)
+            </span>
+          </label>
+        </div>
+
+        <div className="my-1 h-px bg-gray-100" />
+
+        <div className="min-h-0 flex-1 overflow-auto px-4 py-3">
           {dealerFilterId && filteredDealerName ? (
             <div className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-teal-200/80 bg-teal-50/80 px-2.5 py-2 text-xs dark:border-teal-900/50 dark:bg-teal-950/40">
               <span className="min-w-0 truncate font-medium text-teal-900 dark:text-teal-100">
@@ -492,26 +520,9 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
               ) : null}
             </div>
           ) : null}
-          <p className="mb-2 text-xs text-muted-foreground">
-            {loading
-              ? "Chargement..."
-              : dealerFilterId
-                ? `${filteredItems.length} véhicule(s) — cette concession`
-                : fetchError
-                  ? "—"
-                  : `${items.length} véhicule(s) · ${
-                      showVehiclesOnMap ? "véhicules sur la carte" : "véhicules masqués"
-                    } · ${
-                      showConcessionsOnMap
-                        ? `${dealerPins.length} concession(s)`
-                        : "concessions masquées"
-                    }`}
-          </p>
-          {!loading && !fetchError && items.length === 0 ? (
-            <p className="mb-2 text-xs text-muted-foreground">
-              Aucun véhicule réseau géolocalisé dans cette zone. Vérifiez qu’au moins un véhicule est en
-              visibilité « Réseau », disponible, avec coordonnées GPS (éditer la fiche ou enregistrer le
-              profil garage).
+          {dealerFilterId && !loading && !fetchError ? (
+            <p className="mb-2 text-xs text-gray-500">
+              {filteredItems.length} véhicule(s) — cette concession
             </p>
           ) : null}
           <ul className="space-y-2">
@@ -535,9 +546,21 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
             ))}
           </ul>
         </div>
+
+        <div className="mt-auto border-t border-gray-100 bg-gray-50 px-4 py-3">
+          <p className="text-xs font-medium text-gray-500">
+            <span className="font-semibold text-gray-900">{items.length}</span> véhicule(s) sur la carte ·{" "}
+            <span className="font-semibold text-gray-900">{dealerPins.length}</span> concession(s)
+          </p>
+          {!loading && !fetchError && items.length === 0 ? (
+            <p className="mt-1 text-[11px] text-amber-600">
+              ⚠ Aucun véhicule réseau géolocalisé dans cette zone
+            </p>
+          ) : null}
+        </div>
       </aside>
 
-      <section className="order-1 min-h-0 overflow-hidden rounded-2xl border border-border/60 lg:order-2">
+      <section className="relative min-h-0 flex-1 overflow-hidden">
         <MapContainer center={[46.5, 2.5]} zoom={6} className="h-full w-full" zoomControl={false}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
