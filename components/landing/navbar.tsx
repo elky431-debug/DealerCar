@@ -22,7 +22,9 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
             <LandingLogoMark className="h-8 w-8" />
-            <span className="text-lg font-bold tracking-tight text-gray-900">DealerLink</span>
+            <span className="text-lg font-bold tracking-tight text-gray-900">
+              Dealer<span className="text-[#D99330]">Link</span>
+            </span>
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600">
               Bêta
             </span>
@@ -33,7 +35,7 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+                className="text-sm font-medium text-gray-500 transition-colors hover:text-[#D99330]"
               >
                 {l.label}
               </a>
@@ -43,7 +45,7 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
           <div className="hidden items-center gap-4 md:flex">
             <Link
               href={dashboardHref}
-              className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+              className="text-sm font-medium text-gray-500 transition-colors hover:text-[#D99330]"
             >
               Tableau de bord
             </Link>

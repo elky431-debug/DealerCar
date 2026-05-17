@@ -1,19 +1,33 @@
+import { BrandText } from "@/components/landing/brand-text";
+
 const CARDS = [
   {
     icon: "📋",
-    title: "Votre stock, enfin organisé",
+    title: (
+      <>
+        Votre stock, enfin <BrandText>organisé</BrandText>
+      </>
+    ),
     before: "Fichiers Excel éparpillés, statuts flous, documents introuvables",
     after: "Toutes les fiches, documents, photos et vidéos au même endroit",
   },
   {
     icon: "🤝",
-    title: "Le réseau que vous n'aviez pas",
+    title: (
+      <>
+        Le <BrandText>réseau</BrandText> que vous n&apos;aviez pas
+      </>
+    ),
     before: "Échanges informels par SMS, WhatsApp, bouche à oreille",
     after: "Une plateforme structurée pour trouver et partager des véhicules entre pros",
   },
   {
     icon: "📊",
-    title: "Pilotez votre rentabilité",
+    title: (
+      <>
+        Pilotez votre <BrandText>rentabilité</BrandText>
+      </>
+    ),
     before: "Marges calculées à la main, frais oubliés, coût de revient flou",
     after: "Frais, prix d'achat, prix de vente — marge nette calculée automatiquement",
   },
@@ -24,19 +38,19 @@ export function ProblemSolution() {
     <section className="bg-white/50 py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 md:text-[36px]">
-          Fini les tableaux Excel et les groupes WhatsApp
+          Fini les tableaux <BrandText>Excel</BrandText> et les groupes <BrandText>WhatsApp</BrandText>
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-landing-muted">
           DealerLink centralise tout ce dont un marchand a besoin au quotidien.
         </p>
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {CARDS.map((c) => (
+          {CARDS.map((c, i) => (
             <div
-              key={c.title}
+              key={i}
               className="landing-card-surface flex flex-col p-6 transition-transform hover:-translate-y-0.5"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-landing-brand/10 text-2xl">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#D99330]/10 text-2xl">
                 {c.icon}
               </span>
               <h3 className="mt-4 text-lg font-bold text-gray-900">{c.title}</h3>

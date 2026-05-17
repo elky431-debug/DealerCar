@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { BrandText } from "@/components/landing/brand-text";
 
 function DashboardMockup() {
   return (
     <div className="landing-card-surface overflow-hidden">
       <div className="flex h-12 items-center border-b border-gray-100 bg-gray-50/90 px-4">
-        <span className="text-xs font-medium text-gray-500">DealerLink — Dashboard</span>
+        <span className="text-xs font-medium text-gray-500">
+          DealerLink — <BrandText>Dashboard</BrandText>
+        </span>
       </div>
       <div className="p-4 sm:p-5">
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
@@ -17,12 +20,14 @@ function DashboardMockup() {
           ].map((c) => (
             <div key={c.l} className="rounded-xl border border-gray-100 bg-gray-50/90 p-3 sm:p-4">
               <p className="text-[10px] font-semibold tracking-wide text-gray-500">{c.l}</p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-gray-900 sm:text-2xl">{c.v}</p>
+              <p className="mt-1 text-xl font-bold tabular-nums text-[#D99330] sm:text-2xl">{c.v}</p>
             </div>
           ))}
         </div>
         <div className="mt-4 rounded-xl border border-gray-100 bg-white p-3">
-          <p className="text-[11px] font-semibold text-gray-500">Activité (7 j)</p>
+          <p className="text-[11px] font-semibold text-gray-500">
+            Activité <BrandText>(7 j)</BrandText>
+          </p>
           <svg viewBox="0 0 200 48" className="mt-2 h-12 w-full" preserveAspectRatio="none" aria-hidden>
             <defs>
               <linearGradient id="landing-chart-fill" x1="0" y1="0" x2="0" y2="1">
@@ -59,7 +64,7 @@ function DashboardMockup() {
                 </span>
                 <span className="truncate font-medium text-gray-900">{row.n}</span>
               </span>
-              <span className="shrink-0 font-semibold tabular-nums text-gray-900">{row.p}</span>
+              <span className="shrink-0 font-semibold tabular-nums text-[#D99330]">{row.p}</span>
               <span className="landing-tag-green">{row.s}</span>
             </div>
           ))}
@@ -67,6 +72,10 @@ function DashboardMockup() {
       </div>
     </div>
   );
+}
+
+function div({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={className}>{children}</div>;
 }
 
 export function Hero() {
@@ -78,7 +87,9 @@ export function Hero() {
             <span className="text-emerald-400" aria-hidden>
               ●
             </span>
-            <span>Réseau actif · 38 marchands</span>
+            <span>
+              Réseau actif · <BrandText className="font-semibold">38 marchands</BrandText>
+            </span>
           </div>
 
           <h1 className="mt-7 text-[2.5rem] font-bold leading-[1.08] tracking-[-0.03em] text-gray-900 sm:text-[3.25rem] lg:text-[3.5rem]">
@@ -86,19 +97,22 @@ export function Hero() {
             <br />
             marchands automobiles
             <br />
-            <span className="text-landing-brand">professionnels</span>
+            <BrandText>professionnels</BrandText>
           </h1>
 
           <p className="mt-6 max-w-[520px] text-lg leading-relaxed text-landing-muted">
-            Gérez votre stock, vos dépôts-vente et vos documents. Trouvez des véhicules entre professionnels avant
-            leur publication publique.
+            Gérez votre stock, vos dépôts-vente et vos documents. Trouvez des véhicules{" "}
+            <BrandText className="font-medium">entre professionnels</BrandText> avant leur publication publique.
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
             <Link href="/register" className="landing-cta-primary">
               Commencer gratuitement →
             </Link>
-            <a href="#fonctionnalites" className="landing-cta-ghost text-center sm:text-left">
+            <a
+              href="#fonctionnalites"
+              className="text-center text-[15px] font-medium text-[#D99330] underline-offset-4 transition-colors hover:text-[#b87a28] hover:underline sm:text-left"
+            >
               Voir une démo ↓
             </a>
           </div>

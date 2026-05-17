@@ -1,3 +1,5 @@
+import { BrandText } from "@/components/landing/brand-text";
+
 const ITEMS = [
   {
     icon: "🚗",
@@ -63,7 +65,7 @@ function VehicleSheetMockup() {
       </ul>
       <div className="border-t border-gray-100 p-4">
         <p className="text-xs text-gray-500">Prix affiché</p>
-        <p className="text-2xl font-bold text-gray-900">16 500 €</p>
+        <p className="text-2xl font-bold text-[#D99330]">16 500 €</p>
       </div>
     </div>
   );
@@ -77,11 +79,11 @@ export function FeaturesGarage() {
           <VehicleSheetMockup />
         </div>
         <div className="max-lg:order-first">
-          <span className="inline-flex rounded-full bg-landing-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-landing-brand">
+          <span className="inline-flex rounded-full bg-[#D99330]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#D99330]">
             Mon garage
           </span>
           <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-[40px]">
-            Tout votre garage dans une seule interface
+            Tout votre garage dans une <BrandText>seule interface</BrandText>
           </h2>
           <ul className="mt-10 space-y-5">
             {ITEMS.map((it) => (
@@ -90,7 +92,7 @@ export function FeaturesGarage() {
                   {it.icon}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{it.title}</p>
+                  <p className="text-sm font-semibold text-[#D99330]">{it.title}</p>
                   <p className="mt-1 text-[13px] leading-relaxed text-landing-muted">{it.desc}</p>
                 </div>
               </li>

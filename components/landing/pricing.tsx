@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Check, X } from "lucide-react";
+import { BrandText } from "@/components/landing/brand-text";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -27,7 +28,7 @@ export function Pricing() {
     <section id="tarifs" className="scroll-mt-24 landing-section-alt py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 md:text-[36px]">
-          Un tarif simple, sans surprise
+          Un tarif simple, <BrandText>sans surprise</BrandText>
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-lg text-landing-muted">
           Essayez gratuitement pendant 14 jours, sans carte bancaire.
@@ -53,7 +54,7 @@ export function Pricing() {
                 annual ? "bg-gray-900 text-white" : "text-gray-600 hover:text-gray-900",
               )}
             >
-              Annuel <span className="text-emerald-600">-20%</span>
+              Annuel <span className="text-[#D99330]">-20%</span>
             </button>
           </div>
         </div>
@@ -85,7 +86,7 @@ export function Pricing() {
               Le plus populaire
             </span>
             <h3 className="text-lg font-bold text-gray-900">Pro</h3>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
+            <p className="mt-2 text-3xl font-bold text-[#D99330]">
               {proPrice} €/mois
               {annual ? (
                 <span className="ml-2 text-base font-normal text-gray-500 line-through">49 €</span>

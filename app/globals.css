@@ -270,6 +270,14 @@
   .landing-tag-green {
     @apply shrink-0 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700;
   }
+
+  .text-landing-brand {
+    color: #d99330;
+  }
+
+  .hover\:text-landing-brand:hover {
+    color: #d99330;
+  }
 }
 
 /* ================================================================

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandText } from "@/components/landing/brand-text";
 
 export function CtaFinal() {
   return (
@@ -6,7 +7,7 @@ export function CtaFinal() {
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <h2 className="text-3xl font-bold leading-tight text-gray-900 md:text-5xl md:leading-tight">
           Rejoignez le réseau des{" "}
-          <span className="text-landing-brand">marchands pros</span>
+          <BrandText>marchands pros</BrandText>
         </h2>
         <p className="mt-6 text-lg text-landing-muted md:text-xl">
           38 marchands utilisent déjà DealerLink. Plus le réseau grandit, plus il a de valeur.

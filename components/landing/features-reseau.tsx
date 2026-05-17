@@ -1,3 +1,5 @@
+import { BrandText } from "@/components/landing/brand-text";
+
 const FEAT = [
   {
     icon: "🔍",
@@ -34,7 +36,7 @@ function ReseauSearchMockup() {
             <div className="text-lg">{c.e}</div>
             <p className="mt-1 font-semibold text-gray-900">{c.n}</p>
             <p className="text-gray-500">{c.km}</p>
-            <p className="mt-1 font-bold text-gray-900">{c.p}</p>
+            <p className="mt-1 font-bold text-[#D99330]">{c.p}</p>
             <span className="mt-1 inline-block rounded bg-white px-1.5 py-0.5 text-[10px] font-medium text-gray-600 ring-1 ring-gray-200">
               {c.m}
             </span>
@@ -53,11 +55,11 @@ export function FeaturesReseau() {
           <ReseauSearchMockup />
         </div>
         <div>
-          <span className="inline-flex rounded-full bg-landing-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-landing-brand">
+          <span className="inline-flex rounded-full bg-[#D99330]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#D99330]">
             Réseau inter-marchands
           </span>
           <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-[40px]">
-            Accédez aux véhicules avant tout le monde
+            Accédez aux véhicules <BrandText>avant tout le monde</BrandText>
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-landing-muted">
             DealerLink n&apos;est pas un agrégateur d&apos;annonces publiques. C&apos;est un réseau privé B2B où les
@@ -68,7 +70,7 @@ export function FeaturesReseau() {
               <li key={f.title} className="flex gap-4">
                 <span className="text-2xl">{f.icon}</span>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{f.title}</p>
+                  <p className="text-sm font-semibold text-[#D99330]">{f.title}</p>
                   <p className="mt-1 text-[13px] leading-relaxed text-gray-500">{f.desc}</p>
                 </div>
               </li>
@@ -76,15 +78,15 @@ export function FeaturesReseau() {
           </ul>
           <div className="mt-10 grid grid-cols-3 gap-4 border-t border-gray-100 pt-8">
             <div>
-              <p className="text-3xl font-bold tabular-nums text-landing-brand md:text-4xl">247</p>
+              <p className="text-3xl font-bold tabular-nums text-[#D99330] md:text-4xl">247</p>
               <p className="mt-1 text-[13px] text-gray-500">véhicules disponibles</p>
             </div>
             <div>
-              <p className="text-3xl font-bold tabular-nums text-landing-brand md:text-4xl">38</p>
+              <p className="text-3xl font-bold tabular-nums text-[#D99330] md:text-4xl">38</p>
               <p className="mt-1 text-[13px] text-gray-500">marchands actifs</p>
             </div>
             <div>
-              <p className="text-3xl font-bold tabular-nums text-landing-brand md:text-4xl">&lt;24h</p>
+              <p className="text-3xl font-bold tabular-nums text-[#D99330] md:text-4xl">&lt;24h</p>
               <p className="mt-1 text-[13px] text-gray-500">délai moyen de réponse</p>
             </div>
           </div>

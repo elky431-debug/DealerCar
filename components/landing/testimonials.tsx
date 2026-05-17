@@ -1,3 +1,5 @@
+import { BrandText } from "@/components/landing/brand-text";
+
 const QUOTES = [
   {
     text: "J'ai arrêté Excel le jour où j'ai essayé DealerLink. La gestion des dépôts avec les infos client directement sur la fiche, c'est un gain de temps énorme.",
@@ -21,7 +23,7 @@ export function Testimonials() {
     <section className="py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-2xl font-bold text-gray-900 md:text-[32px]">
-          Ce que disent nos marchands
+          Ce que disent nos <BrandText>marchands</BrandText>
         </h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {QUOTES.map((q) => (

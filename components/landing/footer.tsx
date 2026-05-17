@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandText } from "@/components/landing/brand-text";
 import { LandingLogoMark } from "@/components/landing/logo-mark";
 
 const linkClass = "text-sm text-gray-500 transition-colors hover:text-gray-900";
@@ -10,7 +11,7 @@ export function Footer() {
         <div>
           <Link href="/" className="flex items-center gap-2.5 font-bold text-gray-900">
             <LandingLogoMark className="h-9 w-9" />
-            DealerLink
+            Dealer<BrandText>Link</BrandText>
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-landing-muted">
             La plateforme B2B des marchands automobiles professionnels.
