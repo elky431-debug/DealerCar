@@ -1,3 +1,4 @@
+import { Check, X } from "lucide-react";
 import { BrandText } from "@/components/landing/brand-text";
 
 const CARDS = [
@@ -54,8 +55,14 @@ export function ProblemSolution() {
                 {c.icon}
               </span>
               <h3 className="mt-4 text-lg font-bold text-gray-900">{c.title}</h3>
-              <p className="mt-3 rounded-lg bg-red-50 p-3 text-sm leading-relaxed text-red-800">{c.before}</p>
-              <p className="mt-3 rounded-lg bg-emerald-50 p-3 text-sm leading-relaxed text-emerald-800">{c.after}</p>
+              <p className="mt-4 flex gap-2.5 rounded-lg border border-gray-100 bg-gray-50/80 p-3 text-sm leading-relaxed text-gray-600">
+                <X className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" strokeWidth={2.5} aria-hidden />
+                <span>{c.before}</span>
+              </p>
+              <p className="mt-2 flex gap-2.5 rounded-lg border border-gray-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#D99330]" strokeWidth={2.5} aria-hidden />
+                <span>{c.after}</span>
+              </p>
             </div>
           ))}
         </div>
