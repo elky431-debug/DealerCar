@@ -182,7 +182,7 @@ export function AssistantWidget() {
           className="group fixed bottom-5 right-5 z-40 flex h-12 items-center gap-2 rounded-full bg-foreground px-4 text-background shadow-[0_8px_28px_-8px_hsl(var(--foreground)/0.5)] transition-all hover:scale-105 hover:shadow-[0_12px_32px_-8px_hsl(var(--foreground)/0.6)] sm:bottom-6 sm:right-6"
           aria-label="Ouvrir l'assistant IA"
         >
-          <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-primary/100/20">
+          <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-gray-900/10">
             <Bot className="h-4 w-4" />
             <span className="absolute -right-0.5 -top-0.5 h-2 w-2">
               <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-70" />
@@ -210,7 +210,7 @@ export function AssistantWidget() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border/60 bg-foreground px-4 py-3 text-background">
               <div className="flex items-center gap-3">
-                <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-primary/100/20">
+                <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900/10">
                   <Bot className="h-5 w-5" />
                 </span>
                 <div>
@@ -323,7 +323,7 @@ export function AssistantWidget() {
                   type="button"
                   onClick={() => sendMessage(input)}
                   disabled={!input.trim() || streaming}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-30"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-900 text-white transition-all hover:bg-black disabled:opacity-30"
                   aria-label="Envoyer"
                 >
                   <Send className="h-3.5 w-3.5" />
@@ -354,7 +354,7 @@ function MessageBubble({
         className={cn(
           "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13.5px] leading-relaxed",
           isUser
-            ? "rounded-br-md bg-primary text-primary-foreground"
+            ? "rounded-br-md bg-gray-900 text-white"
             : "rounded-bl-md border border-border/60 bg-card text-foreground",
         )}
       >

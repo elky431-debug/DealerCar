@@ -171,7 +171,7 @@ export function GarageForm({ userId, email, defaults }: Props) {
         </p>
         <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-[0_1px_2px_hsl(var(--foreground)/0.04)]">
           <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)]">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl dl-icon-mark shadow-[0_4px_14px_-4px_hsl(var(--foreground)/0.3)]">
               <Building2 className="h-5 w-5" />
             </span>
             <div className="min-w-0">

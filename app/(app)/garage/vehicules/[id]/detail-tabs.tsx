@@ -66,7 +66,7 @@ export function VehicleDetailTabs({ base, active, tabs }: Props) {
                   className={cn(
                     "min-w-[18px] rounded-full px-1.5 py-0.5 text-center text-[10.5px] font-semibold leading-none tabular-nums",
                     isActive
-                      ? "bg-primary/12 text-primary ring-1 ring-inset ring-primary/15"
+                      ? "bg-gray-900 text-white shadow-sm"
                       : "bg-muted text-muted-foreground",
                   )}
                 >

@@ -220,20 +220,90 @@
 
   /* Panneaux accent (ex-bandeaux bleus) */
   .brand-panel {
-    @apply overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card;
+    @apply dl-brand-banner;
   }
 
   .brand-panel-icon {
-    @apply flex shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)];
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
   }
 
-  /* Onglet / nav pill actif */
-  .tab-pill-active {
-    @apply bg-[#D99330] text-white shadow-[0_4px_14px_-4px_rgba(217,147,48,0.35)];
+  .dl-icon-mark {
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
+  }
+
+  .dl-icon-mark-soft {
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-[#d99330]/10 text-[#d99330];
+  }
+
+  /* ── Design language app (aligné landing, sobre) ── */
+
+  .dl-card {
+    @apply rounded-2xl border border-gray-200/80 bg-white text-card-foreground;
+    box-shadow:
+      0 1px 0 rgba(15, 23, 42, 0.04),
+      0 12px 40px -24px rgba(15, 23, 42, 0.1);
+  }
+
+  .dl-tabs-track {
+    @apply inline-flex flex-wrap items-center gap-1 rounded-full border border-gray-200/80 bg-white p-1;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .dl-tab-active {
+    @apply bg-gray-900 text-white;
+    box-shadow: 0 2px 10px -3px rgba(0, 0, 0, 0.25);
+  }
+
+  .dl-tab-inactive {
+    @apply text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900;
+  }
+
+  .dl-sidebar-link-active {
+    @apply relative bg-gray-100/90 font-semibold text-gray-900;
+  }
+
+  .dl-sidebar-link-active::before {
+    content: "";
+    @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#d99330];
+  }
+
+  .dl-sidebar-link {
+    @apply text-gray-500 transition-colors hover:bg-gray-100/80 hover:text-gray-900;
+  }
+
+  .dl-chip-on {
+    @apply border-gray-900 bg-gray-900 text-white;
+    box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.2);
+  }
+
+  .dl-chip-off {
+    @apply border-gray-200/90 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50;
+  }
+
+  .dl-brand-banner {
+    @apply overflow-hidden rounded-2xl border border-gray-200/80 bg-gradient-to-br from-[#d99330]/[0.07] via-white to-white;
+  }
+
+  .dl-input {
+    @apply flex w-full rounded-xl border border-gray-200/90 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm;
+    @apply placeholder:text-gray-400 transition-all duration-150;
+    @apply focus-visible:outline-none focus-visible:border-[#d99330]/40 focus-visible:ring-2 focus-visible:ring-[#d99330]/15;
+  }
+
+  .dl-eyebrow {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-gray-200/80 bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-gray-500 shadow-sm;
   }
 
   .page-header-bar {
-    @apply border-border/50 bg-white/90 backdrop-blur-xl;
+    @apply border-gray-200/70 backdrop-blur-xl;
+    background-color: rgb(255 255 255 / 0.92);
+  }
+
+  /* legacy alias */
+  .tab-pill-active {
+    @apply dl-tab-active;
   }
 
   /* Carte annonce sourcing — élévation premium */
@@ -272,7 +342,8 @@
   /* Cartes / sidebar au-dessus du fond maille */
   .dealerlink-surface .app-sidebar,
   .dealerlink-surface .app-topbar {
-    @apply border-gray-200/70 bg-white/90 backdrop-blur-md;
+    @apply border-gray-200/80 bg-white/95 backdrop-blur-xl;
+    box-shadow: 1px 0 0 rgba(15, 23, 42, 0.03);
   }
 
   .landing-section-alt {
@@ -280,7 +351,8 @@
   }
 
   .landing-card-surface {
-    @apply rounded-2xl border border-gray-200/90 bg-white shadow-[0_20px_50px_-24px_rgba(15,23,42,0.18)];
+    @apply rounded-2xl border border-gray-200/90 bg-white;
+    box-shadow: 0 20px 50px -24px rgba(15, 23, 42, 0.18);
   }
 
   .landing-cta-primary {

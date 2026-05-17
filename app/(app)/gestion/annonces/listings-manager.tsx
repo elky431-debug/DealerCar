@@ -56,8 +56,8 @@ export function ListingsManager({ vehicles }: Props) {
                   className={cn(
                     "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all",
                     active
-                      ? "border-primary bg-primary text-white shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.35)]"
-                      : "border-border/60 bg-card hover:border-primary/40",
+                      ? "dl-chip-on border"
+                      : "dl-chip-off border",
                   )}
                 >
                   <div

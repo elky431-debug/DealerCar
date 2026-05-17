@@ -23,7 +23,7 @@ export default function ClientSearchesPage() {
               Recherche & sourcing
             </Link>
             <div className="flex items-start gap-4">
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+              <span className="dl-icon-mark h-14 w-14 rounded-2xl shadow-lg shadow-gray-900/15">
                 <UserRoundSearch className="h-7 w-7" />
               </span>
               <div className="min-w-0 space-y-2">
