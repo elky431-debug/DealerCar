@@ -117,7 +117,7 @@ export function AppShell({
       {/* Soft top gradient for atmospheric depth */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[320px] bg-[radial-gradient(80%_70%_at_70%_0%,rgba(217,147,48,0.06),transparent_55%)]"
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[320px] bg-[radial-gradient(80%_70%_at_70%_0%,rgba(13,148,136,0.06),transparent_55%)]"
       />
 
       {/* ───────── Desktop sidebar (fixed width for smoother perf) ───────── */}
@@ -233,7 +233,7 @@ export function AppShell({
             <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
               <Car className="h-3.5 w-3.5" />
             </span>
-            Dealer<span className="text-[#D99330]">Link</span>
+            Dealer<span className="text-brand">Link</span>
           </span>
           <Link href="/garage/vehicules/nouveau" aria-label="Ajouter un véhicule">
             <Button size="icon" variant="ghost">
@@ -267,7 +267,7 @@ function BrandHeader({ collapsed }: { collapsed: boolean }) {
       </span>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[15px] font-semibold tracking-tight">
-          Dealer<span className="text-[#D99330]">Link</span>
+          Dealer<span className="text-brand">Link</span>
         </span>
       )}
     </div>

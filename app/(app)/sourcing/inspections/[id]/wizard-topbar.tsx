@@ -253,7 +253,7 @@ function StepPicker({
                   <span className="block truncate text-[11.5px] text-muted-foreground">
                     {s.subtitle}
                     {isCustom && (
-                      <span className="text-[#b07824]"> · Perso.</span>
+                      <span className="text-brand-dark"> · Perso.</span>
                     )}
                   </span>
                 </span>

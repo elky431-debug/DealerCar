@@ -496,7 +496,7 @@ function InventoryCard({
       : tone === "amber"
         ? "bg-amber-50 text-amber-700"
         : tone === "brand"
-          ? "bg-[#d99330]/10 text-[#b07824]"
+          ? "bg-brand/10 text-brand-dark"
           : "bg-muted text-foreground/70";
 
   return (
@@ -535,7 +535,7 @@ function FeedItem({ event }: { event: { type: "added" | "sold" | "lead"; when: s
       verb: "Vendu",
     },
     lead: {
-      dot: "bg-primary",
+      dot: "bg-brand",
       icon: <Users className="h-3 w-3" />,
       verb: "Lead",
     },

@@ -167,7 +167,7 @@ function Item({
           className={cn(
             "ml-auto inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[10.5px] font-semibold tabular tracking-tight",
             active
-              ? "bg-[#d99330]/15 text-[#b07824]"
+              ? "bg-brand/15 text-brand-dark"
               : "bg-gray-100 text-gray-600",
             railHover &&
               "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",

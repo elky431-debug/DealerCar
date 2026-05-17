@@ -22,7 +22,7 @@ export function PageHeader({
         <div className="min-w-0">
           {eyebrow && (
             <span className="dl-eyebrow mb-3">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#D99330]" aria-hidden />
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden />
               {eyebrow}
             </span>
           )}

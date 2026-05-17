@@ -14,7 +14,7 @@ const VARIANTS: Record<Variant, string> = {
     "border border-gray-200/90 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 focus-visible:ring-gray-900/15",
   ghost: "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-900/10",
   accent:
-    "bg-[#D99330] text-white shadow-[0_4px_14px_-4px_rgba(217,147,48,0.35)] hover:bg-[#c48429] focus-visible:ring-[#D99330]/40",
+    "bg-brand text-brand-foreground shadow-[0_4px_14px_-4px_rgba(13,148,136,0.35)] hover:bg-brand-dark focus-visible:ring-brand/40",
   destructive:
     "bg-destructive text-destructive-foreground shadow-[0_4px_14px_-4px_hsl(var(--destructive)/0.4)] hover:bg-destructive/90 focus-visible:ring-destructive/40",
   success:

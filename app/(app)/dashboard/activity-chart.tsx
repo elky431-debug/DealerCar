@@ -82,7 +82,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
             Activité — <span className="capitalize">{monthLabel}</span>
           </p>
           <p className="mt-1.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[14px]">
-            <Legend dot="bg-[#D99330]" count={totalAdded} label="ajouté" />
+            <Legend dot="bg-brand" count={totalAdded} label="ajouté" />
             <Legend dot="bg-foreground" count={totalSold} label="vendu" />
           </p>
         </div>
@@ -353,7 +353,7 @@ function Tooltip({ datum, xPercent }: { datum: DayDatum; xPercent: number }) {
       <p className="mb-1 font-semibold capitalize tracking-tight">{formatted}</p>
       <div className="space-y-0.5">
         <p className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D99330]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
           <span className="tabular font-semibold">{datum.added}</span>
           <span className="text-muted-foreground">
             ajouté{datum.added > 1 ? "s" : ""}

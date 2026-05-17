@@ -223,7 +223,7 @@ export function InspectionStepsEditor({
                     <p className="truncate text-[11px] text-muted-foreground">
                       {row.type === "default" ? row.subtitle : row.def.subtitle}
                       {row.type === "custom" && (
-                        <span className="ml-1 text-[#b07824]">· Personnalisée</span>
+                        <span className="ml-1 text-brand-dark">· Personnalisée</span>
                       )}
                     </p>
                   </div>

@@ -764,7 +764,7 @@ function ResumeSearchSection({
             <div className="space-y-2">
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-[#d99330] transition-all duration-300"
+                  className="h-full rounded-full bg-brand transition-all duration-300"
                   style={{ width: `${progressDraft}%` }}
                 />
               </div>
