@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Info, Wallet, FileText, Users, type LucideIcon } from "lucide-react";
+import { Info, Wallet, FileText, Users, ImageIcon, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,6 +15,7 @@ const ICONS: Record<string, LucideIcon> = {
   wallet: Wallet,
   document: FileText,
   users: Users,
+  photos: ImageIcon,
 };
 
 interface Tab {
@@ -36,7 +37,7 @@ export function VehicleDetailTabs({ base, active, tabs }: Props) {
       <nav className="flex gap-0.5 overflow-x-auto px-5 sm:px-10">
         {tabs.map((t) => {
           const isActive = active === t.id;
-          const href = t.id === "details" ? base : `${base}?tab=${t.id}`;
+          const href = t.id === "infos" ? base : `${base}?tab=${t.id}`;
           const Icon = t.iconKey ? ICONS[t.iconKey] : null;
           return (
             <Link
@@ -66,7 +67,7 @@ export function VehicleDetailTabs({ base, active, tabs }: Props) {
                   className={cn(
                     "min-w-[18px] rounded-full px-1.5 py-0.5 text-center text-[10.5px] font-semibold leading-none tabular-nums",
                     isActive
-                      ? "bg-primary/12 text-primary ring-1 ring-inset ring-primary/15"
+                      ? "bg-gray-900 text-white shadow-sm"
                       : "bg-muted text-muted-foreground",
                   )}
                 >

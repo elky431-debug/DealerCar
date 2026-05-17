@@ -11,9 +11,10 @@ import {
   type VehicleInspection,
 } from "@/lib/types";
 import {
-  INSPECTION_STEPS_COUNT,
-  countCompleted,
-} from "@/lib/inspection-steps";
+  countCompletedForSteps,
+  inspectionStepsCount,
+  resolveInspectionSteps,
+} from "@/lib/inspection-steps-config";
 import { NewInspectionButton } from "./new-inspection-button";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,7 @@ export default async function InspectionsPage() {
       <PageHeader
         eyebrow="Sourcing"
         title="Consultation pré-achat"
-        description="Checklist guidée en 10 étapes pour sécuriser l'achat d'un véhicule, comme un expert. Toutes vos consultations sont sauvegardées."
+        description="Checklist guidée et personnalisable pour sécuriser l'achat d'un véhicule. Ajoutez ou retirez des étapes selon votre méthode."
         actions={<NewInspectionButton />}
       />
 
@@ -44,7 +45,7 @@ export default async function InspectionsPage() {
           <EmptyState
             icon={<ClipboardCheck className="h-5 w-5" />}
             title="Démarrez votre première consultation"
-            description="10 étapes guidées : Histovec, châssis, contrôle technique, carrosserie, voyants, pneus, freins, essai routier… L'IA vous aide pour le contrôle technique et la localisation du châssis."
+            description="Étapes par défaut (Histovec, châssis, CT, carrosserie…) ou checklist sur mesure. Personnalisez chaque consultation depuis le bouton « Étapes »."
             action={<NewInspectionButton variant="primary" />}
           />
         ) : (
@@ -60,8 +61,10 @@ export default async function InspectionsPage() {
 }
 
 function InspectionCard({ inspection }: { inspection: VehicleInspection }) {
-  const completed = countCompleted(inspection.steps_state ?? {});
-  const pct = Math.round((completed / INSPECTION_STEPS_COUNT) * 100);
+  const steps = resolveInspectionSteps(inspection.steps_config);
+  const total = inspectionStepsCount(inspection.steps_config);
+  const completed = countCompletedForSteps(steps, inspection.steps_state ?? {});
+  const pct = total ? Math.round((completed / total) * 100) : 0;
   const isDone = inspection.completed_at != null;
 
   const decisionStyle =
@@ -113,7 +116,7 @@ function InspectionCard({ inspection }: { inspection: VehicleInspection }) {
           <div>
             <div className="flex items-center justify-between text-[11px] text-muted-foreground">
               <span className="font-medium tabular-nums">
-                {completed}/{INSPECTION_STEPS_COUNT} étapes
+                {completed}/{total} étapes
               </span>
               <span className="tabular-nums">{pct}%</span>
             </div>

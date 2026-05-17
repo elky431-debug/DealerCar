@@ -17,14 +17,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageBody } from "@/components/page-header";
 import { VehicleHero } from "@/components/vehicle-hero";
-import { VehicleGallery } from "@/components/vehicle-gallery";
 import { VehicleOwnerActions } from "@/components/vehicle-owner-actions";
 import { VehiclePriceCard } from "@/components/vehicle-price-card";
 import { FavoriteButton } from "@/components/favorite-button";
 import { VehicleDetailTabs } from "./detail-tabs";
-import { DocumentSection } from "@/components/document-section";
-import { LeadsSection } from "./leads-section";
-import { CostsSection } from "./costs-section";
+import { VehicleDocumentsTab } from "./vehicle-documents-tab";
+import { VehicleClientsTab } from "./vehicle-clients-tab";
+import { VehicleFraisTab } from "./vehicle-frais-tab";
+import { VehiclePhotosTab } from "./vehicle-photos-tab";
 import { EcoSpecsCard } from "@/components/eco-specs-card";
 import { getServerAuth } from "@/lib/supabase/server";
 import { findVehicleSpecsForVehicle } from "@/lib/vehicle-specs";
@@ -33,15 +33,31 @@ import {
   STATUS_LABELS,
   TYPE_LABELS,
   VISIBILITY_LABELS,
-  type LeadWithVehicle,
+  type Lead,
   type Profile,
   type SpecMatchResult,
   type VehicleCost,
   type VehicleDocument,
+  type VehicleImage,
   type VehicleWithRelations,
 } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+const TAB_IDS = ["infos", "photos", "documents", "frais", "clients"] as const;
+type TabId = (typeof TAB_IDS)[number];
+
+const TAB_ALIASES: Record<string, TabId> = {
+  details: "infos",
+  costs: "frais",
+  leads: "clients",
+};
+
+function resolveTab(raw?: string): TabId {
+  if (!raw) return "infos";
+  const normalized = TAB_ALIASES[raw] ?? raw;
+  return TAB_IDS.includes(normalized as TabId) ? (normalized as TabId) : "infos";
+}
 
 interface Props {
   params: { id: string };
@@ -61,8 +77,7 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
   if (!vehicle) notFound();
 
   const isOwner = vehicle.dealer_id === user.id;
-  const tab =
-    (searchParams.tab as "details" | "documents" | "leads" | "costs") ?? "details";
+  const tab = resolveTab(searchParams.tab);
 
   const [
     { data: dealer },
@@ -89,7 +104,7 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
           .select("*")
           .eq("vehicle_id", vehicle.id)
           .order("created_at", { ascending: false })
-      : Promise.resolve({ data: [] as LeadWithVehicle[] }),
+      : Promise.resolve({ data: [] as Lead[] }),
     isOwner
       ? supabase
           .from("vehicle_costs")
@@ -108,22 +123,29 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
   ]);
 
   const docs = (documents ?? []) as VehicleDocument[];
-  const leadsList = (leads ?? []) as LeadWithVehicle[];
+  const leadsList = (leads ?? []) as Lead[];
   const costs = (costsData ?? []) as VehicleCost[];
   const isFav = Boolean(fav);
   const images = (vehicle.vehicle_images ?? [])
     .slice()
     .sort((a, b) => a.position - b.position);
 
-  // Enrichissement ADEME (silencieux si la table n'existe pas encore)
   let specMatch: SpecMatchResult = { spec: null, confidence: "none", alternatives: 0 };
   try {
     specMatch = await findVehicleSpecsForVehicle(supabase, vehicle);
   } catch {
-    // Table pas encore importée : on ignore proprement
+    /* table ADEME absente */
   }
 
   const fullTitle = `${formatTitle(vehicle.brand)} ${formatTitle(vehicle.model)}`.trim();
+
+  const ownerTabs = [
+    { id: "infos", label: "Infos", iconKey: "info" as const },
+    { id: "photos", label: "Photos", count: images.length, iconKey: "photos" as const },
+    { id: "documents", label: "Documents", count: docs.length, iconKey: "document" as const },
+    { id: "frais", label: "Frais", count: costs.length, iconKey: "wallet" as const },
+    { id: "clients", label: "Clients", count: leadsList.length, iconKey: "users" as const },
+  ];
 
   return (
     <>
@@ -150,24 +172,13 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
       />
 
       {isOwner && (
-        <VehicleDetailTabs
-          base={`/garage/vehicules/${vehicle.id}`}
-          tabs={[
-            { id: "details", label: "Détails", iconKey: "info" },
-            { id: "costs", label: "Frais", count: costs.length, iconKey: "wallet" },
-            { id: "documents", label: "Documents", count: docs.length, iconKey: "document" },
-            { id: "leads", label: "Clients intéressés", count: leadsList.length, iconKey: "users" },
-          ]}
-          active={tab}
-        />
+        <VehicleDetailTabs base={`/garage/vehicules/${vehicle.id}`} tabs={ownerTabs} active={tab} />
       )}
 
       <PageBody className="pt-6 sm:pt-8">
-        {tab === "details" && (
+        {tab === "infos" && (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="min-w-0 space-y-6">
-              <VehicleGallery images={images} alt={fullTitle} />
-
               <Card>
                 <CardHeader>
                   <CardTitle>Caractéristiques</CardTitle>
@@ -189,11 +200,7 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
                       label="Localisation"
                       value={vehicle.location}
                     />
-                    <Detail
-                      icon={<Tag className="h-4 w-4" />}
-                      label="Type"
-                      value={TYPE_LABELS[vehicle.type]}
-                    />
+                    <Detail icon={<Tag className="h-4 w-4" />} label="Type" value={TYPE_LABELS[vehicle.type]} />
                     <Detail
                       icon={<Tag className="h-4 w-4" />}
                       label="Statut"
@@ -234,18 +241,15 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
                     </CardHeader>
                     <CardContent>
                       <dl className="grid grid-cols-2 gap-x-4 gap-y-5 text-sm sm:grid-cols-3">
-                        <Detail
-                          label="Prix client"
-                          value={formatPrice(vehicle.client_price)}
-                        />
+                        <Detail label="Prix client" value={formatPrice(vehicle.client_price)} />
                         <Detail
                           label="Type commission"
                           value={
                             vehicle.commission_type === "percent"
                               ? "Pourcentage"
                               : vehicle.commission_type === "fixed"
-                              ? "Montant fixe"
-                              : "—"
+                                ? "Montant fixe"
+                                : "—"
                           }
                         />
                         <Detail
@@ -254,8 +258,8 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
                             vehicle.commission_value == null
                               ? "—"
                               : vehicle.commission_type === "percent"
-                              ? `${vehicle.commission_value}%`
-                              : formatPrice(vehicle.commission_value)
+                                ? `${vehicle.commission_value}%`
+                                : formatPrice(vehicle.commission_value)
                           }
                         />
                       </dl>
@@ -264,9 +268,7 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
 
                   {(vehicle.deposit_client_name ||
                     vehicle.deposit_client_phone ||
-                    vehicle.deposit_client_email ||
-                    vehicle.deposit_client_address ||
-                    vehicle.deposit_notes) && (
+                    vehicle.deposit_client_email) && (
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -277,57 +279,15 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
                       <CardContent>
                         <dl className="grid gap-4 text-sm sm:grid-cols-2">
                           {vehicle.deposit_client_name && (
-                            <Detail
-                              label="Nom"
-                              value={vehicle.deposit_client_name}
-                            />
+                            <Detail label="Nom" value={vehicle.deposit_client_name} />
                           )}
                           {vehicle.deposit_client_phone && (
-                            <Detail
-                              label="Téléphone"
-                              value={vehicle.deposit_client_phone}
-                            />
+                            <Detail label="Téléphone" value={vehicle.deposit_client_phone} />
                           )}
                           {vehicle.deposit_client_email && (
-                            <Detail
-                              label="Email"
-                              value={vehicle.deposit_client_email}
-                            />
-                          )}
-                          {vehicle.deposit_client_address && (
-                            <Detail
-                              label="Adresse"
-                              value={vehicle.deposit_client_address}
-                            />
+                            <Detail label="Email" value={vehicle.deposit_client_email} />
                           )}
                         </dl>
-                        {vehicle.deposit_notes && (
-                          <div className="mt-4">
-                            <p className="text-xs text-muted-foreground">Notes</p>
-                            <p className="mt-1 whitespace-pre-line text-sm">
-                              {vehicle.deposit_notes}
-                            </p>
-                          </div>
-                        )}
-                        {(vehicle.deposit_client_phone ||
-                          vehicle.deposit_client_email) && (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {vehicle.deposit_client_phone && (
-                              <a href={`tel:${vehicle.deposit_client_phone}`}>
-                                <Button variant="outline" size="sm">
-                                  <Phone className="h-3.5 w-3.5" /> Appeler
-                                </Button>
-                              </a>
-                            )}
-                            {vehicle.deposit_client_email && (
-                              <a href={`mailto:${vehicle.deposit_client_email}`}>
-                                <Button variant="outline" size="sm">
-                                  <Mail className="h-3.5 w-3.5" /> Email
-                                </Button>
-                              </a>
-                            )}
-                          </div>
-                        )}
                       </CardContent>
                     </Card>
                   )}
@@ -335,12 +295,9 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
               )}
             </div>
 
-            {/* Sidebar */}
             <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
               <VehiclePriceCard vehicle={vehicle} isOwner={isOwner} />
-
               <EcoSpecsCard match={specMatch} />
-
               {isOwner ? (
                 <Card>
                   <CardHeader>
@@ -394,24 +351,24 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
           </div>
         )}
 
-        {tab === "costs" && isOwner && (
-          <CostsSection
-            vehicleId={vehicle.id}
-            userId={user.id}
-            vehiclePrice={Number(vehicle.price)}
-            purchasePrice={
-              vehicle.purchase_price != null ? Number(vehicle.purchase_price) : null
-            }
-            costs={costs}
-          />
+        {tab === "photos" && isOwner && (
+          <VehiclePhotosTab vehicleId={vehicle.id} userId={user.id} images={images} alt={fullTitle} />
         )}
 
         {tab === "documents" && isOwner && (
-          <DocumentSection vehicleId={vehicle.id} userId={user.id} documents={docs} />
+          <VehicleDocumentsTab vehicleId={vehicle.id} userId={user.id} documents={docs} />
         )}
 
-        {tab === "leads" && isOwner && (
-          <LeadsSection vehicleId={vehicle.id} userId={user.id} leads={leadsList} />
+        {tab === "frais" && isOwner && (
+          <VehicleFraisTab vehicleId={vehicle.id} userId={user.id} costs={costs} />
+        )}
+
+        {tab === "clients" && isOwner && (
+          <VehicleClientsTab vehicleId={vehicle.id} userId={user.id} leads={leadsList} />
+        )}
+
+        {!isOwner && tab !== "infos" && (
+          <p className="text-sm text-muted-foreground">Cette section est réservée au propriétaire.</p>
         )}
       </PageBody>
     </>
@@ -433,9 +390,7 @@ function Detail({
         {icon && <span className="text-muted-foreground/70">{icon}</span>}
         {label}
       </dt>
-      <dd className="mt-1 truncate text-[14px] font-medium text-foreground">
-        {value}
-      </dd>
+      <dd className="mt-1 truncate text-[14px] font-medium text-foreground">{value}</dd>
     </div>
   );
 }

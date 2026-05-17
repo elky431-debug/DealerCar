@@ -78,7 +78,7 @@ export function VehicleCard({
 
         <span
           aria-hidden
-          className="absolute bottom-3 right-3 flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-primary text-primary-foreground opacity-0 shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.4)] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+          className="absolute bottom-3 right-3 flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-gray-900 text-white opacity-0 shadow-[0_8px_20px_-6px_hsl(var(--primary)/0.4)] transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
         >
           <ArrowUpRight className="h-4 w-4" />
         </span>
@@ -125,7 +125,7 @@ function SoftPill({
       className={cn(
         "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium tracking-tight ring-1 ring-inset shadow-sm backdrop-blur-md",
         highlight
-          ? "bg-primary text-white ring-primary/20"
+          ? "dl-icon-mark ring-primary/20"
           : "bg-card/95 text-foreground ring-foreground/10",
       )}
     >
