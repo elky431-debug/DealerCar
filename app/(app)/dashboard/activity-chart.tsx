@@ -19,6 +19,9 @@ interface Props {
 
 const VIEW_W = 1000;
 
+/** Aligné sur --dl-brand-rgb (#0d9488) dans globals.css */
+const BRAND_STROKE = "rgb(var(--dl-brand-rgb))";
+
 export function ActivityChart({ days, monthLabel, todayIndex, className }: Props) {
   const uid = useId().replace(/:/g, "");
   const gradAdded = `chart-added-${uid}`;
@@ -127,8 +130,8 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
           >
             <defs>
               <linearGradient id={gradAdded} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(217 147 48)" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="rgb(217 147 48)" stopOpacity="0" />
+                <stop offset="0%" stopColor={BRAND_STROKE} stopOpacity="0.28" />
+                <stop offset="100%" stopColor={BRAND_STROKE} stopOpacity="0" />
               </linearGradient>
               <linearGradient id={gradSold} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="rgb(15 23 42)" stopOpacity="0.18" />
@@ -167,7 +170,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                   <path
                     d={addedPath}
                     fill="none"
-                    stroke="rgb(217 147 48)"
+                    stroke={BRAND_STROKE}
                     strokeWidth={2.5}
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -206,7 +209,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                         cx={x}
                         cy={y}
                         r={hovered === i ? 7 : 5}
-                        fill="rgb(217 147 48)"
+                        fill={BRAND_STROKE}
                         fillOpacity={hovered === i ? 0.18 : 0.12}
                         className="transition-all"
                       />
@@ -214,7 +217,7 @@ export function ActivityChart({ days, monthLabel, todayIndex, className }: Props
                         cx={x}
                         cy={y}
                         r={hovered === i ? 4.5 : 3.2}
-                        fill="rgb(217 147 48)"
+                        fill={BRAND_STROKE}
                         stroke="rgb(255 255 255)"
                         strokeWidth={1.5}
                         className="transition-all"
