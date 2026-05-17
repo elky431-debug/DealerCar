@@ -241,6 +241,8 @@ export interface SpecMatchResult {
   alternatives: number;
 }
 
+import type { InspectionStepsConfig } from "@/lib/inspection-steps-config";
+
 // ---------- Inspection pré-achat ("Consultation complète") ----------
 
 export type InspectionDecision = "go" | "no_go" | "uncertain";
@@ -277,6 +279,8 @@ export interface VehicleInspection {
   buyer_last_name: string | null;
   current_step: number;
   steps_state: Record<string, InspectionStepState>;
+  /** Ordre des étapes + étapes personnalisées (null = défaut complet). */
+  steps_config: InspectionStepsConfig | null;
   decision: InspectionDecision | null;
   decision_notes: string | null;
   created_at: string;

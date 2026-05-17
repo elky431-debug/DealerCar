@@ -378,7 +378,7 @@ export function stepById(id: string): InspectionStep | null {
 
 /**
  * Compte les étapes "validées" (done=true) dans un steps_state.
- * Une étape facultative non remplie ne compte pas comme validée.
+ * @deprecated Préférer countCompletedForSteps avec resolveInspectionSteps.
  */
 export function countCompleted(
   state: Record<string, { done?: boolean } | undefined>,
@@ -388,3 +388,5 @@ export function countCompleted(
     0,
   );
 }
+
+export { countCompletedForSteps } from "@/lib/inspection-steps-config";
