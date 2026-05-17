@@ -51,7 +51,7 @@ export function ProblemSolution() {
               key={i}
               className="landing-card-surface flex flex-col p-6 transition-transform hover:-translate-y-0.5"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#D99330]/10 text-2xl">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand/10 text-2xl">
                 {c.icon}
               </span>
               <h3 className="mt-4 text-lg font-bold text-gray-900">{c.title}</h3>
@@ -60,7 +60,7 @@ export function ProblemSolution() {
                 <span>{c.before}</span>
               </p>
               <p className="mt-2 flex gap-2.5 rounded-lg border border-gray-100 bg-white p-3 text-sm leading-relaxed text-gray-700">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#D99330]" strokeWidth={2.5} aria-hidden />
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" strokeWidth={2.5} aria-hidden />
                 <span>{c.after}</span>
               </p>
             </div>

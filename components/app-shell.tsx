@@ -233,7 +233,7 @@ export function AppShell({
             <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-border/70 bg-background text-black shadow-sm dark:text-foreground">
               <Car className="h-3.5 w-3.5" />
             </span>
-            Dealer<span className="text-[#D99330]">Link</span>
+            Dealer<span className="text-brand">Link</span>
           </span>
           <Link href="/garage/vehicules/nouveau" aria-label="Ajouter un véhicule">
             <Button size="icon" variant="ghost">
@@ -267,7 +267,7 @@ function BrandHeader({ collapsed }: { collapsed: boolean }) {
       </span>
       {!collapsed && (
         <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[15px] font-semibold tracking-tight">
-          Dealer<span className="text-[#D99330]">Link</span>
+          Dealer<span className="text-brand">Link</span>
         </span>
       )}
     </div>
