@@ -198,7 +198,7 @@ export default async function DashboardPage() {
   > & { vehicle_images: { storage_path: string; position: number }[] })[];
 
   return (
-    <>
+    <div className="min-h-full bg-[#F8FAFC]">
       <PageHeader
         eyebrow="Tableau de bord"
         title={`Bonjour ${profile?.company_name ?? ""}`.trim()}
@@ -413,7 +413,7 @@ export default async function DashboardPage() {
           </section>
         </div>
       </PageBody>
-    </>
+    </div>
   );
 }
 
@@ -459,7 +459,7 @@ function MiniStat({
         : "from-primary/12 to-primary/0";
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-4 shadow-[0_8px_20px_-16px_hsl(var(--foreground)/0.22)]">
+    <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card p-4 shadow-sm">
       <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", tone)} />
       <div className="flex items-baseline justify-between">
         <p className="relative text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -502,7 +502,7 @@ function InventoryCard({
   return (
     <Link
       href={href}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card p-4 shadow-[0_8px_20px_-16px_hsl(var(--foreground)/0.22)] transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-[0_12px_24px_-16px_hsl(var(--foreground)/0.25)]"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-border/60 bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-md"
     >
       <span className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-primary/[0.06] to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
       <div className="flex items-center justify-between">

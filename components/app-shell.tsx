@@ -1,9 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { Car, Home, Plus, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggleButton } from "@/components/theme-toggle";
@@ -12,10 +11,39 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
-const AssistantWidgetLazy = dynamic(
-  () => import("@/components/assistant-widget").then((m) => m.AssistantWidget),
-  { ssr: false },
-);
+/** Charge l’assistant avec retry — évite un crash global si le chunk HMR est périmé. */
+function AssistantWidgetGate() {
+  const [Widget, setWidget] = useState<ComponentType | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load(attempt = 0) {
+      try {
+        const mod = await import("@/components/assistant-widget");
+        if (!cancelled) setWidget(() => mod.AssistantWidget);
+      } catch {
+        if (cancelled) return;
+        if (attempt < 2) {
+          window.setTimeout(() => void load(attempt + 1), 400 * (attempt + 1));
+          return;
+        }
+        console.warn("[AssistantWidget] chunk indisponible — rechargez la page (Cmd+Shift+R).");
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!Widget) return null;
+  return <Widget />;
+}
+
+const SIDEBAR_COLLAPSED_KEY = "dealerlink-sidebar-collapsed";
+const SIDEBAR_WIDTH_EXPANDED = "13.75rem"; /* 220px */
 
 export function AppShell({
   profile,
@@ -28,6 +56,13 @@ export function AppShell({
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [assistantReady, setAssistantReady] = useState(false);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, "0");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // Fermeture auto du drawer mobile à chaque changement de route
   useEffect(() => {
@@ -88,36 +123,38 @@ export function AppShell({
       {/* ───────── Desktop sidebar (fixed width for smoother perf) ───────── */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col overflow-hidden",
-          "border-r border-border/60 bg-card",
-          "w-64 shadow-[0_0_24px_-16px_rgba(15,23,42,0.15)]",
-          "md:flex",
+          "fixed inset-y-0 left-0 z-40 hidden flex-col overflow-visible",
+          "border-r border-border/60 bg-card shadow-[0_0_24px_-16px_rgba(15,23,42,0.15)]",
+          "w-[220px] md:flex",
         )}
       >
-        <BrandHeader />
+        <BrandHeader collapsed={false} />
 
-        <div className="border-b border-border/40 px-2.5 py-2">
+        <div className="border-b border-border/40 px-2 py-2">
           <Button
             variant="outline"
             size="sm"
             href="/"
+            title="Retour à l'accueil"
             className="h-9 w-full justify-start gap-2 border-border/80 text-[13px] font-medium"
           >
             <Home className="h-4 w-4 shrink-0" aria-hidden />
-            Retour à l&apos;accueil
+            <span>Retour à l&apos;accueil</span>
           </Button>
         </div>
 
-        <QuickAddCTA />
+        <QuickAddCTA collapsed={false} />
 
-        <SidebarNav variant="drawer" />
+        <SidebarNav variant="drawer" collapsed={false} />
 
         <SidebarFooter
           profile={profile}
           initials={initials}
           onLogout={handleLogout}
           variant="drawer"
+          collapsed={false}
         />
+
       </aside>
 
       {/* ───────── Mobile drawer ───────── */}
@@ -179,7 +216,10 @@ export function AppShell({
       )}
 
       {/* ───────── Main ───────── */}
-      <div className="flex min-h-screen flex-col md:pl-64">
+      <div
+        className="flex min-h-screen flex-1 flex-col md:pl-[var(--sidebar-width)]"
+        style={{ "--sidebar-width": SIDEBAR_WIDTH_EXPANDED } as React.CSSProperties}
+      >
         {/* Mobile topbar */}
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur md:hidden">
           <Button
@@ -205,7 +245,7 @@ export function AppShell({
         <main className="min-w-0 flex-1">{children}</main>
       </div>
 
-      {assistantReady && <AssistantWidgetLazy />}
+      {assistantReady && <AssistantWidgetGate />}
     </div>
   );
 }
@@ -214,16 +254,23 @@ export function AppShell({
 /*  Sub-components                                                        */
 /* ────────────────────────────────────────────────────────────────────── */
 
-function BrandHeader() {
+function BrandHeader({ collapsed }: { collapsed: boolean }) {
   return (
-    <div className="flex h-16 items-center gap-3 border-b border-border/60 px-4 font-semibold">
+    <div
+      className={cn(
+        "flex h-16 shrink-0 items-center border-b border-border/60 font-semibold",
+        collapsed ? "justify-center px-2" : "gap-2 px-3",
+      )}
+    >
       <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-background text-black shadow-[0_4px_12px_-2px_hsl(var(--foreground)/0.22)] dark:text-foreground">
         <Car className="h-[18px] w-[18px]" />
         <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
       </span>
-      <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight">
-        DealerLink
-      </span>
+      {!collapsed && (
+        <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[15px] font-semibold tracking-tight">
+          DealerLink
+        </span>
+      )}
     </div>
   );
 }
@@ -236,21 +283,25 @@ function BrandHeader() {
  *
  * Action #1 d'un marchand au quotidien : ajouter un véhicule.
  */
-function QuickAddCTA() {
+function QuickAddCTA({ collapsed }: { collapsed: boolean }) {
   return (
-    <div className="border-b border-border/40 px-2.5 py-3">
+    <div
+      className={cn(
+        "border-b border-border/40 px-2 py-3",
+        collapsed && "flex justify-center",
+      )}
+    >
       <Link
         href="/garage/vehicules/nouveau"
         title="Nouveau véhicule"
         className={cn(
-          "flex h-11 items-center justify-center gap-2 rounded-xl border border-black/5 bg-black px-3 text-[13.5px] font-medium text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.45)] transition-all duration-200 dark:border-white/10 dark:bg-foreground dark:text-background",
+          "flex h-11 items-center justify-center rounded-xl border border-black/5 bg-black text-[13.5px] font-medium text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.45)] transition-all duration-200 dark:border-white/10 dark:bg-foreground dark:text-background",
           "hover:-translate-y-0.5 hover:bg-black/90 active:scale-[0.98] dark:hover:bg-foreground/90",
+          collapsed ? "w-9 gap-0 px-0" : "w-full gap-2 px-3",
         )}
       >
         <Plus className="h-[18px] w-[18px] shrink-0" />
-        <span className="whitespace-nowrap">
-          Nouveau véhicule
-        </span>
+        {!collapsed && <span className="whitespace-nowrap">Nouveau véhicule</span>}
       </Link>
     </div>
   );
@@ -260,54 +311,50 @@ function SidebarFooter({
   profile,
   initials,
   onLogout,
-  variant = "rail",
+  collapsed = false,
 }: {
   profile: Profile | null;
   initials: string;
   onLogout: () => void;
   variant?: "rail" | "drawer";
+  collapsed?: boolean;
 }) {
-  const isRail = variant === "rail";
 
   return (
-    <div className="border-t border-border/70 p-2.5">
+    <div className="border-t border-border/70 p-2">
       {profile && (
-        <div className="mb-1.5 flex items-center gap-3 rounded-lg px-2 py-1.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-[13px] font-semibold text-primary ring-1 ring-primary/20">
+        <div
+          className={cn(
+            "mb-1.5 flex items-center rounded-lg py-1.5",
+            collapsed ? "justify-center px-0" : "gap-3 px-2",
+          )}
+        >
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-[13px] font-semibold text-primary ring-1 ring-primary/20"
+            title={profile.company_name}
+          >
             {initials}
           </div>
-          <div
-            className={cn(
-              "min-w-0 whitespace-nowrap",
-              isRail &&
-                "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
-            )}
-          >
-            <p className="truncate text-sm font-medium leading-tight">
-              {profile.company_name}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {profile.email}
-            </p>
-          </div>
+          {!collapsed && (
+            <div className="min-w-0 whitespace-nowrap">
+              <p className="truncate text-sm font-medium leading-tight">{profile.company_name}</p>
+              <p className="truncate text-xs text-muted-foreground">{profile.email}</p>
+            </div>
+          )}
         </div>
       )}
-      <div className="flex items-center gap-1">
+      <div className={cn("flex items-center", collapsed ? "flex-col gap-1" : "gap-1")}>
         <ThemeToggleButton className="shrink-0" />
         <button
           onClick={onLogout}
           title="Se déconnecter"
-          className="flex flex-1 items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className={cn(
+            "flex items-center rounded-lg text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+            collapsed ? "h-9 w-9 justify-center px-0" : "flex-1 gap-3 whitespace-nowrap px-3 py-2",
+          )}
         >
           <LogOut className="h-[18px] w-[18px] shrink-0" />
-          <span
-            className={cn(
-              isRail &&
-                "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
-            )}
-          >
-            Se déconnecter
-          </span>
+          {!collapsed && <span>Se déconnecter</span>}
         </button>
       </div>
     </div>

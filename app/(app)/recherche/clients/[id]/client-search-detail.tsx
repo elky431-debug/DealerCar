@@ -49,11 +49,21 @@ import {
   type SourcingContact,
   type VehicleWithRelations,
 } from "@/lib/types";
-import { CS_CARD as CARD, CS_SHELL } from "@/lib/client-search-ui";
+import { CS_CARD as CARD } from "@/lib/client-search-ui";
 import { cn, formatMileage, formatPrice, publicImageUrl } from "@/lib/utils";
 
-const GAP_SECTION = "gap-5";
+const GAP_SECTION = "gap-6";
 const PAD_INNER = "p-6";
+const CS_LABEL =
+  "text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500";
+const CS_SECTION_TITLE = "text-sm font-semibold text-gray-900 dark:text-zinc-100";
+const CS_INPUT =
+  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:bg-white transition-colors";
+const CS_TEXTAREA =
+  "w-full px-3 py-2 text-sm bg-gray-50 border border-gray-100 rounded-lg placeholder:text-gray-400 focus:outline-none focus:border-blue-300 focus:bg-white transition-colors resize-none";
+const CS_SURFACE = "rounded-xl border border-slate-200/70 bg-white shadow-sm";
+const CS_CARD_AI =
+  "rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-4 shadow-sm";
 
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -260,15 +270,9 @@ export function ClientSearchDetail({ id }: { id: string }) {
   const bestScore = matches?.strong[0]?.compatibility_score ?? null;
 
   return (
-    <div
-      className={cn(
-        CS_SHELL,
-        "flex min-h-[calc(100dvh-3.5rem)] min-w-0 flex-col md:min-h-[calc(100dvh-1rem)]",
-        "xl:min-h-[calc(100dvh-2rem)]",
-      )}
-    >
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
       {/* Tabs — mobile uniquement (&lt; lg) */}
-      <div className="flex shrink-0 items-center gap-1 border-b border-border/50 bg-background/80 px-3 py-2 backdrop-blur-xl lg:hidden">
+      <div className="flex shrink-0 items-center gap-1 border-b border-gray-100 bg-white/95 px-3 py-2 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/95 lg:hidden">
         {(
           [
             ["list", "Recherches", Users],
@@ -283,8 +287,8 @@ export function ClientSearchDetail({ id }: { id: string }) {
             className={cn(
               "flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all duration-200",
               workspaceTab === key
-                ? "bg-foreground text-background shadow-sm"
-                : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+                ? "bg-blue-600 text-white shadow-sm"
+                : "text-gray-500 hover:bg-gray-50 dark:text-zinc-400 dark:hover:bg-zinc-800",
             )}
           >
             <Icon className="h-4 w-4 shrink-0 opacity-80" />
@@ -293,18 +297,11 @@ export function ClientSearchDetail({ id }: { id: string }) {
         ))}
       </div>
 
-      <div
-        className={cn(
-          "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
-          "lg:grid lg:min-h-0 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)_auto]",
-          "xl:grid-cols-[320px_minmax(0,1fr)_380px] xl:grid-rows-[minmax(0,1fr)]",
-        )}
-      >
-        {/* Colonne 1 — 320px */}
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* Colonne 1 — pipeline */}
         <aside
           className={cn(
-            "flex min-h-0 w-full min-w-0 shrink-0 flex-col border-border/50 bg-background/60",
-            "lg:row-span-2 lg:border-r xl:row-span-1",
+            "flex w-full flex-shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white lg:w-[320px]",
             workspaceTab === "list" ? "flex" : "hidden",
             "lg:flex",
           )}
@@ -317,41 +314,52 @@ export function ClientSearchDetail({ id }: { id: string }) {
           />
         </aside>
 
-        {/* Colonne 2 — flex-1 */}
+        {/* Colonne 2 — fiche sourcing */}
         <main
           className={cn(
-            "flex min-h-0 min-w-0 flex-col overflow-hidden bg-background/30",
-            "lg:col-start-2 lg:row-start-1 lg:min-h-0",
-            workspaceTab === "market" ? "flex" : "hidden",
-            "lg:flex",
+            "min-w-0 flex-1 overflow-y-auto bg-slate-50",
+            workspaceTab === "market" ? "block" : "hidden",
+            "lg:block",
           )}
         >
-          <PremiumMainHeader
-            searchId={id}
-            search={search}
-            loadMatches={loadMatches}
-            totalListed={totalListed}
-            bestScore={bestScore}
-            scanned={matches?.total_scanned ?? null}
-          />
-          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain">
-            <div className={cn("w-full min-w-0 space-y-8 px-5 py-8 sm:px-6", GAP_SECTION)}>
+          <div className="border-b border-gray-100 bg-white shadow-sm">
+            <PremiumMainHeader searchId={id} search={search} />
+            <SearchStatsGrid
+              search={search}
+              loadMatches={loadMatches}
+              totalListed={totalListed}
+              bestScore={bestScore}
+            />
+          </div>
+
+          <div className="w-full space-y-8 px-8 py-10">
               <section id="resume-section">
                 <ResumeSearchSection search={search} onPatch={patchSearch} matches={matches} />
               </section>
 
               {loadMatches && !matches ? (
-                <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-border/60 bg-muted/20 py-20">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary/80" />
-                  <p className="text-sm font-medium text-foreground">Analyse du marché…</p>
-                  <p className="max-w-sm text-center text-xs leading-relaxed text-muted-foreground">
-                    Matching sur votre stock et le réseau — quelques secondes.
+                <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 bg-white py-16 shadow-sm">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                  <p className="text-sm font-semibold text-slate-900">Analyse du marché…</p>
+                  <p className="max-w-xs text-center text-xs text-slate-500">
+                    Matching stock & réseau — quelques secondes.
                   </p>
                 </div>
               ) : matches ? (
                 <>
                   <HintsPremiumSection hints={matches.hints} />
-                  <div className="space-y-10">
+                  {matches.strong.length === 0 &&
+                  matches.close.length === 0 &&
+                  matches.stretch.length === 0 ? (
+                    <div className="rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-sm">
+                      <TrendingUp className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+                      <p className="text-sm font-semibold text-slate-900">Aucun véhicule correspondant</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Élargissez les critères ou activez des sources pro pour débloquer des pistes.
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="space-y-8">
                     <MatchTierSection
                       variant="strong"
                       title="Correspondance forte"
@@ -383,27 +391,18 @@ export function ClientSearchDetail({ id }: { id: string }) {
                   </div>
                 </>
               ) : null}
-            </div>
           </div>
         </main>
 
-        {/* Colonne 3 — 380px (sous le marché en tablette lg–xl) */}
+        {/* Colonne 3 — espace pro */}
         <aside
           className={cn(
-            "flex min-h-0 w-full min-w-0 shrink-0 flex-col border-border/50 bg-muted/10",
-            "lg:col-start-2 lg:row-start-2 lg:max-h-[min(520px,42vh)] lg:border-t lg:border-border/50",
-            "xl:col-start-3 xl:row-start-1 xl:max-h-none xl:w-[380px] xl:border-l xl:border-t-0",
-            workspaceTab === "pro" ? "flex" : "hidden",
-            "lg:flex",
+            "w-full flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white lg:w-[380px]",
+            workspaceTab === "pro" ? "block" : "hidden",
+            "lg:block",
           )}
         >
-          <div className="sticky top-0 flex max-h-[calc(100dvh-8rem)] min-h-0 flex-1 flex-col overflow-hidden lg:max-h-[min(520px,42vh)] xl:max-h-none">
-            <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-6 py-8">
-              <div className={cn("flex flex-col", GAP_SECTION)}>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  Espace pro
-                </p>
-                <ProWorkspacePanel
+            <ProWorkspacePanel
                   searchId={id}
                   search={search}
                   assignments={assignments}
@@ -411,11 +410,8 @@ export function ClientSearchDetail({ id }: { id: string }) {
                   events={events}
                   onRefresh={refreshDetail}
                   onPatch={patchSearch}
-                  onLink={linkContacts}
-                />
-              </div>
-            </div>
-          </div>
+              onLink={linkContacts}
+            />
         </aside>
       </div>
     </div>
@@ -472,26 +468,31 @@ function SearchListColumn({
 }) {
   return (
     <>
-      <div className={cn("shrink-0 space-y-4 border-b border-border/40 bg-background/40 px-6 py-6 backdrop-blur-sm")}>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="h-9 shrink-0 px-2" href="/recherche/clients">
-            <ArrowLeft className="h-4 w-4" />
+      <div className="shrink-0 border-b border-gray-100 bg-white p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-zinc-100">
+            Recherches clients
+          </h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 shrink-0 rounded-md p-0 hover:bg-gray-100 dark:hover:bg-zinc-800"
+            href="/recherche/clients"
+          >
+            <ArrowLeft className="h-4 w-4 text-gray-500" />
           </Button>
-          <div className="min-w-0 flex-1">
-            <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
-              Recherches clients
-            </h2>
-            <p className="text-[13px] text-muted-foreground">Vue pipeline — sélectionnez une fiche</p>
-          </div>
         </div>
-        <Input
+        <p className="mb-3 text-xs text-gray-400 dark:text-zinc-500">
+          Vue pipeline — sélectionnez une fiche
+        </p>
+        <input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Filtrer par client ou véhicule…"
-          className="h-11 rounded-xl border-border/60 bg-background/90"
+          placeholder="Filtrer par client ou véhicule..."
+          className={CS_INPUT}
         />
       </div>
-      <nav className="min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden overscroll-contain px-6 py-6">
+      <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain py-2">
         {searches.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border/60 px-4 py-10 text-center text-sm text-muted-foreground">
             Aucune recherche ne correspond au filtre.
@@ -501,59 +502,48 @@ function SearchListColumn({
             const active = s.id === activeId;
             const budgetA = s.budget_min != null ? formatPrice(Number(s.budget_min)) : "—";
             const budgetB = s.budget_max != null ? formatPrice(Number(s.budget_max)) : "—";
+            const statusActive = s.status === "active";
             return (
               <Link
                 key={s.id}
                 href={`/recherche/clients/${s.id}`}
                 className={cn(
-                  "block rounded-2xl border p-5 transition-all duration-200",
+                  "mx-4 my-2 block cursor-pointer rounded-xl border p-5 transition-all duration-150",
                   active
-                    ? "border-primary/45 bg-primary/[0.07] shadow-[0_8px_28px_-16px_hsl(var(--primary)/0.45)] ring-1 ring-primary/15"
-                    : cn(
-                        CARD,
-                        "border-border/50 bg-card/70 hover:border-primary/25 hover:bg-card",
-                      ),
+                    ? "border-blue-200 bg-blue-50 shadow-sm dark:border-blue-900 dark:bg-blue-950/40"
+                    : "border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700",
                 )}
               >
-                <div className="flex gap-4">
-                  <span
-                    className={cn(
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold",
-                      active
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted/90 text-muted-foreground ring-1 ring-border/50",
-                    )}
-                  >
+                <div className="mb-2.5 flex items-center gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-bold text-white">
                     {initialsFromName(s.client_name)}
                   </span>
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <p className="truncate text-[15px] font-semibold tracking-tight text-foreground">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-gray-900 dark:text-zinc-100">
                       {s.client_name}
                     </p>
-                    <p className="line-clamp-2 text-[13px] capitalize leading-snug text-muted-foreground">
+                    <p className="truncate text-sm capitalize text-gray-500 dark:text-zinc-500">
                       {s.brand} {s.model}
                     </p>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex rounded-lg bg-background/90 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-foreground ring-1 ring-border/50">
-                        {budgetA} – {budgetB}
-                      </span>
-                      <span
-                        className={cn(
-                          "inline-flex rounded-lg px-2.5 py-1 text-[11px] font-semibold",
-                          active
-                            ? "bg-primary/15 text-primary"
-                            : "bg-muted/80 text-muted-foreground",
-                        )}
-                      >
-                        {CLIENT_SEARCH_STATUS_LABELS[s.status]}
-                      </span>
-                    </div>
-                    <p className="text-[12px] font-medium tabular-nums text-muted-foreground">
-                      <span className="font-semibold text-foreground">{s.cached_match_count}</span>{" "}
-                      résultat{s.cached_match_count > 1 ? "s" : ""} proche
-                      {s.cached_match_count > 1 ? "s" : ""}
-                    </p>
                   </div>
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                      statusActive
+                        ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
+                        : "bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-zinc-400",
+                    )}
+                  >
+                    {CLIENT_SEARCH_STATUS_LABELS[s.status]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600 tabular-nums dark:bg-blue-950/50 dark:text-blue-400">
+                    {budgetA} – {budgetB}
+                  </span>
+                  <span className="text-xs text-gray-400 tabular-nums dark:text-zinc-500">
+                    {s.cached_match_count} résultat{s.cached_match_count > 1 ? "s" : ""}
+                  </span>
                 </div>
               </Link>
             );
@@ -566,134 +556,121 @@ function SearchListColumn({
 
 /* ─── header principal (colonne centre) ─── */
 
-function PremiumMainHeader({
-  searchId,
-  search,
-  loadMatches,
-  totalListed,
-  bestScore,
-  scanned,
-}: {
-  searchId: string;
-  search: ClientSearch;
-  loadMatches: boolean;
-  totalListed: number | null;
-  bestScore: number | null;
-  scanned: number | null;
-}) {
+function PremiumMainHeader({ searchId, search }: { searchId: string; search: ClientSearch }) {
   return (
-    <header className="sticky top-0 z-20 shrink-0 border-b border-border/50 bg-background/80 px-5 py-6 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-xl dark:bg-background/70 sm:px-6">
-      <div className="flex w-full min-w-0 flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0 flex-1 space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Fiche sourcing
-          </p>
-          <div className="flex flex-wrap items-center gap-3 gap-y-2">
-            <h1 className="text-balance text-[1.65rem] font-semibold leading-tight tracking-tight text-foreground sm:text-[2rem]">
-              {search.client_name}
-            </h1>
-            {search.is_rare && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-400/35 bg-orange-500/10 px-3 py-1 text-[11px] font-semibold text-orange-900 dark:text-orange-100">
-                <Flame className="h-3.5 w-3.5" />
-                Rare
-              </span>
-            )}
+    <header className="px-8 pb-6 pt-8">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-base font-bold text-white shadow-lg shadow-blue-600/25">
+            {initialsFromName(search.client_name)}
+          </span>
+          <div className="min-w-0">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              Fiche sourcing
+            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">{search.client_name}</h1>
+              {search.is_rare && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-[11px] font-semibold text-orange-700 ring-1 ring-orange-200">
+                  <Flame className="h-3 w-3" />
+                  Rare
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-sm capitalize text-slate-500">
+              {search.brand} {search.model}
+              {search.version ? ` · ${search.version}` : ""}
+            </p>
           </div>
-          <p className="max-w-2xl text-[1.05rem] font-medium capitalize leading-relaxed text-muted-foreground">
-            {search.brand} {search.model}
-            {search.version ? (
-              <span className="font-normal text-muted-foreground/80"> · {search.version}</span>
-            ) : null}
-          </p>
         </div>
 
-        <div className="flex w-full min-w-0 flex-col gap-4 lg:max-w-xl lg:items-end">
-          <div className="flex w-full flex-wrap gap-3 lg:justify-end">
-            <StatPill
-              icon={Target}
-              label="Statut"
-              value={CLIENT_SEARCH_STATUS_LABELS[search.status]}
-            />
-            <StatPill
-              icon={Percent}
-              label="Meilleur match"
-              value={
-                loadMatches ? "…" : bestScore != null ? `${Math.round(bestScore)} %` : "—"
-              }
-            />
-            <StatPill
-              icon={Gauge}
-              label="Difficulté"
-              value={
-                search.difficulty_score != null ? `${search.difficulty_score} / 10` : "—"
-              }
-            />
-            <StatPill
-              icon={Sparkles}
-              label="Annonces listées"
-              value={loadMatches ? "…" : totalListed != null ? String(totalListed) : "—"}
-            />
-            {scanned != null && (
-              <StatPill
-                icon={Compass}
-                label="Scannées"
-                value={String(scanned)}
-                muted
-              />
-            )}
-          </div>
-          <div className="flex w-full flex-wrap gap-3 lg:justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 rounded-xl border-border/70"
-              href={`/recherche/clients/${searchId}#resume-section`}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Modifier critères
-            </Button>
-            <Button
-              size="sm"
-              className="h-10 rounded-xl"
-              href="/recherche/clients/new"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Nouvelle recherche
-            </Button>
-          </div>
+        <div className="flex shrink-0 flex-wrap gap-2.5">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 rounded-xl border-slate-200 px-4 text-sm"
+            href={`/recherche/clients/${searchId}#resume-section`}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Modifier critères
+          </Button>
+          <Button
+            size="sm"
+            className="h-10 rounded-xl bg-slate-900 px-4 text-sm hover:bg-slate-800"
+            href="/recherche/clients/new"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nouvelle recherche
+          </Button>
         </div>
       </div>
     </header>
   );
 }
 
-function StatPill({
-  icon: Icon,
-  label,
-  value,
-  muted,
+function SearchStatsGrid({
+  search,
+  loadMatches,
+  totalListed,
+  bestScore,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  muted?: boolean;
+  search: ClientSearch;
+  loadMatches: boolean;
+  totalListed: number | null;
+  bestScore: number | null;
 }) {
+  const statItems = [
+    {
+      label: "Statut",
+      value: CLIENT_SEARCH_STATUS_LABELS[search.status],
+      icon: CheckCircle2,
+      iconColor: "text-emerald-600",
+      iconBg: "bg-emerald-50",
+    },
+    {
+      label: "Difficulté",
+      value: search.difficulty_score != null ? `${search.difficulty_score} / 10` : "—",
+      icon: Target,
+      iconColor: "text-orange-500",
+      iconBg: "bg-orange-50",
+    },
+    {
+      label: "Meilleur match",
+      value: loadMatches ? "…" : bestScore != null ? `${Math.round(bestScore)} %` : "—",
+      icon: Sparkles,
+      iconColor: "text-blue-600",
+      iconBg: "bg-blue-50",
+    },
+    {
+      label: "Annonces listées",
+      value: loadMatches ? "…" : totalListed != null ? String(totalListed) : "—",
+      icon: TrendingUp,
+      iconColor: "text-violet-600",
+      iconBg: "bg-violet-50",
+    },
+  ];
+
   return (
-    <div
-      className={cn(
-        "flex min-w-[8.5rem] flex-1 items-center gap-3 rounded-2xl border border-border/55 bg-card/90 px-4 py-3 shadow-sm sm:flex-initial sm:min-w-[9.5rem]",
-        muted && "opacity-90",
-      )}
-    >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-muted/80 text-muted-foreground ring-1 ring-border/40">
-        <Icon className="h-4 w-4" />
-      </span>
-      <div className="min-w-0">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {label}
-        </p>
-        <p className="truncate text-[13px] font-bold text-foreground">{value}</p>
-      </div>
+    <div className="grid grid-cols-2 gap-4 px-8 pb-8 lg:grid-cols-4">
+      {statItems.map((stat) => {
+        const Icon = stat.icon;
+        return (
+          <div
+            key={stat.label}
+            className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+          >
+            <div className="mb-3">
+              <span className={cn("inline-flex h-9 w-9 items-center justify-center rounded-xl", stat.iconBg)}>
+                <Icon className={cn("h-4.5 w-4.5", stat.iconColor)} />
+              </span>
+            </div>
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              {stat.label}
+            </p>
+            <p className="text-lg font-bold tabular-nums text-slate-900">{stat.value}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -752,39 +729,30 @@ function ResumeSearchSection({
   });
 
   return (
-    <div className={cn("flex flex-col", GAP_SECTION)}>
-      <div>
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">Résumé de la recherche</h2>
-        <p className="mt-1 text-[14px] text-muted-foreground">
-          Critères actifs et pilotage du sourcing sur un seul écran lisible.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {criteria.map((c) => (
-          <div key={c.label} className={cn(CARD, PAD_INNER)}>
-            <div className="flex items-start gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-                {c.icon}
+    <div className="space-y-6">
+      <div className={cn(CS_SURFACE, "p-6")}>
+        <p className={CS_LABEL}>Critères actifs</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {criteria.map((c) => (
+            <div
+              key={c.label}
+              className="flex items-center gap-2.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm"
+            >
+              <span className="text-gray-400 [&_svg]:h-3.5 [&_svg]:w-3.5">{c.icon}</span>
+              <span>
+                {c.label}: <span className="font-semibold text-gray-900">{c.value}</span>
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {c.label}
-                </p>
-                <p className="mt-1 break-words text-[15px] font-semibold leading-snug text-foreground">
-                  {c.value}
-                </p>
-              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className={cn(CARD, PAD_INNER)}>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <p className="text-sm font-semibold text-gray-900">Pilotage</p>
           <Field label="Statut">
             <Select
-              className="h-12 w-full min-w-0 rounded-xl border-border/60 bg-background"
+              className={CS_INPUT}
               value={search.status}
               onChange={(e) => onPatch({ status: e.target.value as ClientSearch["status"] })}
             >
@@ -795,11 +763,16 @@ function ResumeSearchSection({
               ))}
             </Select>
           </Field>
-        </div>
-        <div className={cn(CARD, PAD_INNER)}>
           <Field label="Progression sourcing">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <input
+            <div className="space-y-2">
+              <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${progressDraft}%` }}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
                 type="range"
                 min={0}
                 max={100}
@@ -812,14 +785,13 @@ function ResumeSearchSection({
                   );
                   if (v !== search.sourcing_progress) onPatch({ sourcing_progress: v });
                 }}
-                className="h-3 w-full min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-muted accent-[hsl(var(--primary))]"
-              />
-              <div className="flex shrink-0 items-center gap-2">
+                  className="min-w-0 flex-1 cursor-pointer accent-blue-600"
+                />
                 <Input
                   type="number"
                   min={0}
                   max={100}
-                  className="h-12 w-[4.5rem] rounded-xl tabular-nums"
+                  className={cn(CS_INPUT, "w-14 tabular-nums")}
                   value={progressDraft}
                   onChange={(e) => setProgressDraft(Number(e.target.value))}
                   onBlur={() => {
@@ -829,54 +801,48 @@ function ResumeSearchSection({
                     if (v !== search.sourcing_progress) onPatch({ sourcing_progress: v });
                   }}
                 />
-                <span className="text-sm font-semibold text-muted-foreground">%</span>
+                <span className="text-xs font-medium text-slate-500">%</span>
               </div>
             </div>
           </Field>
         </div>
-        <div
-          className={cn(
-            CARD,
-            PAD_INNER,
-            "border-primary/20 bg-gradient-to-br from-primary/[0.06] via-card to-card",
-          )}
-        >
-          <div className="flex items-start gap-4">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary ring-1 ring-primary/20">
-              <Target className="h-5 w-5" />
+
+        <div className="rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-5 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+              <Target className="h-4 w-4" />
             </span>
-            <div className="min-w-0 flex-1 space-y-2 text-[14px] leading-relaxed">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="min-w-0 space-y-1.5">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600/80">
                 Terrain & cache
               </p>
               {search.difficulty_score != null && (
-                <p className="font-semibold text-foreground">
-                  Difficulté{" "}
-                  <span className="tabular-nums">{search.difficulty_score}</span>
-                  <span className="font-normal text-muted-foreground">/10</span>
+                <p className="text-sm font-semibold text-slate-900">
+                  Difficulté {search.difficulty_score}
+                  <span className="font-normal text-slate-500">/10</span>
                 </p>
               )}
               {search.eta_days_min != null && search.eta_days_max != null && (
-                <p className="flex flex-wrap items-center gap-2 text-muted-foreground">
-                  <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+                <p className="flex items-center gap-1.5 text-sm text-slate-600">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-600" />
                   Estimation {search.eta_days_min}–{search.eta_days_max} jours
                 </p>
               )}
-              <p className="text-[13px] text-muted-foreground">
-                <span className="font-bold tabular-nums text-foreground">
+              <p className="text-sm text-slate-500">
+                <span className="font-semibold tabular-nums text-slate-800">
                   {search.cached_match_count}
                 </span>{" "}
-                véhicules proches (cache)
-                {matches && (
+                en cache
+                {matches ? (
                   <>
                     {" "}
                     ·{" "}
-                    <span className="font-semibold text-foreground">
+                    <span className="font-semibold text-slate-800">
                       {matches.strong.length + matches.close.length + matches.stretch.length}
                     </span>{" "}
-                    listés maintenant
+                    listés
                   </>
-                )}
+                ) : null}
               </p>
             </div>
           </div>
@@ -891,38 +857,27 @@ function ResumeSearchSection({
 function HintsPremiumSection({ hints }: { hints: SourcingHint[] }) {
   if (!hints.length) return null;
   return (
-    <section className={cn("flex flex-col", GAP_SECTION)}>
-      <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-primary/15 text-primary ring-1 ring-primary/20">
-          <Bot className="h-5 w-5" />
+    <section>
+      <div className="mb-3 flex items-center gap-2">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+          <Bot className="h-4 w-4" />
         </span>
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">Suggestions IA</h2>
-          <p className="text-[14px] text-muted-foreground">
-            Pistes actionnables pour accélérer le sourcing.
-          </p>
+          <p className="text-sm font-semibold text-slate-900">Suggestions IA</p>
+          <p className="text-xs text-slate-500">Pistes pour accélérer le sourcing</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {hints.map((h) => (
           <div
             key={h.title}
-            className={cn(
-              "relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-primary/[0.04] to-violet-500/[0.06] p-6 pl-7 shadow-sm ring-1 ring-black/[0.03] dark:ring-white/[0.04]",
-            )}
+            className="rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-5"
           >
-            <div
-              aria-hidden
-              className="absolute inset-y-3 left-0 w-1 rounded-full bg-gradient-to-b from-primary to-violet-500"
-            />
-            <h3 className="flex items-start gap-3 text-[16px] font-semibold leading-snug tracking-tight text-foreground">
-              <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-              {h.title}
-            </h3>
-            <ul className="mt-4 space-y-3 text-[14px] leading-relaxed text-muted-foreground">
+            <p className="mb-3 text-sm font-semibold text-blue-700">{h.title}</p>
+            <ul className="space-y-2">
               {h.lines.map((line, i) => (
-                <li key={`${h.title}-${i}`} className="flex gap-3">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+                <li key={`${h.title}-${i}`} className="flex items-start gap-2 text-sm text-gray-600">
+                  <span className="mt-0.5 shrink-0 text-blue-400">•</span>
                   <span>{line}</span>
                 </li>
               ))}
@@ -1226,16 +1181,12 @@ function ProWorkspacePanel({
 
   return (
     <>
-      <div className={cn(CARD, PAD_INNER, "space-y-6")}>
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/15">
-            <Users className="h-5 w-5" />
-          </span>
-          <div>
-            <h3 className="text-[16px] font-semibold text-foreground">Sources professionnelles</h3>
-            <p className="text-[13px] text-muted-foreground">Garages et partenaires liés à cette fiche.</p>
-          </div>
-        </div>
+      <div className="border-b border-gray-100 bg-slate-50/80 px-5 py-4">
+        <p className={CS_LABEL}>Espace pro</p>
+        <p className="text-sm font-semibold text-slate-900">Sources & contact</p>
+      </div>
+      <div className="space-y-5 border-b border-gray-100 p-5 dark:border-zinc-800">
+        <p className={CS_LABEL}>Sources professionnelles</p>
 
         {assignments.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 px-5 py-10 text-center">
@@ -1256,7 +1207,10 @@ function ProWorkspacePanel({
                   timeStyle: "short",
                 });
               return (
-                <li key={a.id} className={cn(CARD, "border-primary/10 bg-card/80 p-6")}>
+                <li
+                  key={a.id}
+                  className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm"
+                >
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0 flex-1 space-y-1">
@@ -1268,45 +1222,36 @@ function ProWorkspacePanel({
                           {c.specialty ? ` · ${c.specialty}` : ""}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-muted/90 px-3 py-1 text-[11px] font-semibold text-foreground ring-1 ring-border/50">
-                        {SOURCE_FOLLOW_UP_LABELS[a.follow_up_status]}
-                      </span>
+                      <Select
+                        className="h-auto shrink-0 rounded-lg border-amber-200 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-400"
+                        value={a.follow_up_status}
+                        onChange={(e) =>
+                          patchAssignment(a.id, {
+                            follow_up_status: e.target
+                              .value as ClientSearchSourceAssignment["follow_up_status"],
+                          })
+                        }
+                      >
+                        {Object.entries(SOURCE_FOLLOW_UP_LABELS).map(([k, label]) => (
+                          <option key={k} value={k}>
+                            {label}
+                          </option>
+                        ))}
+                      </Select>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <Field label="Suivi">
-                        <Select
-                          className="h-11 rounded-xl"
-                          value={a.follow_up_status}
-                          onChange={(e) =>
-                            patchAssignment(a.id, {
-                              follow_up_status: e.target
-                                .value as ClientSearchSourceAssignment["follow_up_status"],
-                            })
-                          }
-                        >
-                          {Object.entries(SOURCE_FOLLOW_UP_LABELS).map(([k, label]) => (
-                            <option key={k} value={k}>
-                              {label}
-                            </option>
-                          ))}
-                        </Select>
-                      </Field>
-                      {last && (
-                        <div className="rounded-xl border border-border/50 bg-background/60 px-4 py-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                            Dernier contact
-                          </p>
-                          <p className="mt-1 text-[13px] font-medium text-foreground">{last}</p>
-                        </div>
-                      )}
-                    </div>
+                    {last && (
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                        <span>Dernier contact :</span>
+                        <span className="font-medium text-gray-600 dark:text-zinc-300">{last}</span>
+                      </div>
+                    )}
 
                     <Field label="Réponse reçue">
                       <Textarea
                         defaultValue={a.response_received ?? ""}
                         placeholder="Synthèse de la réponse du partenaire…"
-                        className="min-h-[88px] rounded-xl text-[13px]"
+                        className={cn(CS_TEXTAREA, "min-h-16")}
                         onBlur={(e) => {
                           const v = e.target.value.trim();
                           if (v !== (a.response_received ?? "")) {
@@ -1346,7 +1291,7 @@ function ProWorkspacePanel({
         {available.length > 0 && (
           <div className={cn("space-y-4 border-t border-border/40 pt-6")}>
             <Field label="Ajouter depuis le carnet">
-              <Select value={pick} onChange={(e) => setPick(e.target.value)} className="h-11 rounded-xl">
+              <Select value={pick} onChange={(e) => setPick(e.target.value)} className={CS_INPUT}>
                 <option value="">Choisir un contact…</option>
                 {available.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -1372,20 +1317,14 @@ function ProWorkspacePanel({
         <AddContactInline searchId={searchId} onCreated={onRefresh} />
       </div>
 
-      <div
-        className={cn(
-          CARD,
-          PAD_INNER,
-          "space-y-6 border-violet-500/15 bg-gradient-to-br from-violet-500/[0.06] via-card to-card",
-        )}
-      >
+      <div className={cn(CS_CARD_AI, "mx-4 mb-4 space-y-4")}>
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-700 ring-1 ring-violet-500/25 dark:text-violet-300">
-            <Bot className="h-5 w-5" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <Bot className="h-4 w-4" />
           </span>
           <div>
-            <h3 className="text-[16px] font-semibold text-foreground">Message IA</h3>
-            <p className="text-[13px] text-muted-foreground">
+            <h3 className="text-sm font-semibold text-slate-900">Message IA</h3>
+            <p className="text-xs text-slate-600">
               Générez un texte pour {search.brand} {search.model}.
             </p>
           </div>
@@ -1395,7 +1334,7 @@ function ProWorkspacePanel({
           <Select
             value={aiContact}
             onChange={(e) => setAiContact(e.target.value)}
-            className="h-11 rounded-xl"
+            className={CS_INPUT}
           >
             <option value="">Choisir…</option>
             {assignments.map((a) => {
@@ -1415,7 +1354,7 @@ function ProWorkspacePanel({
             <Select
               value={channel}
               onChange={(e) => setChannel(e.target.value as typeof channel)}
-              className="h-11 rounded-xl"
+              className={CS_INPUT}
             >
               <option value="whatsapp">WhatsApp</option>
               <option value="sms">SMS</option>
@@ -1423,7 +1362,7 @@ function ProWorkspacePanel({
             </Select>
           </Field>
           <Field label="Style">
-            <Select value={tone} onChange={(e) => setTone(e.target.value as typeof tone)} className="h-11 rounded-xl">
+            <Select value={tone} onChange={(e) => setTone(e.target.value as typeof tone)} className={CS_INPUT}>
               <option value="professional">Professionnel</option>
               <option value="quick">Rapide</option>
               <option value="friendly">Amical</option>
@@ -1433,11 +1372,11 @@ function ProWorkspacePanel({
 
         <Button
           type="button"
-          className="h-11 w-full rounded-xl"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
           disabled={aiLoading}
           onClick={() => void generateAi()}
         >
-          {aiLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
+          {aiLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
           Générer avec l’IA
         </Button>
 
@@ -1447,15 +1386,15 @@ function ProWorkspacePanel({
           </p>
         )}
 
-        <div className="space-y-3 rounded-2xl border border-border/50 bg-background/70 p-4 ring-1 ring-black/[0.03] dark:ring-white/[0.05]">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="space-y-2 rounded-lg border border-slate-200/80 bg-white/80 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
             Aperçu message
           </p>
           <Textarea
             value={aiText}
             onChange={(e) => setAiText(e.target.value)}
             placeholder="Le texte généré apparaîtra ici — vous pouvez l’éditer avant envoi."
-            className="min-h-[140px] resize-y rounded-xl border-0 bg-transparent text-[14px] leading-relaxed shadow-none focus-visible:ring-1"
+            className={cn(CS_TEXTAREA, "min-h-[140px]")}
           />
           <div className="flex flex-wrap gap-2">
             <Button
@@ -1493,14 +1432,16 @@ function ProWorkspacePanel({
         </div>
       </div>
 
-      <div className={cn(CARD, PAD_INNER, "space-y-4")}>
-        <h3 className="text-[16px] font-semibold text-foreground">Notes internes</h3>
-        <p className="text-[13px] text-muted-foreground">Mémo terrain — non visible par le client.</p>
+      <div className="border-t border-gray-100 p-4 dark:border-zinc-800">
+        <p className={CS_LABEL}>Notes internes</p>
+        <p className="mb-2 text-[11px] italic text-gray-400 dark:text-zinc-500">
+          Mémo terrain — non visible par le client
+        </p>
         <Textarea
           key={search.updated_at}
           defaultValue={search.internal_notes ?? ""}
-          placeholder="Ex. client exige boîte auto, dispo le samedi…"
-          className="min-h-[120px] rounded-xl text-[14px]"
+          placeholder="Ex. client exige boîte auto, dispo le samedi..."
+          className={cn(CS_TEXTAREA, "min-h-20")}
           onBlur={async (e) => {
             const v = e.target.value.trim();
             if (v === (search.internal_notes ?? "")) return;
@@ -1510,32 +1451,34 @@ function ProWorkspacePanel({
         />
       </div>
 
-      <div className={cn(CARD, PAD_INNER, "space-y-4")}>
-        <h3 className="text-[16px] font-semibold text-foreground">Historique</h3>
-        <ul className="max-h-72 space-y-3 overflow-y-auto pr-1 text-[13px]">
-          {events.length === 0 ? (
-            <li className="rounded-xl border border-dashed border-border/60 py-8 text-center text-muted-foreground">
-              Aucun événement pour l’instant.
-            </li>
-          ) : (
-            events.map((ev) => (
-              <li
-                key={ev.id}
-                className="rounded-xl border border-border/50 bg-muted/20 px-4 py-3 transition-colors hover:bg-muted/30"
-              >
-                <span className="font-medium capitalize text-foreground">
-                  {ev.event_type.replace(/_/g, " ")}
-                </span>
-                <span className="mt-1 block text-[12px] text-muted-foreground">
-                  {new Date(ev.created_at).toLocaleString("fr-FR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                </span>
-              </li>
-            ))
-          )}
-        </ul>
+      <div className="border-t border-gray-100 p-4 dark:border-zinc-800">
+        <p className={cn(CS_LABEL, "mb-3")}>Historique</p>
+        <div className="relative max-h-72 overflow-y-auto">
+          <div
+            aria-hidden
+            className="absolute bottom-1 left-2.5 top-1 w-px bg-gray-100 dark:bg-zinc-800"
+          />
+          <div className="space-y-3 pl-7">
+            {events.length === 0 ? (
+              <p className="py-6 text-center text-xs text-gray-400">Aucun événement pour l&apos;instant.</p>
+            ) : (
+              events.map((ev) => (
+                <div key={ev.id} className="relative">
+                  <div className="absolute -left-[18px] top-1 h-2 w-2 rounded-full bg-gray-300 ring-2 ring-white dark:bg-zinc-600 dark:ring-zinc-950" />
+                  <p className="text-xs font-medium capitalize text-gray-700 dark:text-zinc-300">
+                    {ev.event_type.replace(/_/g, " ")}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-gray-400 dark:text-zinc-500">
+                    {new Date(ev.created_at).toLocaleString("fr-FR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </>
   );
@@ -1603,19 +1546,19 @@ function AddContactInline({
       className={cn("space-y-4 rounded-2xl border border-dashed border-border/70 bg-muted/10 p-6")}
     >
       <Field label="Garage" required>
-        <Input name="garage_name" required placeholder="Garage Premium Auto" className="h-11 rounded-xl" />
+        <Input name="garage_name" required placeholder="Garage Premium Auto" className={CS_INPUT} />
       </Field>
       <Field label="Contact">
-        <Input name="contact_name" placeholder="Prénom" className="h-11 rounded-xl" />
+        <Input name="contact_name" placeholder="Prénom" className={CS_INPUT} />
       </Field>
       <Field label="Téléphone">
-        <Input name="phone" type="tel" className="h-11 rounded-xl" />
+        <Input name="phone" type="tel" className={CS_INPUT} />
       </Field>
       <Field label="Ville">
-        <Input name="city" placeholder="Paris" className="h-11 rounded-xl" />
+        <Input name="city" placeholder="Paris" className={CS_INPUT} />
       </Field>
       <Field label="Spécialité">
-        <Input name="specialty" placeholder="BMW / Mercedes" className="h-11 rounded-xl" />
+        <Input name="specialty" placeholder="BMW / Mercedes" className={CS_INPUT} />
       </Field>
       <div className="flex gap-3">
         <Button type="submit" className="h-11 rounded-xl" disabled={loading}>

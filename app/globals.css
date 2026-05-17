@@ -231,6 +231,92 @@
   }
 }
 
+/* ================================================================
+   LANDING PAGE — design tokens + utility classes
+   Thème : fond sombre premium, accent bleu #4F8EF7, typo serrée
+   ================================================================ */
+
+:root {
+  --landing-bg: #08080F;
+  --landing-surface: #0E0E18;
+  --landing-border: rgba(255, 255, 255, 0.08);
+  --landing-text-primary: #EEEEF5;
+  --landing-text-muted: rgba(238, 238, 245, 0.42);
+  --landing-accent: #4F8EF7;
+}
+
+@layer components {
+  /* Card glassmorphism */
+  .landing-card {
+    border: 1px solid var(--landing-border);
+    background: rgba(255, 255, 255, 0.035);
+    border-radius: 1rem;
+  }
+
+  /* Primary CTA button */
+  .landing-cta {
+    @apply inline-flex items-center justify-center rounded-xl font-semibold text-white transition-all duration-150;
+    background: var(--landing-accent);
+  }
+  .landing-cta:hover {
+    filter: brightness(1.12);
+  }
+
+  /* Secondary outlined CTA */
+  .landing-cta-secondary {
+    @apply inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150;
+    border: 1px solid var(--landing-border);
+    color: var(--landing-text-muted);
+  }
+  .landing-cta-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--landing-text-primary);
+  }
+
+  /* Eyebrow / label text */
+  .landing-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--landing-text-muted);
+  }
+
+  /* Display / headline */
+  .landing-display {
+    letter-spacing: -0.03em;
+    line-height: 1.06;
+  }
+
+  /* Monospace utility */
+  .landing-mono {
+    font-family: ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
+    font-feature-settings: normal;
+    letter-spacing: -0.01em;
+  }
+
+  /* Gradient accent text */
+  .landing-gradient-text {
+    background: linear-gradient(120deg, var(--landing-accent) 10%, #93B4F8 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hero section background */
+  .landing-hero-noise {
+    background-color: var(--landing-bg);
+  }
+
+  /* Soft blue glow (used as absolute overlay div or on section) */
+  .landing-hero-glow {
+    background: radial-gradient(ellipse 85% 55% at 50% -10%, rgba(79, 142, 247, 0.13) 0%, transparent 70%);
+  }
+}
+
+/* ================================================================
+   ANIMATIONS
+   ================================================================ */
 /* ---------- Animations ---------- */
 @keyframes fadeIn {
   from {

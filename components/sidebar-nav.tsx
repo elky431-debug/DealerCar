@@ -24,12 +24,15 @@ import {
  */
 export interface SidebarNavProps {
   variant: "rail" | "drawer";
+  /** Réduit volontairement (icônes seules, sans expand au survol). */
+  collapsed?: boolean;
   onItemClick?: () => void;
   className?: string;
 }
 
 export function SidebarNav({
   variant,
+  collapsed = false,
   onItemClick,
   className,
 }: SidebarNavProps) {
@@ -39,7 +42,7 @@ export function SidebarNav({
     <nav
       className={cn(
         "flex-1 space-y-1 overflow-y-auto [scrollbar-width:thin]",
-        variant === "rail" ? "p-2.5" : "p-3",
+        variant === "rail" || collapsed ? "p-2" : "p-3",
         className,
       )}
     >
@@ -49,6 +52,7 @@ export function SidebarNav({
           group={group}
           isFirst={gi === 0}
           variant={variant}
+          collapsed={collapsed}
           pathname={pathname}
           onItemClick={onItemClick}
         />
@@ -63,27 +67,30 @@ function Group({
   group,
   isFirst,
   variant,
+  collapsed,
   pathname,
   onItemClick,
 }: {
   group: NavGroup;
   isFirst: boolean;
   variant: "rail" | "drawer";
+  collapsed: boolean;
   pathname: string;
   onItemClick?: () => void;
 }) {
   const groupActive = isGroupActive(group, pathname);
+  const railHover = variant === "rail" && !collapsed;
 
   return (
     <div className="space-y-0.5">
       {group.label && (
         <>
-          {/* Label visible quand expanded (rail collapsed → opacity 0) */}
           <p
             className={cn(
               "px-3 pt-3 text-[10.5px] font-semibold uppercase tracking-[0.14em] transition-colors",
-              variant === "rail" &&
+              railHover &&
                 "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
+              collapsed && "hidden",
               groupActive
                 ? "text-foreground"
                 : "text-muted-foreground/70",
@@ -92,9 +99,14 @@ function Group({
             {group.label}
           </p>
 
-          {/* Mini séparateur pour le rail collapsed (remplace le label) */}
-          {variant === "rail" && !isFirst && (
-            <div className="mx-4 my-2 h-px bg-border/50 transition-opacity duration-200 group-hover/sb:opacity-0 group-focus-within/sb:opacity-0" />
+          {(variant === "rail" || collapsed) && !isFirst && (
+            <div
+              className={cn(
+                "mx-2 my-2 h-px bg-border/50",
+                railHover &&
+                  "transition-opacity duration-200 group-hover/sb:opacity-0 group-focus-within/sb:opacity-0",
+              )}
+            />
           )}
         </>
       )}
@@ -104,6 +116,7 @@ function Group({
           key={item.href}
           item={item}
           variant={variant}
+          collapsed={collapsed}
           active={isItemActive(item.href, pathname)}
           onClick={onItemClick}
         />
@@ -117,17 +130,27 @@ function Group({
 function Item({
   item,
   variant,
+  collapsed,
   active,
   onClick,
 }: {
   item: NavItem;
   variant: "rail" | "drawer";
+  collapsed: boolean;
   active: boolean;
   onClick?: () => void;
 }) {
   const [navPending, startNavTransition] = useTransition();
   const Icon = item.icon;
   const isDisabled = item.disabled || item.comingSoon;
+  const railHover = variant === "rail" && !collapsed;
+  const iconOnly = collapsed || variant === "rail";
+
+  const labelHidden = cn(
+    iconOnly && !collapsed && variant === "rail" &&
+      "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
+    collapsed && "sr-only",
+  );
 
   const content = (
     <>
@@ -137,17 +160,8 @@ function Item({
           active && "scale-105",
         )}
       />
-      <span
-        className={cn(
-          "flex-1 truncate",
-          variant === "rail" &&
-            "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
-        )}
-      >
-        {item.label}
-      </span>
+      <span className={cn("flex-1 truncate", labelHidden)}>{item.label}</span>
 
-      {/* Badge (counter) — masqué en rail collapsed, sinon à droite */}
       {item.badge !== undefined && (
         <span
           className={cn(
@@ -155,21 +169,22 @@ function Item({
             active
               ? "bg-background/20 text-background"
               : "bg-foreground/[0.08] text-foreground/80",
-            variant === "rail" &&
+            railHover &&
               "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
+            collapsed && "sr-only",
           )}
         >
           {item.badge}
         </span>
       )}
 
-      {/* "Bientôt" tag */}
       {item.comingSoon && (
         <span
           className={cn(
             "ml-auto rounded-md bg-foreground/[0.06] px-1.5 py-0.5 text-[9.5px] font-medium uppercase tracking-[0.1em] text-muted-foreground",
-            variant === "rail" &&
+            railHover &&
               "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
+            collapsed && "sr-only",
           )}
         >
           Bientôt
@@ -179,7 +194,8 @@ function Item({
   );
 
   const baseClasses = cn(
-    "relative flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200",
+    "relative flex items-center whitespace-nowrap rounded-xl py-2.5 text-[13.5px] font-medium transition-all duration-200",
+    iconOnly ? "justify-center gap-0 px-2" : "gap-3 px-3",
     isDisabled && "cursor-not-allowed opacity-50",
     !isDisabled && active
       ? "bg-gradient-to-r from-foreground to-foreground/90 text-background shadow-[0_10px_24px_-12px_hsl(var(--foreground)/0.65)]"
