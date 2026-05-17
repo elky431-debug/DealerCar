@@ -50,10 +50,16 @@ const config: Config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        brand: {
+          DEFAULT: "var(--dl-brand)",
+          light: "var(--dl-brand-light)",
+          dark: "var(--dl-brand-dark)",
+          foreground: "#ffffff",
+        },
         landing: {
           bg: "#FAFAF8",
-          brand: "#D99330",
-          "brand-light": "#E8A84A",
+          brand: "var(--dl-brand)",
+          "brand-light": "var(--dl-brand-light)",
           muted: "#6B7280",
         },
       },
