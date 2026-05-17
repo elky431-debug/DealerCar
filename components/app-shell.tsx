@@ -113,7 +113,7 @@ export function AppShell({
       .toUpperCase() ?? "·";
 
   return (
-    <div className="dealerlink-surface relative min-h-screen">
+    <div className="dealerlink-surface relative flex h-dvh min-h-0 flex-col overflow-hidden">
       {/* Soft top gradient for atmospheric depth */}
       <div
         aria-hidden
@@ -216,7 +216,7 @@ export function AppShell({
 
       {/* ───────── Main ───────── */}
       <div
-        className="flex min-h-screen flex-1 flex-col md:pl-[var(--sidebar-width)]"
+        className="flex min-h-0 flex-1 flex-col md:pl-[var(--sidebar-width)]"
         style={{ "--sidebar-width": SIDEBAR_WIDTH_EXPANDED } as React.CSSProperties}
       >
         {/* Mobile topbar */}
@@ -241,7 +241,7 @@ export function AppShell({
             </Button>
           </Link>
         </header>
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">{children}</main>
       </div>
 
       {assistantReady && <AssistantWidgetGate />}

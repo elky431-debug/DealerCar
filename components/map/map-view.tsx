@@ -346,7 +346,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
   ] as const;
 
   return (
-    <div className="flex h-[calc(100vh-0px)] min-h-0 flex-1 overflow-hidden">
+    <div className="flex h-full min-h-0 w-full flex-1 overflow-hidden">
       <aside className="flex w-[320px] shrink-0 flex-col overflow-hidden border-r border-slate-200/90 bg-slate-50/95 shadow-[inset_-1px_0_0_rgba(255,255,255,0.6)]">
         <div className="shrink-0 border-b border-slate-200/80 bg-white px-4 pb-4 pt-5">
           <div className="mb-3 flex items-center gap-3">
@@ -603,7 +603,7 @@ export function MapView({ mapMigrationSql = "" }: { mapMigrationSql?: string }) 
         </div>
       </aside>
 
-      <section className="relative min-h-0 flex-1 overflow-hidden">
+      <section className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-slate-100">
         <MapContainer center={[46.5, 2.5]} zoom={6} className="h-full w-full" zoomControl={false}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'

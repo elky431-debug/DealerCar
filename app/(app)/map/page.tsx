@@ -21,7 +21,7 @@ export default async function MapPage() {
   const mapMigrationSql = loadMapMigrationSql();
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[#F8FAFC]">
       <MapView mapMigrationSql={mapMigrationSql} />
     </div>
   );
