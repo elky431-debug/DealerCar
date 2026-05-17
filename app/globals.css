@@ -224,11 +224,13 @@
   }
 
   .brand-panel-icon {
-    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)];
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
   }
 
   .dl-icon-mark {
-    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white shadow-[0_4px_14px_-4px_rgba(0,0,0,0.25)];
+    @apply flex shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
   }
 
   .dl-icon-mark-soft {
@@ -295,7 +297,8 @@
   }
 
   .page-header-bar {
-    @apply border-gray-200/70 bg-white/92 backdrop-blur-xl;
+    @apply border-gray-200/70 backdrop-blur-xl;
+    background-color: rgb(255 255 255 / 0.92);
   }
 
   /* legacy alias */
@@ -348,7 +351,8 @@
   }
 
   .landing-card-surface {
-    @apply rounded-2xl border border-gray-200/90 bg-white shadow-[0_20px_50px_-24px_rgba(15,23,42,0.18)];
+    @apply rounded-2xl border border-gray-200/90 bg-white;
+    box-shadow: 0 20px 50px -24px rgba(15, 23, 42, 0.18);
   }
 
   .landing-cta-primary {
