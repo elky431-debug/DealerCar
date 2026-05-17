@@ -227,9 +227,23 @@
     @apply flex shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)];
   }
 
+  /* Sidebar — item actif discret (pas de pill orange pleine) */
+  .dl-sidebar-link-active {
+    @apply relative bg-gray-100/90 font-semibold text-gray-900;
+  }
+
+  .dl-sidebar-link-active::before {
+    content: "";
+    @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-gray-900;
+  }
+
+  .dl-sidebar-link {
+    @apply text-gray-500 transition-colors hover:bg-gray-100/80 hover:text-gray-900;
+  }
+
   /* Onglet / nav pill actif */
   .tab-pill-active {
-    @apply bg-[#D99330] text-white shadow-[0_4px_14px_-4px_rgba(217,147,48,0.35)];
+    @apply bg-gray-900 text-white shadow-[0_4px_14px_-4px_rgba(0,0,0,0.15)];
   }
 
   .page-header-bar {
