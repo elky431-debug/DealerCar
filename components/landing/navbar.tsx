@@ -13,15 +13,17 @@ const NAV = [
 
 export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
   const [open, setOpen] = useState(false);
+  const dashboardHref = authenticated ? "/dashboard" : "/login";
+  const spaceHref = authenticated ? "/dashboard" : "/register";
 
   return (
     <>
-      <header className="sticky top-0 z-50 h-16 border-b border-gray-100 bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-50 border-b border-gray-200/60 bg-landing-bg/85 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
-            <LandingLogoMark className="h-7 w-7" />
+            <LandingLogoMark className="h-8 w-8" />
             <span className="text-lg font-bold tracking-tight text-gray-900">DealerLink</span>
-            <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-700">
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600">
               Bêta
             </span>
           </Link>
@@ -31,45 +33,23 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-sm font-medium text-gray-500 transition-colors duration-150 hover:text-gray-900"
+                className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
               >
                 {l.label}
               </a>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-            {authenticated ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-gray-500 transition-colors duration-150 hover:text-gray-900"
-                >
-                  Tableau de bord
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors duration-150 hover:bg-black"
-                >
-                  Mon espace
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-gray-500 transition-colors duration-150 hover:text-gray-900"
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/register"
-                  className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors duration-150 hover:bg-black"
-                >
-                  Essai gratuit
-                </Link>
-              </>
-            )}
+          <div className="hidden items-center gap-4 md:flex">
+            <Link
+              href={dashboardHref}
+              className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+            >
+              Tableau de bord
+            </Link>
+            <Link href={spaceHref} className="landing-cta-primary !px-5 !py-2.5 text-sm">
+              Mon espace
+            </Link>
           </div>
 
           <button
@@ -88,14 +68,14 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
         <div className="fixed inset-0 z-40 md:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-gray-900/40"
+            className="absolute inset-0 bg-gray-900/30"
             aria-label="Fermer"
             onClick={() => setOpen(false)}
           />
           <div className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col border-l border-gray-200 bg-white p-6 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-gray-900">
-                <LandingLogoMark className="h-7 w-7" />
+                <LandingLogoMark className="h-8 w-8" />
                 DealerLink
               </span>
               <button type="button" className="p-2 text-gray-500" onClick={() => setOpen(false)} aria-label="Fermer">
@@ -115,36 +95,28 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
               ))}
             </nav>
             <div className="mt-auto flex flex-col gap-3 border-t border-gray-100 pt-6">
-              {authenticated ? (
-                <Link
-                  href="/dashboard"
-                  className="rounded-lg bg-gray-900 py-3 text-center text-sm font-medium text-white"
-                  onClick={() => setOpen(false)}
-                >
-                  Tableau de bord
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="rounded-lg border border-gray-200 py-3 text-center text-sm font-medium text-gray-700"
-                    onClick={() => setOpen(false)}
-                  >
-                    Se connecter
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="rounded-lg bg-gray-900 py-3 text-center text-sm font-medium text-white"
-                    onClick={() => setOpen(false)}
-                  >
-                    Essai gratuit
-                  </Link>
-                </>
-              )}
+              <Link
+                href={dashboardHref}
+                className="rounded-full border border-gray-200 py-3 text-center text-sm font-medium text-gray-800"
+                onClick={() => setOpen(false)}
+              >
+                Tableau de bord
+              </Link>
+              <Link
+                href={spaceHref}
+                className="landing-cta-primary w-full justify-center py-3 text-sm"
+                onClick={() => setOpen(false)}
+              >
+                Mon espace
+              </Link>
             </div>
           </div>
         </div>
       )}
     </>
   );
+}
+
+function div({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={className}>{children}</div>;
 }

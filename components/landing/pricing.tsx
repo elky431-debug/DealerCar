@@ -24,12 +24,12 @@ export function Pricing() {
   const proPrice = annual ? 39 : 49;
 
   return (
-    <section id="tarifs" className="scroll-mt-20 border-t border-gray-100 bg-gray-50 py-20">
+    <section id="tarifs" className="scroll-mt-24 landing-section-alt py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 md:text-[36px]">
           Un tarif simple, sans surprise
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-lg text-gray-500">
+        <p className="mx-auto mt-3 max-w-xl text-center text-lg text-landing-muted">
           Essayez gratuitement pendant 14 jours, sans carte bancaire.
         </p>
 
@@ -59,7 +59,7 @@ export function Pricing() {
         </div>
 
         <div className="mx-auto mt-10 grid max-w-[800px] gap-5 md:grid-cols-2">
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-8">
+          <div className="landing-card-surface flex flex-col p-6 transition-transform hover:-translate-y-0.5 sm:p-8">
             <h3 className="text-lg font-bold text-gray-900">Gratuit</h3>
             <p className="mt-2 text-3xl font-bold text-gray-900">0 €/mois</p>
             <p className="mt-1 text-sm text-gray-500">Pour démarrer</p>
@@ -80,8 +80,8 @@ export function Pricing() {
             </Link>
           </div>
 
-          <div className="relative flex flex-col rounded-xl border-2 border-gray-900 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-8">
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gray-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+          <div className="relative flex flex-col rounded-2xl border-2 border-landing-brand bg-white p-6 shadow-[0_20px_50px_-24px_rgba(217,147,48,0.35)] transition-transform hover:-translate-y-0.5 sm:p-8">
+            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-landing-brand px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
               Le plus populaire
             </span>
             <h3 className="text-lg font-bold text-gray-900">Pro</h3>
@@ -102,10 +102,7 @@ export function Pricing() {
               <Li ok>Support prioritaire</Li>
               <Li ok>Multi-utilisateurs (bientôt)</Li>
             </ul>
-            <Link
-              href="/register"
-              className="mt-8 block w-full rounded-lg bg-gray-900 py-3 text-center text-sm font-medium text-white transition-colors duration-150 hover:bg-black"
-            >
+            <Link href="/register" className="landing-cta-primary mt-8 w-full justify-center py-3 text-sm">
               Commencer l&apos;essai gratuit →
             </Link>
           </div>

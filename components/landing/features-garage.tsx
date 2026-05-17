@@ -33,14 +33,12 @@ const ITEMS = [
 
 function VehicleSheetMockup() {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="landing-card-surface overflow-hidden">
       <div className="border-b border-gray-100 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-sm font-bold text-gray-900">Peugeot 308 SW · 2021 · 42 000 km</h3>
-          <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
-            Disponible
-          </span>
-          <span className="rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-800">Réseau</span>
+          <span className="landing-tag-green">Disponible</span>
+          <span className="rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-700">Réseau</span>
         </div>
         <div className="mt-3 flex gap-2 text-[11px] font-semibold text-gray-500">
           <span className="rounded-md bg-gray-100 px-2 py-1 text-gray-800">Documents</span>
@@ -50,18 +48,16 @@ function VehicleSheetMockup() {
       </div>
       <ul className="divide-y divide-gray-100 p-2">
         {[
-          ["📄", "Carte grise — recto.pdf", true],
-          ["📄", "CT valide.pdf", true],
-          ["🎬", "Vidéo avant réparation.mp4", true],
-        ].map(([ic, name, ok]) => (
-          <li key={String(name)} className="flex items-center gap-3 px-2 py-2.5 text-sm">
+          ["📄", "Carte grise — recto.pdf"],
+          ["📄", "CT valide.pdf"],
+          ["🎬", "Vidéo avant réparation.mp4"],
+        ].map(([ic, name]) => (
+          <li key={name} className="flex items-center gap-3 px-2 py-2.5 text-sm">
             <span className="text-lg">{ic}</span>
             <span className="min-w-0 flex-1 truncate text-gray-700">{name}</span>
-            {ok ? (
-              <span className="shrink-0 text-emerald-600" aria-label="OK">
-                ✓
-              </span>
-            ) : null}
+            <span className="shrink-0 text-emerald-600" aria-label="OK">
+              ✓
+            </span>
           </li>
         ))}
       </ul>
@@ -75,14 +71,14 @@ function VehicleSheetMockup() {
 
 export function FeaturesGarage() {
   return (
-    <section id="fonctionnalites" className="scroll-mt-20 border-t border-gray-100 bg-gray-50 py-20">
+    <section id="fonctionnalites" className="scroll-mt-24 bg-white/50 py-20">
       <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
-        <div className="max-lg:order-last lg:col-start-1">
+        <div className="max-lg:order-last">
           <VehicleSheetMockup />
         </div>
-        <div className="max-lg:order-first lg:col-start-2">
-          <span className="inline-flex rounded-lg bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-800">
-            🏠 Mon garage
+        <div className="max-lg:order-first">
+          <span className="inline-flex rounded-full bg-landing-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-landing-brand">
+            Mon garage
           </span>
           <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-[40px]">
             Tout votre garage dans une seule interface
@@ -90,12 +86,12 @@ export function FeaturesGarage() {
           <ul className="mt-10 space-y-5">
             {ITEMS.map((it) => (
               <li key={it.title} className="flex gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-lg">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-lg">
                   {it.icon}
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{it.title}</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-gray-500">{it.desc}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-landing-muted">{it.desc}</p>
                 </div>
               </li>
             ))}

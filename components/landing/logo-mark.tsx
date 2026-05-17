@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function LandingLogoMark({ className }: { className?: string }) {
   return (
     <Image
-      src="/dealerlink-logo.png"
+      src="/dealerlink-logo.jpg"
       alt="DealerLink"
       width={96}
       height={96}

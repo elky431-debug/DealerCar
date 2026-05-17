@@ -232,85 +232,43 @@
 }
 
 /* ================================================================
-   LANDING PAGE — design tokens + utility classes
-   Thème : fond sombre premium, accent bleu #4F8EF7, typo serrée
+   LANDING PAGE — thème SaaS clair (maille + accent #D99330)
    ================================================================ */
 
-:root {
-  --landing-bg: #08080F;
-  --landing-surface: #0E0E18;
-  --landing-border: rgba(255, 255, 255, 0.08);
-  --landing-text-primary: #EEEEF5;
-  --landing-text-muted: rgba(238, 238, 245, 0.42);
-  --landing-accent: #4F8EF7;
-}
-
 @layer components {
-  /* Card glassmorphism */
-  .landing-card {
-    border: 1px solid var(--landing-border);
-    background: rgba(255, 255, 255, 0.035);
-    border-radius: 1rem;
+  .landing-saas {
+    --landing-brand: #d99330;
+    --landing-brand-light: #e8a84a;
   }
 
-  /* Primary CTA button */
-  .landing-cta {
-    @apply inline-flex items-center justify-center rounded-xl font-semibold text-white transition-all duration-150;
-    background: var(--landing-accent);
-  }
-  .landing-cta:hover {
-    filter: brightness(1.12);
+  .bg-landing-bg {
+    background-color: #fafaf8;
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.065) 1px, transparent 1px);
+    background-size: 22px 22px;
   }
 
-  /* Secondary outlined CTA */
-  .landing-cta-secondary {
-    @apply inline-flex items-center justify-center rounded-xl font-medium transition-all duration-150;
-    border: 1px solid var(--landing-border);
-    color: var(--landing-text-muted);
-  }
-  .landing-cta-secondary:hover {
-    border-color: rgba(255, 255, 255, 0.18);
-    color: var(--landing-text-primary);
+  .landing-section-alt {
+    @apply border-y border-gray-200/80 bg-white/70 backdrop-blur-sm;
   }
 
-  /* Eyebrow / label text */
-  .landing-eyebrow {
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--landing-text-muted);
+  .landing-card-surface {
+    @apply rounded-2xl border border-gray-200/90 bg-white shadow-[0_20px_50px_-24px_rgba(15,23,42,0.18)];
   }
 
-  /* Display / headline */
-  .landing-display {
-    letter-spacing: -0.03em;
-    line-height: 1.06;
+  .landing-cta-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gray-900 px-7 py-3.5 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-black;
   }
 
-  /* Monospace utility */
-  .landing-mono {
-    font-family: ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
-    font-feature-settings: normal;
-    letter-spacing: -0.01em;
+  .landing-cta-ghost {
+    @apply text-[15px] font-medium text-gray-500 underline-offset-4 transition-colors hover:text-gray-900 hover:underline;
   }
 
-  /* Gradient accent text */
-  .landing-gradient-text {
-    background: linear-gradient(120deg, var(--landing-accent) 10%, #93B4F8 90%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .landing-badge-dark {
+    @apply inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-1.5 text-[13px] font-medium text-white;
   }
 
-  /* Hero section background */
-  .landing-hero-noise {
-    background-color: var(--landing-bg);
-  }
-
-  /* Soft blue glow (used as absolute overlay div or on section) */
-  .landing-hero-glow {
-    background: radial-gradient(ellipse 85% 55% at 50% -10%, rgba(79, 142, 247, 0.13) 0%, transparent 70%);
+  .landing-tag-green {
+    @apply shrink-0 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700;
   }
 }
 

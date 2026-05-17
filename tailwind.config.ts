@@ -50,6 +50,19 @@ const config: Config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        landing: {
+          bg: "#FAFAF8",
+          brand: "#D99330",
+          "brand-light": "#E8A84A",
+          muted: "#6B7280",
+        },
+      },
+      backgroundImage: {
+        "landing-dots":
+          "radial-gradient(circle, rgba(0,0,0,0.07) 1px, transparent 1px)",
+      },
+      backgroundSize: {
+        "landing-dots": "22px 22px",
       },
       borderRadius: {
         lg: "var(--radius)",
