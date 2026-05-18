@@ -9,6 +9,20 @@ const supabaseHost = (() => {
 
 const nextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              "frame-src 'self' https://www.autoscout24.fr https://www.autoscout24.com;",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     domains: [
       supabaseHost,
