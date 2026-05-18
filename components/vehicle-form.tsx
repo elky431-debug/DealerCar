@@ -281,7 +281,7 @@ export function VehicleForm({ userId, defaultLocation, initial }: VehicleFormPro
             {aiFilledFields.size > 0 && (
               <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary ring-1 ring-inset ring-primary/20">
                 <Sparkles className="h-2.5 w-2.5" />
-                Champs en orange : pré-remplis par l&apos;IA
+                Champs surlignés : pré-remplis par l&apos;IA
               </span>
             )}
           </CardDescription>
