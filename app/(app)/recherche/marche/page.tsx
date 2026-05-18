@@ -91,23 +91,13 @@ export default function MarchePage() {
   };
 
   return (
-    <div className="flex max-w-6xl flex-col gap-6 p-6">
-      <div>
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
-          Réseau & Sourcing
-        </p>
-        <h1 className="mb-1 text-2xl font-bold tracking-tight text-gray-900">Marché web</h1>
-        <p className="text-sm text-gray-500">
-          Recherchez des véhicules sur AutoScout24 directement depuis DealerLink.
-        </p>
-      </div>
-
-      <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
+    <div className="flex h-[calc(100vh-52px)] flex-col overflow-hidden">
+      <div className="flex-shrink-0 border-b border-gray-100 bg-white px-6 py-4">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
           Critères de recherche
         </p>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="mb-4 grid grid-cols-5 gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-gray-500">Marque</label>
             <select value={make} onChange={(e) => setMake(e.target.value)} className={inputClass}>
@@ -227,7 +217,7 @@ export default function MarchePage() {
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={handleSearch}
@@ -278,8 +268,8 @@ export default function MarchePage() {
       </div>
 
       {showIframe && searchUrl && (
-        <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-5 py-2.5">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
               <p className="text-sm font-medium text-gray-900">Résultats AutoScout24</p>
@@ -306,7 +296,7 @@ export default function MarchePage() {
           </div>
 
           {iframeBlocked ? (
-            <div className="p-10 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
               <p className="mb-3 text-2xl">🚗</p>
               <p className="mb-2 text-sm font-medium text-gray-900">
                 AutoScout24 ne peut pas être affiché ici
@@ -332,21 +322,23 @@ export default function MarchePage() {
               </button>
             </div>
           ) : (
-            <iframe
-              ref={iframeRef}
-              src={searchUrl}
-              className="w-full"
-              style={{ height: "calc(100vh - 320px)", minHeight: "500px" }}
-              title="Recherche AutoScout24"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
-              onLoad={handleIframeLoad}
-            />
+            <div className="flex flex-1 flex-col">
+              <iframe
+                ref={iframeRef}
+                src={searchUrl}
+                className="flex-1 w-full border-0"
+                style={{ height: "100%" }}
+                title="Recherche AutoScout24"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+                onLoad={handleIframeLoad}
+              />
+            </div>
           )}
         </div>
       )}
 
       {!showIframe && (
-        <div className="rounded-xl border border-gray-100 bg-white p-16 text-center shadow-sm">
+        <div className="flex flex-1 flex-col items-center justify-center border-t border-gray-100 bg-white">
           <p className="mb-4 text-4xl">🔍</p>
           <p className="mb-1 text-sm font-medium text-gray-900">
             Recherchez des véhicules sur le marché
