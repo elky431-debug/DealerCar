@@ -20,7 +20,7 @@ function DashboardMockup() {
           ].map((c) => (
             <div key={c.l} className="rounded-xl border border-gray-100 bg-gray-50/90 p-3 sm:p-4">
               <p className="text-[10px] font-semibold tracking-wide text-gray-500">{c.l}</p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-[#D99330] sm:text-2xl">{c.v}</p>
+              <p className="mt-1 text-xl font-bold tabular-nums text-brand sm:text-2xl">{c.v}</p>
             </div>
           ))}
         </div>
@@ -31,8 +31,8 @@ function DashboardMockup() {
           <svg viewBox="0 0 200 48" className="mt-2 h-12 w-full" preserveAspectRatio="none" aria-hidden>
             <defs>
               <linearGradient id="landing-chart-fill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#D99330" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="#D99330" stopOpacity="0" />
+                <stop offset="0%" stopColor="#0d9488" stopOpacity="0.28" />
+                <stop offset="100%" stopColor="#0d9488" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path
@@ -42,7 +42,7 @@ function DashboardMockup() {
             <path
               d="M0 38 L30 32 L55 28 L80 22 L105 26 L130 14 L155 18 L180 10 L200 6"
               fill="none"
-              stroke="#D99330"
+              stroke="#0d9488"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -64,7 +64,7 @@ function DashboardMockup() {
                 </span>
                 <span className="truncate font-medium text-gray-900">{row.n}</span>
               </span>
-              <span className="shrink-0 font-semibold tabular-nums text-[#D99330]">{row.p}</span>
+              <span className="shrink-0 font-semibold tabular-nums text-brand">{row.p}</span>
               <span className="landing-tag-green">{row.s}</span>
             </div>
           ))}
@@ -111,7 +111,7 @@ export function Hero() {
             </Link>
             <a
               href="#fonctionnalites"
-              className="text-center text-[15px] font-medium text-[#D99330] underline-offset-4 transition-colors hover:text-[#b87a28] hover:underline sm:text-left"
+              className="text-center text-[15px] font-medium text-brand underline-offset-4 transition-colors hover:text-brand-dark hover:underline sm:text-left"
             >
               Voir une démo ↓
             </a>

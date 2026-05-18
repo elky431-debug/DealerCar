@@ -17,10 +17,15 @@
 
     --border: 40 14% 90%;
     --input: 40 14% 90%;
-    --ring: 36 66% 52%;
+    --ring: 173 58% 39%;
 
-    /* Accent — orange DealerLink #D99330 */
-    --primary: 36 66% 52%;
+    /* Accent — teal DealerLink (plus d'orange) */
+    --dl-brand: #0d9488;
+    --dl-brand-light: #2dd4bf;
+    --dl-brand-dark: #0f766e;
+    --dl-brand-rgb: 13 148 136;
+
+    --primary: 173 58% 39%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 96%;
@@ -55,10 +60,14 @@
 
     --border: 224 16% 18%;
     --input: 224 16% 18%;
-    --ring: 36 70% 58%;
+    --ring: 173 58% 45%;
 
-    /* Accent orange (lisible sur fond sombre) */
-    --primary: 36 70% 58%;
+    --dl-brand: #14b8a6;
+    --dl-brand-light: #2dd4bf;
+    --dl-brand-dark: #0d9488;
+    --dl-brand-rgb: 20 184 166;
+
+    --primary: 173 58% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 224 18% 14%;
@@ -227,9 +236,23 @@
     @apply flex shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_14px_-2px_hsl(var(--primary)/0.4)];
   }
 
+  /* Sidebar — item actif discret (pas de pill orange pleine) */
+  .dl-sidebar-link-active {
+    @apply relative bg-gray-100/90 font-semibold text-gray-900;
+  }
+
+  .dl-sidebar-link-active::before {
+    content: "";
+    @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-brand;
+  }
+
+  .dl-sidebar-link {
+    @apply text-gray-500 transition-colors hover:bg-gray-100/80 hover:text-gray-900;
+  }
+
   /* Onglet / nav pill actif */
   .tab-pill-active {
-    @apply bg-[#D99330] text-white shadow-[0_4px_14px_-4px_rgba(217,147,48,0.35)];
+    @apply bg-gray-900 text-white shadow-[0_4px_14px_-4px_rgba(0,0,0,0.15)];
   }
 
   .page-header-bar {
@@ -253,13 +276,13 @@
 }
 
 /* ================================================================
-   LANDING PAGE — thème SaaS clair (maille + accent #D99330)
+   LANDING PAGE — thème SaaS clair (maille + accent teal)
    ================================================================ */
 
 @layer components {
   .landing-saas {
-    --landing-brand: #d99330;
-    --landing-brand-light: #e8a84a;
+    --landing-brand: #0d9488;
+    --landing-brand-light: #2dd4bf;
   }
 
   .bg-landing-bg,
@@ -300,11 +323,11 @@
   }
 
   .text-landing-brand {
-    color: #d99330;
+    color: var(--dl-brand);
   }
 
   .hover\:text-landing-brand:hover {
-    color: #d99330;
+    color: var(--dl-brand-dark);
   }
 }
 

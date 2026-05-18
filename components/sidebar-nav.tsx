@@ -167,8 +167,8 @@ function Item({
           className={cn(
             "ml-auto inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[10.5px] font-semibold tabular tracking-tight",
             active
-              ? "bg-background/20 text-background"
-              : "bg-foreground/[0.08] text-foreground/80",
+              ? "bg-gray-900/10 text-gray-900"
+              : "bg-gray-100 text-gray-600",
             railHover &&
               "opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100 group-focus-within/sb:opacity-100",
             collapsed && "sr-only",
@@ -198,16 +198,13 @@ function Item({
     iconOnly ? "justify-center gap-0 px-2" : "gap-3 px-3",
     isDisabled && "cursor-not-allowed opacity-50",
     !isDisabled && active
-      ? "bg-[#D99330] text-white shadow-[0_10px_24px_-12px_rgba(217,147,48,0.45)]"
+      ? "dl-sidebar-link-active"
       : !isDisabled
-        ? "text-muted-foreground hover:bg-[#D99330]/[0.08] hover:text-foreground"
+        ? "dl-sidebar-link"
         : "text-muted-foreground",
   );
 
-  // Drawer mobile : barrette colorée à gauche pour l'item actif
-  const drawerActiveBar = variant === "drawer" && active && (
-    <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-[#D99330]" />
-  );
+  const drawerActiveBar = null;
 
   if (isDisabled) {
     return (
