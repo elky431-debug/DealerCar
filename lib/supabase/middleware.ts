@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 /** Routes accessibles sans session (visiteurs). */
-const PUBLIC_PATHS = ["/", "/login", "/register", "/auth/callback"];
+const PUBLIC_PATHS = ["/", "/login", "/register", "/catalogue", "/auth/callback"];
 
 function hasSupabaseAuthCookie(request: NextRequest): boolean {
   return request.cookies.getAll().some((cookie) => {

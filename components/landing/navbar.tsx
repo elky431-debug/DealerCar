@@ -5,8 +5,9 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LandingLogoMark } from "@/components/landing/logo-mark";
 
-const NAV = [
+const NAV: { href: string; label: string; isRoute?: boolean }[] = [
   { href: "#fonctionnalites", label: "Fonctionnalités" },
+  { href: "/catalogue", label: "Catalogue", isRoute: true },
   { href: "#reseau", label: "Réseau" },
   { href: "#tarifs", label: "Tarifs" },
 ];
@@ -31,15 +32,25 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Navigation principale">
-            {NAV.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-sm font-medium text-gray-500 transition-colors hover:text-brand"
-              >
-                {l.label}
-              </a>
-            ))}
+            {NAV.map((l) =>
+              l.isRoute ? (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm font-medium text-gray-500 transition-colors hover:text-brand"
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm font-medium text-gray-500 transition-colors hover:text-brand"
+                >
+                  {l.label}
+                </a>
+              ),
+            )}
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
@@ -85,16 +96,27 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
               </button>
             </div>
             <nav className="flex flex-col gap-1">
-              {NAV.map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  className="rounded-lg px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  onClick={() => setOpen(false)}
-                >
-                  {l.label}
-                </a>
-              ))}
+              {NAV.map((l) =>
+                l.isRoute ? (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="rounded-lg px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    className="rounded-lg px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </a>
+                ),
+              )}
             </nav>
             <div className="mt-auto flex flex-col gap-3 border-t border-gray-100 pt-6">
               <Link
@@ -117,8 +139,4 @@ export function Navbar({ authenticated = false }: { authenticated?: boolean }) {
       )}
     </>
   );
-}
-
-function div({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={className}>{children}</div>;
 }
