@@ -108,6 +108,12 @@ export const NAV: NavGroup[] = [
         description: "Véhicules partagés par les autres marchands",
       },
       {
+        href: "/recherche/garages",
+        label: "Garages",
+        icon: Building2,
+        description: "Annuaire des garages du réseau DealerLink",
+      },
+      {
         href: "/map",
         label: "Carte",
         icon: MapPinned,

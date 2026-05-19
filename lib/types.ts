@@ -13,8 +13,30 @@ export interface Profile {
   longitude: number | null;
   siret: string | null;
   specialties: string | null;
+  description?: string | null;
+  logo_storage_path?: string | null;
+  banner_storage_path?: string | null;
+  tagline?: string | null;
+  slug?: string | null;
+  is_network_visible?: boolean | null;
+  vehicles_count?: number | null;
   created_at: string;
   updated_at: string;
+}
+
+/** Profil garage visible dans l’annuaire réseau (champs limités). */
+export interface NetworkGarageProfile {
+  id: string;
+  company_name: string;
+  location: string;
+  phone: string;
+  email: string;
+  description: string | null;
+  logo_storage_path: string | null;
+  banner_storage_path: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  vehicles_count: number;
 }
 
 export interface Vehicle {

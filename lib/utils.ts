@@ -92,6 +92,12 @@ export function publicImageUrl(storagePath: string): string {
   return `${base}/storage/v1/object/public/vehicle-images/${storagePath}`;
 }
 
+export function publicBrandingUrl(storagePath: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return storagePath;
+  return `${base}/storage/v1/object/public/dealer-branding/${storagePath}`;
+}
+
 /**
  * Convertit un fichier image en base64 (sans le préfixe data:).
  * Compresse l'image à 1600px max pour rester sous la limite payload.

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { PageBody, PageHeader } from "@/components/page-header";
-import { GarageForm } from "./garage-form";
+import { GarageTabs } from "./garage-tabs";
 import { getServerAuth } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
@@ -24,9 +24,10 @@ export default async function GarageProfilePage() {
         description="Profil marchand affiché sur vos fiches véhicule et dans le réseau."
       />
       <PageBody>
-        <GarageForm
+        <GarageTabs
           userId={user.id}
           email={user.email ?? ""}
+          profile={profile}
           defaults={{
             company_name: profile?.company_name ?? "",
             phone: profile?.phone ?? "",
