@@ -24,6 +24,12 @@ interface Props {
   profile: Profile | null;
 }
 
+const inputClass =
+  "rounded-xl border border-gray-100 bg-gray-50 px-3.5 py-2.5 text-sm font-medium transition-colors placeholder:text-gray-300 focus:border-brand/40 focus:bg-white focus:outline-none";
+
+const inputClassNormal =
+  "rounded-xl border border-gray-100 bg-gray-50 px-3.5 py-2.5 text-sm transition-colors placeholder:text-gray-300 focus:border-brand/40 focus:bg-white focus:outline-none";
+
 async function geocodeLocation(
   location: string,
 ): Promise<{ latitude: number | null; longitude: number | null }> {
@@ -42,7 +48,7 @@ async function geocodeLocation(
 export function GaragePublicTab({ userId, email, profile }: Props) {
   const router = useRouter();
   const toast = useToast();
-  const [saving, setSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [logoPath, setLogoPath] = useState(profile?.logo_storage_path ?? null);
   const [bannerPath, setBannerPath] = useState(profile?.banner_storage_path ?? null);
   const [form, setForm] = useState<PublicForm>({
@@ -97,7 +103,7 @@ export function GaragePublicTab({ userId, email, profile }: Props) {
       toast.error("Champs requis", "Nom, ville et téléphone sont obligatoires.");
       return;
     }
-    setSaving(true);
+    setIsSaving(true);
     const supabase = createClient();
     const coords = await geocodeLocation(form.location.trim());
     const slug = generateGarageSlug(form.company_name.trim(), form.location.trim());
@@ -119,127 +125,186 @@ export function GaragePublicTab({ userId, email, profile }: Props) {
       })
       .eq("id", userId);
 
-    setSaving(false);
+    setIsSaving(false);
     if (error) {
-      toast.error("Sauvegarde impossible", error.message);
+      const hint = error.message.includes("banner_storage_path")
+        ? " Exécutez la migration : npm run db:sql -- supabase/migration-v11.sql"
+        : "";
+      toast.error("Sauvegarde impossible", `${error.message}${hint}`);
       return;
     }
     toast.success("Garage public enregistré");
     router.refresh();
   };
 
-  const set = <K extends keyof PublicForm>(key: K, value: PublicForm[K]) => {
-    setForm((f) => ({ ...f, [key]: value }));
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="relative mb-6 h-40 overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
-        {bannerUrl ? (
-          <Image src={bannerUrl} alt="Bannière" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 800px" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-r from-brand/10 to-brand/5">
-            <p className="text-sm text-gray-400">Cliquez pour ajouter une bannière</p>
-          </div>
-        )}
-        <label className="absolute inset-0 flex cursor-pointer items-center justify-center opacity-0 transition-colors hover:bg-black/10 hover:opacity-100">
-          <span className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium shadow">
-            📷 Changer la bannière
-          </span>
-          <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
-        </label>
-        <label className="absolute bottom-3 left-4 cursor-pointer">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border-2 border-white bg-white shadow-lg">
-            {logoUrl ? (
-              <Image src={logoUrl} alt="Logo" width={64} height={64} className="h-full w-full object-cover" />
+    <div>
+      {/* HERO — Bannière + Logo superposé */}
+      <div className="relative mb-6 overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
+        <label className="block cursor-pointer">
+          <div className="group relative flex h-48 items-center justify-center bg-gradient-to-br from-slate-100 to-brand/10">
+            {bannerUrl ? (
+              <Image src={bannerUrl} alt="Bannière" fill className="object-cover" sizes="(max-width: 1024px) 100vw, 900px" />
             ) : (
-              <span className="text-2xl">🏢</span>
+              <div className="flex flex-col items-center gap-2 text-gray-400 transition-colors group-hover:text-brand">
+                <span className="text-3xl">🖼️</span>
+                <p className="text-sm font-medium">Cliquez pour ajouter une bannière</p>
+                <p className="text-xs">Recommandé : 1200 × 300px</p>
+              </div>
+            )}
+            {bannerUrl && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
+                <span className="rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium shadow">
+                  📷 Changer la bannière
+                </span>
+              </div>
             )}
           </div>
-          <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+          <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
         </label>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-gray-500">Nom du garage *</label>
-          <input
-            className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm focus:border-brand/40 focus:bg-white focus:outline-none"
-            value={form.company_name}
-            onChange={(e) => set("company_name", e.target.value)}
-            placeholder="Auto Garage Martin"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-gray-500">Ville *</label>
-          <input
-            className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm focus:border-brand/40 focus:bg-white focus:outline-none"
-            value={form.location}
-            onChange={(e) => set("location", e.target.value)}
-            placeholder="Lyon, 69000"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-gray-500">Téléphone *</label>
-          <input
-            className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm focus:border-brand/40 focus:bg-white focus:outline-none"
-            value={form.phone}
-            onChange={(e) => set("phone", e.target.value)}
-            placeholder="06 XX XX XX XX"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-gray-500">Email *</label>
-          <input
-            className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm focus:border-brand/40 focus:bg-white focus:outline-none"
-            value={form.email}
-            onChange={(e) => set("email", e.target.value)}
-            placeholder="contact@garage.fr"
-          />
-        </div>
-        <div className="col-span-2 flex flex-col gap-1.5">
-          <label className="text-xs font-medium text-gray-500">Description</label>
-          <textarea
-            className="h-20 resize-none rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm focus:border-brand/40 focus:bg-white focus:outline-none"
-            value={form.description}
-            onChange={(e) => set("description", e.target.value)}
-            placeholder="Spécialités, marques, types de véhicules, années d'expérience..."
-          />
+        <div className="absolute bottom-0 left-6 translate-y-1/2">
+          <label className="block cursor-pointer">
+            <div className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-white shadow-xl">
+              {logoUrl ? (
+                <Image src={logoUrl} alt="Logo" fill className="object-cover" sizes="80px" />
+              ) : (
+                <span className="text-3xl">🏢</span>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
+                <span className="text-xs text-white">📷</span>
+              </div>
+            </div>
+            <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+          </label>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-4">
-        <div>
-          <p className="text-sm font-semibold text-gray-900">Visible sur le réseau DealerLink</p>
-          <p className="mt-0.5 text-xs text-gray-400">
-            Les autres marchands peuvent voir votre profil et vous contacter
-          </p>
+      <div className="h-12" />
+
+      {/* FORMULAIRE */}
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <p className="mb-5 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+          Informations du garage
+        </p>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500">
+              Nom du garage <span className="text-brand">*</span>
+            </label>
+            <input
+              value={form.company_name}
+              onChange={(e) => setForm({ ...form, company_name: e.target.value })}
+              placeholder="Auto Garage Martin"
+              className={inputClass}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500">
+              Ville <span className="text-brand">*</span>
+            </label>
+            <input
+              value={form.location}
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              placeholder="Lyon, 69000"
+              className={inputClassNormal}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500">
+              Téléphone <span className="text-brand">*</span>
+            </label>
+            <input
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="06 XX XX XX XX"
+              className={inputClassNormal}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500">
+              Email <span className="text-brand">*</span>
+            </label>
+            <input
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="contact@garage.fr"
+              className={inputClassNormal}
+            />
+          </div>
+
+          <div className="col-span-2 flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-gray-500">Description</label>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="Spécialités, marques traitées, types de véhicules, années d'expérience..."
+              rows={3}
+              className={`${inputClassNormal} resize-none`}
+            />
+          </div>
         </div>
+      </div>
+
+      {/* VISIBILITÉ */}
+      <div className="mt-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Visible sur le réseau DealerLink</p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              Les autres marchands peuvent voir votre profil et vous contacter directement
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.is_network_visible}
+            onClick={() => setForm({ ...form, is_network_visible: !form.is_network_visible })}
+            className={`relative flex h-6 w-12 flex-shrink-0 rounded-full transition-colors ${
+              form.is_network_visible ? "bg-brand" : "bg-gray-200"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                form.is_network_visible ? "translate-x-6" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </div>
+
+        {form.is_network_visible && (
+          <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+            <p className="text-xs font-medium text-emerald-600">
+              Votre garage est visible par tous les marchands du réseau
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* BOUTON SAVE */}
+      <div className="mt-5 flex items-center justify-between">
+        <p className="text-xs text-gray-400">* Champs obligatoires pour apparaître dans l&apos;annuaire</p>
         <button
           type="button"
-          role="switch"
-          aria-checked={form.is_network_visible}
-          onClick={() => set("is_network_visible", !form.is_network_visible)}
-          className={`relative h-6 w-11 rounded-full transition-colors ${
-            form.is_network_visible ? "bg-brand" : "bg-gray-300"
-          }`}
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-xl bg-brand px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand/90 disabled:opacity-50"
         >
-          <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-              form.is_network_visible ? "translate-x-5" : "translate-x-0.5"
-            }`}
-          />
+          {isSaving ? (
+            <>
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Enregistrement...
+            </>
+          ) : (
+            <>✓ Enregistrer mon garage public</>
+          )}
         </button>
       </div>
-
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving}
-        className="mt-4 rounded-lg bg-brand px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand/90 disabled:opacity-60"
-      >
-        {saving ? "Enregistrement…" : "Enregistrer mon garage public"}
-      </button>
     </div>
   );
 }

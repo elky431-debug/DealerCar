@@ -4,7 +4,10 @@
  * Usage : npm run db:sql -- supabase/migration-v11.sql
  */
 
+import dns from "node:dns";
 import { readFileSync, existsSync } from "node:fs";
+
+dns.setDefaultResultOrder("ipv4first");
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config as loadEnv } from "dotenv";
