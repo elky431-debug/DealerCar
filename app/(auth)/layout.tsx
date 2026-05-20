@@ -12,11 +12,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       />
       <header className="container flex h-16 items-center">
         <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#D99330] text-white shadow-[0_4px_12px_-2px_rgba(217,147,48,0.45)]">
+          <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-white shadow-[0_4px_12px_-2px_rgba(13,148,136,0.45)]">
             <Car className="h-[18px] w-[18px]" />
             <span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
           </span>
-          Dealer<span className="text-[#D99330]">Link</span>
+          Dealer<span className="text-brand">Link</span>
         </Link>
       </header>
       <main className="container flex items-start justify-center py-8 sm:py-16">

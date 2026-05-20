@@ -54,7 +54,7 @@ export function Pricing() {
                 annual ? "bg-gray-900 text-white" : "text-gray-600 hover:text-gray-900",
               )}
             >
-              Annuel <span className="text-[#D99330]">-20%</span>
+              Annuel <span className="text-brand">-20%</span>
             </button>
           </div>
         </div>
@@ -81,12 +81,12 @@ export function Pricing() {
             </Link>
           </div>
 
-          <div className="relative flex flex-col rounded-2xl border-2 border-landing-brand bg-white p-6 shadow-[0_20px_50px_-24px_rgba(217,147,48,0.35)] transition-transform hover:-translate-y-0.5 sm:p-8">
+          <div className="relative flex flex-col rounded-2xl border-2 border-landing-brand bg-white p-6 shadow-[0_20px_50px_-24px_rgba(13,148,136,0.35)] transition-transform hover:-translate-y-0.5 sm:p-8">
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-landing-brand px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
               Le plus populaire
             </span>
             <h3 className="text-lg font-bold text-gray-900">Pro</h3>
-            <p className="mt-2 text-3xl font-bold text-[#D99330]">
+            <p className="mt-2 text-3xl font-bold text-brand">
               {proPrice} €/mois
               {annual ? (
                 <span className="ml-2 text-base font-normal text-gray-500 line-through">49 €</span>

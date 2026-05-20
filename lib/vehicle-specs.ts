@@ -188,7 +188,7 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClass, string> = {
   B: "bg-lime-500",
   C: "bg-yellow-400",
   D: "bg-amber-500",
-  E: "bg-orange-500",
+  E: "bg-brand",
   F: "bg-red-500",
   G: "bg-rose-700",
 };

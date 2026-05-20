@@ -571,7 +571,7 @@ function PremiumMainHeader({ searchId, search }: { searchId: string; search: Cli
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900">{search.client_name}</h1>
               {search.is_rare && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-[11px] font-semibold text-orange-700 ring-1 ring-orange-200">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-[11px] font-semibold text-brand-dark ring-1 ring-brand/20">
                   <Flame className="h-3 w-3" />
                   Rare
                 </span>
@@ -631,8 +631,8 @@ function SearchStatsGrid({
       label: "Difficulté",
       value: search.difficulty_score != null ? `${search.difficulty_score} / 10` : "—",
       icon: Target,
-      iconColor: "text-orange-500",
-      iconBg: "bg-orange-50",
+      iconColor: "text-brand",
+      iconBg: "bg-brand/10",
     },
     {
       label: "Meilleur match",
