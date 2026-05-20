@@ -1,5 +1,6 @@
 /**
  * Port unique pour `next dev` dans ce dépôt.
- * Importé par dev-guard et diagnostic pour rester synchronisé.
+ * Surcharge : PORT ou DEV_PORT dans .env.local (ex. PORT=3002)
  */
-export const DEV_PORT = 3000;
+const fromEnv = process.env.PORT ?? process.env.DEV_PORT;
+export const DEV_PORT = fromEnv ? Number(fromEnv) : 3001;

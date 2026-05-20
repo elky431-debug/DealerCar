@@ -46,7 +46,7 @@ Cela crée :
 npm run dev
 ```
 
-L'app tourne en local sur [http://localhost:3000](http://localhost:3000) (`npm run dev` / `npm run dev:quick`).
+L'app tourne en local sur [http://localhost:3001](http://localhost:3001) par défaut (`npm run dev` / `npm run dev:quick`). Autre port : `PORT=3002` dans `.env.local`.
 
 ---
 

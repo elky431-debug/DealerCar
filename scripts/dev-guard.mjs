@@ -7,7 +7,7 @@
  *
  * Actions :
  *   1. Tue TOUS les `next dev` / `next-server` / `next build` en cours.
- *   2. Libère le port dev (3000) + 3001-3005 si encore occupés.
+ *   2. Libère le port dev (DEV_PORT) + 3000-3005 si encore occupés.
  *   3. Détecte les caches .next incohérents (pas de manifests, mtime ancien…)
  *      et propose / force un reset.
  *
@@ -67,7 +67,7 @@ function killNextProcesses() {
   if (killed > 0) log(`✓ ${killed} process Next.js tué(s)`);
 }
 
-/* ────────── 2. Free dev port + 3000-3005 ────────── */
+/* ────────── 2. Free dev port + plage 3000-3005 ────────── */
 
 function pidsListeningOnPortWindows(port) {
   const pids = new Set();
@@ -91,7 +91,7 @@ function pidsListeningOnPortWindows(port) {
 
 function freePorts() {
   let freed = 0;
-  const ports = [DEV_PORT, 3000, 3001, 3002, 3003, 3004, 3005];
+  const ports = [...new Set([DEV_PORT, 3000, 3001, 3002, 3003, 3004, 3005])];
 
   if (isWin) {
     for (const port of ports) {
